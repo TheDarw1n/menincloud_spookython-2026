@@ -9,4 +9,7 @@ COPY data/ data/
 USER app
 EXPOSE 8000
 # UN SOLO WORKER: el estado del mundo vive en memoria. Nunca usar --workers > 1.
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# --timeout-keep-alive 75: mayor que el idle timeout del ALB (60 s); si uvicorn cierra antes una
+#   conexion que el ALB reutiliza, el jurado ve 502 (cuenta como error de disponibilidad).
+# --no-access-log: una linea por cada POST /paso (cientos por turno) costaria CPU y CloudWatch.
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--timeout-keep-alive", "75", "--no-access-log"]
