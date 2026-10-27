@@ -192,3 +192,17 @@ async def sim_reanudar():
 @app.get("/ws/sim/resultados", dependencies=[Depends(verificar_api_key)])
 def sim_resultados():
     return {"corriendo": SIM.corriendo, "resultados": SIM.resultados, "puntaje": SIM.puntaje()}
+
+
+# Desarrollo local o plan B sin AWS: SERVIR_FRONTEND=1 sirve el mapa y el grafo desde este mismo
+# proceso. En AWS no se activa: los sirve S3 a traves de CloudFront.
+if os.environ.get("SERVIR_FRONTEND", "0") == "1":
+    from fastapi.responses import FileResponse
+
+    @app.get("/", include_in_schema=False)
+    def mapa_local():
+        return FileResponse(os.path.join(os.environ.get("FRONTEND_DIR", "frontend"), "index.html"))
+
+    @app.get("/manta_graph.json", include_in_schema=False)
+    def grafo_local():
+        return FileResponse(os.environ.get("GRAPH_PATH", "data/manta_graph.json"), media_type="application/json")
