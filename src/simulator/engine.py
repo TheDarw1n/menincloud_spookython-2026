@@ -28,9 +28,10 @@ LIMITE_S = 0.5  # /paso debe responder en < 500 ms; si no, el sobreviviente se q
 MAX_MUESTRAS = 100_000
 # PRO capacidad: cada refugio evacua E personas por turno hacia la zona segura y tiene cupo para
 # BUFFER_TURNOS turnos de su evacuacion. La evacuacion total cubre EVAC_FACTOR veces las llegadas
-# esperadas, repartida segun la demanda de cada refugio; el de mayor demanda queda chico (CUELLO):
-# si todos van al mas cercano se llena, asi que el planner tiene que repartir.
-EVAC_FACTOR, CUELLO, BUFFER_TURNOS = 1.6, 0.45, 4
+# esperadas, repartida segun la demanda de cada refugio; el de mayor demanda queda mas chico
+# (CUELLO): si todos van al mas cercano se llena, asi que el planner tiene que repartir. Medido en
+# Manta: con 1.6/0.45 la espera en puertas costaba ~4 puntos de eficiencia; con 2.0/0.6, ~2.
+EVAC_FACTOR, CUELLO, BUFFER_TURNOS = 2.0, 0.6, 4
 CAMIONETAS = 5  # PRO flota: salen de los refugios; el servidor decide a quien recogen
 
 

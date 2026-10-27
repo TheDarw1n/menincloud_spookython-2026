@@ -4,16 +4,14 @@ de cada turno hacia la zona segura, asi que para alguien que llega en t turnos (
 mismo turno ya no ve otra evacuacion) el cupo proyectado es
     capacidad - ocupacion + E * (t - 1) - (asignados que llegan antes).
 Cada turno se asigna en orden de llegada (el mas cercano primero) al refugio mas barato que
-tenga cupo proyectado; conservar el refugio que ya tenia cuesta un 15 % menos para que las rutas
-no oscilen entre turnos."""
+tenga cupo proyectado. Se recalcula desde cero: medido, "fijar" el refugio previo (aunque sea con
+un 15 % de preferencia) hacia que los zombies acorralaran a mas gente (R3: 178 -> 309 mordidas)."""
 import bisect
 
 from .dijkstra import INF
 
-ESTABILIDAD = 0.85
 
-
-def asignar(tablas, saltos, sobrevivientes, refugios, previa):
+def asignar(tablas, saltos, sobrevivientes, refugios):
     """tablas/saltos: {refugio: {nodo: segundos | calles}}; refugios: estado publicado con
     capacidad, ocupacion y evacuaPorTurno. Devuelve ({sobreviviente: refugio}, llenos ahora)."""
     cupos = {r["id"]: r for r in refugios if r.get("capacidad") is not None}
@@ -26,7 +24,7 @@ def asignar(tablas, saltos, sobrevivientes, refugios, previa):
         for rid, tabla in tablas.items():
             c = tabla.get(n, INF)
             if c < INF:
-                opciones.append((c * (ESTABILIDAD if previa.get(sv["id"]) == rid else 1.0), saltos[rid][n], rid))
+                opciones.append((c, saltos[rid][n], rid))
         if opciones:
             opciones.sort()
             pedidos.append((min(eta for _, eta, _ in opciones), sv["id"], opciones))

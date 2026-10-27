@@ -55,7 +55,7 @@ class Planner:
         asignacion, llenos = {}, frozenset()
         if self.usa_capacidad:
             asignacion, llenos = capacidad.asignar(tablas, saltos, est.get("sobrevivientes", ()),
-                                                   est.get("refugios", ()), self._snap.asignacion)
+                                                   est.get("refugios", ()))
         snap = Snapshot(est.get("turno", 0), tablas, saltos, prohibidos, bloqueadas, cruces, penal,
                         asignacion, llenos)
         if self.usa_flota and est.get("camionetas"):

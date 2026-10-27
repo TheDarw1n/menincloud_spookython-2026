@@ -43,7 +43,7 @@ def test_cupo_proyectado_cuenta_la_evacuacion_desde_el_turno_siguiente():
     saltos = {"R0": {"A": 1, "B": 2}, "R1": {"A": 5, "B": 5}}
     svs = [{"id": "a", "nodo": "A"}, {"id": "b", "nodo": "B"}]
     # R0 lleno y evacua 1 por turno: quien llega este turno (a, 1 calle) no entra; b llega en 2 y si
-    asig, llenos = capacidad.asignar(tablas, saltos, svs, [_cupo("R0", 3, 3, 1), _cupo("R1", 9)], {})
+    asig, llenos = capacidad.asignar(tablas, saltos, svs, [_cupo("R0", 3, 3, 1), _cupo("R1", 9)])
     assert asig == {"a": "R1", "b": "R0"} and llenos == {"R0"}
 
 
