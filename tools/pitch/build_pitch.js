@@ -166,8 +166,8 @@ s.addNotes("Reglas duras: nunca pisa un zombie, ni la horda ni sus vecinos, ni u
 pres.addSection({ title: "Resultados" });
 s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Resultados" });
 s.addText("Resultados medidos, no prometidos", { placeholder: "title" });
-cifra(s, "puntaje", "9.61", "de 10 en la rúbrica: 3 rondas en un contenedor ARM64 de 0.5 vCPU (CI)", 0.6, 1.5, 2.85, C.accent1);
-cifra(s, "p95", "14 ms", "p95 de POST /paso en la ronda 3, 200 a la vez (umbral 150 ms)", 3.6, 1.5, 2.85, C.accent3);
+cifra(s, "puntaje", "9.54", "de 10 en la rúbrica (hasta 9.61): 3 rondas en ARM64 con 0.5 vCPU (CI)", 0.6, 1.5, 2.85, C.accent1);
+cifra(s, "p95", "16 ms", "p95 de POST /paso en R3 con 200 internos, 200 externos y 30 visores a la vez (umbral 150 ms)", 3.6, 1.5, 2.85, C.accent3);
 cifra(s, "errores", "0 %", "errores o respuestas de más de 500 ms", 0.6, 3.5, 2.85, C.accent3);
 cifra(s, "supervivencia", "98 %", "supervivencia en la ronda 3 de 150 turnos: 200 a la vez, todos los zombies", 3.6, 3.5, 2.85, C.accent5);
 texto(s, "resultados_pie", "Rondas de 150 turnos, grafo de Manta, 6 semillas: supervivencia+eficiencia 6.54 de 7 (tools/ab_planner.py).",
@@ -189,7 +189,7 @@ s.addChart(pres.charts.BAR, [{
   showLegend: false, plotArea: { fill: { color: "1E1A3A" } }, chartArea: { fill: { color: "1E1A3A" }, roundedCorners: false },
   barGapWidthPct: 60,
 });
-s.addNotes("Todo esto está medido. En la CI de GitHub levantamos el contenedor en ARM64, como Graviton en Fargate, con 0.5 vCPU, y jugamos las 3 rondas por HTTP: 9.61 de 10, p95 de 14 ms con 200 a la vez y cero errores. A la derecha, el A/B: a la versión final le quitamos una pieza a la vez y siempre empeora; lo que más pesa es el costo por cruce, y los tres PRO juntos suman 0.07.");
+s.addNotes("Todo esto está medido. En la CI de GitHub levantamos el contenedor en ARM64, como Graviton en Fargate, con 0.5 vCPU, y jugamos las 3 rondas por HTTP: entre 9.54 y 9.61 de 10. Y con todo a la vez, la ronda 3, 200 consultas externas y 30 visores del mapa, el p95 fue de 16 ms con cero errores. A la derecha, el A/B: a la versión final le quitamos una pieza a la vez y siempre empeora; lo que más pesa es el costo por cruce, y los tres PRO juntos suman 0.07.");
 
 // ---------- 6. PRO ----------
 s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Resultados" });
