@@ -114,6 +114,19 @@ def test_websocket_limita_visores(monkeypatch):
         assert "turno" in otra.receive_json()
 
 
+def test_websocket_cierra_si_el_cliente_envia_datos():
+    import pytest
+    from starlette.websockets import WebSocketDisconnect
+
+    with c.websocket_connect("/ws") as ws:
+        assert "turno" in ws.receive_json()
+        ws.send_text("x" * 1000)
+        with pytest.raises(WebSocketDisconnect) as cierre:
+            while True:
+                ws.receive_json()
+    assert cierre.value.code == 1008
+
+
 def test_autoarranque_espera_a_que_el_puerto_acepte_conexiones(monkeypatch):
     import asyncio
 

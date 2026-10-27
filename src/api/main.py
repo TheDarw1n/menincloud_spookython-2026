@@ -183,9 +183,10 @@ async def ws(websocket: WebSocket):
         return
     await websocket.accept()
     _visores += 1
+    lector = asyncio.create_task(_escuchar(websocket))
     ultimo, silencio = None, 0
     try:
-        while True:
+        while not lector.done():
             est = MUNDO.estado
             if est is not ultimo:
                 await websocket.send_text(MUNDO.json_estado())
@@ -195,10 +196,22 @@ async def ws(websocket: WebSocket):
                 silencio = 0
             await asyncio.sleep(0.25)
             silencio += 1
-    except (WebSocketDisconnect, RuntimeError):
+    except (WebSocketDisconnect, RuntimeError, OSError):
         pass
     finally:
+        lector.cancel()
         _visores -= 1
+
+
+async def _escuchar(websocket):
+    """El mapa solo escucha. Sin leer, uvicorn acumulaba en memoria lo que mandara el cliente (2
+    conexiones anonimas llevaban la tarea a ~1 GB) y un visor caido ocupaba su cupo hasta el
+    siguiente envio. Cualquier mensaje de datos cierra con 1008; una desconexion termina al instante."""
+    try:
+        if (await websocket.receive())["type"] != "websocket.disconnect":
+            await websocket.close(code=1008)
+    except (WebSocketDisconnect, RuntimeError, OSError):
+        pass
 
 
 # Control del simulador. Van bajo /ws/ porque el plan Free de CloudFront permite solo 5

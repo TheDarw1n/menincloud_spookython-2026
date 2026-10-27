@@ -12,4 +12,6 @@ EXPOSE 8000
 # --timeout-keep-alive 75: mayor que el idle timeout del ALB (60 s); si uvicorn cierra antes una
 #   conexion que el ALB reutiliza, el jurado ve 502 (cuenta como error de disponibilidad).
 # --no-access-log: una linea por cada POST /paso (cientos por turno) costaria CPU y CloudWatch.
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--timeout-keep-alive", "75", "--no-access-log"]
+# --ws-max-size/--ws-max-queue: el mapa nunca envia datos por /ws; sin limite uvicorn aceptaba
+#   mensajes de 16 MiB y encolaba 32 por conexion.
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--timeout-keep-alive", "75", "--no-access-log", "--ws-max-size", "4096", "--ws-max-queue", "1"]
