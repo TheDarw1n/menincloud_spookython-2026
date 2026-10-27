@@ -44,7 +44,10 @@ async def lifespan(app):
     await SIM.detener()
 
 
-app = FastAPI(title="Escape de Manta Zombie", lifespan=lifespan)
+# /docs y /openapi.json listan los endpoints de control: apagados salvo EXPONER_DOCS=1 (desarrollo)
+_DOCS = os.environ.get("EXPONER_DOCS", "0") == "1"
+app = FastAPI(title="Escape de Manta Zombie", lifespan=lifespan, docs_url="/docs" if _DOCS else None,
+              redoc_url=None, openapi_url="/openapi.json" if _DOCS else None)
 
 
 class OrigenSecreto:

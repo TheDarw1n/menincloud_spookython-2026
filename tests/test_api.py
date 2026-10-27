@@ -93,3 +93,7 @@ def test_paso_valida_tipos_y_tamano():
     assert c.post("/paso", headers=H, content=b'{"turno": Infinity, "nodoActual": "N-0001", "sobrevivienteId": "S"}').status_code == 422
     assert c.post("/paso", headers=H, content=b"x" * 5000).status_code == 413
     assert c.post("/paso", headers=H, json={**P, "turno": "142", "sobrevivienteId": 89}).status_code == 200
+
+
+def test_docs_apagados_por_defecto():
+    assert c.get("/docs").status_code == 404 and c.get("/openapi.json").status_code == 404
