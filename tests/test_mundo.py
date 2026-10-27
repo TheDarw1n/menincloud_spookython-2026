@@ -201,6 +201,18 @@ def test_la_ruta_del_mapa_empieza_con_el_mismo_paso_que_paso():
     assert paso != "N-0011" and m.planner.ruta("N-0012", "S")[:2] == ["N-0012", paso]
 
 
+def test_eventos_se_escalan_a_la_duracion_de_la_ronda():
+    def eventos(ronda, turnos, reponer=True):
+        sim = Simulador(Mundo(G, Planner(G)), consulta=None, turno_s=0, turnos_ronda=turnos, seed=1,
+                        reponer=reponer, log=lambda *a, **k: None)
+        sim._preparar(ronda)
+        return sim.s["eventos"]
+
+    assert eventos(2, 150) == [[40, "puente"]] and eventos(3, 150) == [[30, "avenida"], [75, "avenida"]]
+    assert eventos(2, 30) == [[8, "puente"]] and eventos(3, 30) == [[6, "avenida"], [15, "avenida"]]
+    assert eventos(3, 30, reponer=False) == [[4, "avenida"], [9, "avenida"]]  # poblacion fija: sin escalar
+
+
 def test_texto_de_eventos_con_y_sin_nombre_de_calle():
     from src.world import events
     g = _grafo([("A", "B", 100), ("B", "C", 100), ("A", "C", 100)], ["C"])

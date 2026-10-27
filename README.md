@@ -74,7 +74,7 @@ Medido con [`tools/ab_planner.py`](tools/ab_planner.py) (3 rondas × 150 turnos 
 
 ### Reglas del simulador y supuestos declarados
 
-Turno de 2 s, primero zombies y luego sobrevivientes. Caminante: 1 calle cada 2 turnos al azar. Corredor: 2 calles por turno, persigue si hay alguien a ≤ 3 nodos. Horda: casi inmóvil (10 % de avanzar), su nodo y **todos sus vecinos** muerden. Dormido: invisible (no se publica) hasta que alguien está a ≤ 2 nodos; despierta como caminante. Mordida: compartir nodo al final del turno o cruzarse por la misma calle. Eventos: R2 colapsa un puente, R3 cierra dos avenidas; se elige la calle más usada por las rutas planificadas sin aislar ninguna zona.
+Turno de 2 s, primero zombies y luego sobrevivientes. Caminante: 1 calle cada 2 turnos al azar. Corredor: 2 calles por turno, persigue si hay alguien a ≤ 3 nodos. Horda: casi inmóvil (10 % de avanzar), su nodo y **todos sus vecinos** muerden. Dormido: invisible (no se publica) hasta que alguien está a ≤ 2 nodos; despierta como caminante. Mordida: compartir nodo al final del turno o cruzarse por la misma calle. Eventos: R2 colapsa un puente (turno 40), R3 cierra dos avenidas (turnos 30 y 75); en rondas más cortas esos turnos se escalan. Se elige la calle más usada por las rutas planificadas sin aislar ninguna zona.
 
 Supuestos propios (no están en el enunciado; se pueden cambiar):
 

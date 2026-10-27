@@ -14,9 +14,11 @@ from ..world import bites, events, zombies as zm
 from . import puntaje
 from .cliente import ClientePaso
 
-# Fracciones de zombies respecto al numero de nodos; eventos = (turno, tipo de calle). Con
-# poblacion fija la ronda dura lo que tarda la ultima persona (~15-30 turnos en Manta), asi que
-# sus eventos van antes (eventos_fija) para que el puente colapse mientras todavia hay gente.
+# Fracciones de zombies respecto al numero de nodos; eventos = (turno, tipo de calle) en una ronda
+# de TURNOS_REF turnos: con TURNOS_RONDA menor se escalan (la CI juega 30 y el puente de R2 nunca
+# colapsaba). Con poblacion fija la ronda dura lo que tarda la ultima persona (~15-30 turnos en
+# Manta), asi que sus eventos van antes (eventos_fija, sin escalar) mientras todavia hay gente.
+TURNOS_REF = 150
 RONDAS = {
     1: dict(nombre="Anochecer", sobrevivientes=20, zombies={"caminante": 0.05}, eventos=[], eventos_fija=[]),
     2: dict(nombre="Medianoche", sobrevivientes=80,
@@ -113,6 +115,11 @@ class Simulador:
     def _reset_metricas(self):
         self.lat, self.errores, self.consultas = [], 0, 0
 
+    def _eventos(self, cfg):
+        if not self.reponer:
+            return [list(e) for e in cfg["eventos_fija"]]
+        return [[max(1, round(t * self.turnos_ronda / TURNOS_REF)), tipo] for t, tipo in cfg["eventos"]]
+
     def _preparar(self, ronda):
         cfg = RONDAS[ronda]
         self._reset_metricas()
@@ -120,7 +127,7 @@ class Simulador:
                   "poblacion": cfg["sobrevivientes"],
                   "zombies": zm.crear(self.grafo, cfg["zombies"], self.rng, excluir=self.grafo.nodos_refugio),
                   "bloqueadas": [], "log_eventos": [],
-                  "eventos": [list(e) for e in cfg["eventos" if self.reponer else "eventos_fija"]],
+                  "eventos": self._eventos(cfg),
                   "seq": 0, "sobrevivientes": [], "refugios": {}, "camionetas": self._camionetas(),
                   "stats": {"salvados": 0, "mordidos": 0, "rechazados": 0, "en_camioneta": 0,
                             "turnos_salvado": 0, "ef_suma": 0.0, "ef_n": 0}}
