@@ -20,6 +20,7 @@ class Snapshot:
     llenos: frozenset = frozenset()                 # refugios sin cupo en este turno
     flota: dict = field(default_factory=dict)       # camioneta -> objetivo del turno (PRO flota)
     esperar: frozenset = frozenset()                # sobrevivientes que esperan a su camioneta
+    nodos: dict = field(default_factory=dict)       # sobreviviente propio -> su nodo en este turno
 
 
 class Planner:
@@ -59,8 +60,9 @@ class Planner:
         if self.usa_capacidad:
             asignacion, llenos = capacidad.asignar(tablas, saltos, est.get("sobrevivientes", ()),
                                                    est.get("refugios", ()))
+        nodos = {sv["id"]: sv["nodo"] for sv in est.get("sobrevivientes", ())}
         snap = Snapshot(est.get("turno", 0), tablas, saltos, prohibidos, bloqueadas, cruces, penal,
-                        asignacion, llenos)
+                        asignacion, llenos, nodos=nodos)
         if self.usa_flota and est.get("camionetas"):
             objetivos, esperar = flota.planificar(g, snap, est.get("sobrevivientes", ()), est["camionetas"],
                                                   est.get("refugios", ()), self._snap.flota)
@@ -68,14 +70,21 @@ class Planner:
         self._snap = snap
 
     # ---------- consultas (ruta caliente de /paso) ----------
-    def _tablas(self, snap, sid):
-        rid = snap.asignacion.get(sid)
+    @staticmethod
+    def _propio(snap, sid, nodo):
+        """La asignacion por cupo y la espera de camioneta son de los sobrevivientes del simulador.
+        Un id externo que coincida con uno propio ("S-0001" es tambien el formato del contrato) pero
+        en otro nodo se rutea como cualquier id externo."""
+        return sid is not None and snap.nodos.get(sid) == nodo
+
+    def _tablas(self, snap, sid, nodo):
+        rid = snap.asignacion.get(sid) if self._propio(snap, sid, nodo) else None
         return [snap.tablas[rid]] if rid in snap.tablas else list(snap.tablas.values())
 
     def refugio_de(self, sid, nodo):
         """Refugio al que va (asignado por capacidad o el mas barato desde su nodo)."""
         snap = self._snap
-        rid = snap.asignacion.get(sid)
+        rid = snap.asignacion.get(sid) if self._propio(snap, sid, nodo) else None
         if rid is None and snap.tablas:
             rid = min(snap.tablas, key=lambda r: snap.tablas[r].get(nodo, INF))
         return rid
@@ -107,9 +116,9 @@ class Planner:
     def _siguiente(self, snap, nodo, sid=None):
         if nodo not in self.grafo.nodos or (nodo in self.grafo.nodos_refugio and nodo not in snap.prohibidos):
             return nodo  # nodo desconocido o en la puerta de un refugio seguro: se queda
-        if sid in snap.esperar and nodo not in snap.prohibidos:
+        if sid in snap.esperar and nodo not in snap.prohibidos and self._propio(snap, sid, nodo):
             return nodo  # su camioneta llega en <= 3 turnos
-        mejor, costo = self._mejor(snap, nodo, self._tablas(snap, sid))
+        mejor, costo = self._mejor(snap, nodo, self._tablas(snap, sid, nodo))
         if costo == INF:
             mejor, costo = self._mejor(snap, nodo, list(snap.tablas.values()))
         if costo == INF and nodo in snap.prohibidos:
@@ -143,7 +152,7 @@ class Planner:
         """Ruta planificada (para el mapa): el primer paso es exactamente el que responde /paso
         (respeta cruces y esperas); desde ahi baja por la tabla hasta el refugio."""
         snap, g = self._snap, self.grafo
-        tablas = self._tablas(snap, sid)
+        tablas = self._tablas(snap, sid, nodo)
         ruta, actual = [nodo], nodo
         primero = self._siguiente(snap, nodo, sid)
         if primero != nodo:

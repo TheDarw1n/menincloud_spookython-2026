@@ -38,6 +38,22 @@ def test_reparte_cuando_el_refugio_cercano_no_tiene_cupo():
     assert p.refugio_de("b", "S2") == "R1" and p.refugio_de("otro", "S2") == "R0"
 
 
+def test_un_id_externo_igual_a_uno_propio_no_hereda_su_asignacion_ni_su_espera():
+    from dataclasses import replace
+
+    g = _grafo([("S1", "R0", 100), ("S2", "R0", 150), ("S1", "M", 500), ("S2", "M", 500), ("M", "R1", 500)],
+               ["R0", "R1"])
+    p = Planner(g, prediccion=False)
+    p.actualizar({"turno": 1, "sobrevivientes": [{"id": "a", "nodo": "S1"}, {"id": "b", "nodo": "S2"}],
+                  "refugios": [_cupo("R0", 1), _cupo("R1", 10)]})
+    assert p.siguiente_nodo("S2", "b") == "M"      # el propio, en su nodo, sigue su asignacion (R1)
+    assert p.siguiente_nodo("S1", "b") == "R0"     # el mismo id en OTRO nodo es un id externo
+    assert p.refugio_de("b", "S1") == "R0"
+    p._snap = replace(p._snap, esperar=frozenset({"a"}))
+    assert p.siguiente_nodo("S1", "a") == "S1"     # el propio espera a su camioneta
+    assert p.siguiente_nodo("S2", "a") == "R0"     # un externo con su id no se queda quieto
+
+
 def test_cupo_proyectado_cuenta_la_evacuacion_desde_el_turno_siguiente():
     tablas = {"R0": {"A": 1.0, "B": 2.0}, "R1": {"A": 50.0, "B": 50.0}}
     saltos = {"R0": {"A": 1, "B": 2}, "R1": {"A": 5, "B": 5}}
