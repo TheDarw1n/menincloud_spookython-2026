@@ -174,13 +174,13 @@ def test_ninguna_mordida_era_evitable_en_rondas_completas(monkeypatch):
     evitables, total = [], [0]
     original = mordidas.mordidos
 
-    for ronda in (2, 3):
+    for ronda in (1, 2, 3):  # rondas de 150 turnos, con todos sus eventos de ciudad
         mundo = Mundo(g, Planner(g))
 
         async def directa(sid, nodo, turno, mundo=mundo):
             return mundo.planner.siguiente_nodo(nodo, sid)
 
-        sim = Simulador(mundo, consulta=directa, turno_s=0, turnos_ronda=60, seed=ronda, **CALLADO)
+        sim = Simulador(mundo, consulta=directa, turno_s=0, seed=ronda, **CALLADO)
 
         def espia(mov, zombies, zonas=frozenset(), sim=sim):
             muertos = original(mov, zombies, zonas)
@@ -197,6 +197,7 @@ def test_ninguna_mordida_era_evitable_en_rondas_completas(monkeypatch):
 
         monkeypatch.setattr(eng.bites, "mordidos", espia)
         asyncio.run(sim.correr(ronda))
+        assert sim.s["turno"] == 150 and len(sim.s["log_eventos"]) == ronda - 1
     assert total[0] > 0 and evitables == []
 
 
