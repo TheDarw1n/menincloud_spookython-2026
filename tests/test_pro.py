@@ -131,6 +131,37 @@ def test_camioneta_con_pasajeros_entrega_en_refugio_con_cupo():
     assert p.objetivos_flota()["C-1"] == {"tipo": "entregar", "refugio": "R1", "nodo": "R1"}
 
 
+def test_camioneta_no_entrega_en_un_refugio_tomado_por_zombies(monkeypatch):
+    import random
+
+    from src.world import zombies as zmod
+    monkeypatch.setattr(zmod, "FORTIFICADOS", False)
+    monkeypatch.setattr(zmod, "PROB_HORDA", 0.0)
+    # sin refugios fortificados: R (con vecinos A y D) queda tomado por un caminante o por una horda en A
+    for zombie in ({"id": "Z", "tipo": "caminante", "nodo": "R", "previo": "D", "visible": True, "fase": 0,
+                    "pasos": [["D", "R"]]},
+                   {"id": "H", "tipo": "horda", "nodo": "A", "previo": "A", "visible": True, "fase": 0, "pasos": []}):
+        g = _grafo([("R", "A", 100), ("A", "B", 100), ("B", "C", 100), ("R", "D", 100), ("D", "E", 100)], ["R"])
+        mundo = Mundo(g, Planner(g))
+
+        async def directa(sid, nodo, turno):
+            return mundo.planner.siguiente_nodo(nodo, sid)
+
+        sim = Simulador(mundo, consulta=directa, turno_s=0, seed=1, reponer=False, **CALLADO)
+        sim._preparar(1)
+        pasajero = lambda i: {"id": i, "nodo": "C", "turno_inicio": 0, "optimo": 3}
+        s = sim.s
+        s["sobrevivientes"], s["zombies"] = [], [zombie]
+        s["camionetas"] = [{"id": "C-1", "nodo": "R", "pasajeros": [pasajero("P1"), pasajero("P2")], "capacidad": 4,
+                            "destino": None, "estado": "entregando"}]
+        s["refugios"] = {"R": {"capacidad": 9, "evacua": 1, "ocupacion": 0}}
+        sim.rng = random.Random(0)
+        sim._publicar_turno()
+        asyncio.run(sim.turno())
+        assert s["stats"]["en_camioneta"] == 0 and len(s["camionetas"][0]["pasajeros"]) == 2, zombie["tipo"]
+        assert mundo.planner.objetivos_flota()["C-1"]["tipo"] != "entregar"  # R es el unico refugio y esta tomado
+
+
 def test_flota_en_una_ronda_rescata_sin_pasar_por_zombies_ni_perder_gente():
     mundo, sim = _sim(turnos_ronda=50)
     sim._preparar(3)

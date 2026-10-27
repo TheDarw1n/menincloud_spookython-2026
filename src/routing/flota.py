@@ -104,7 +104,9 @@ def planificar(grafo, snap, sobrevivientes, camionetas, refugios, previos=None):
             objetivos[c["id"]] = {"tipo": "libre"}
             continue
         dist = arboles[c["id"]][0]
-        alcanzables = sorted((dist[nodo], rid, nodo) for rid, nodo in grafo.refugios.items() if nodo in dist)
+        # (arbol() incluye el origen aunque sea letal: un refugio tomado por un zombie nunca es destino)
+        alcanzables = sorted((dist[nodo], rid, nodo) for rid, nodo in grafo.refugios.items()
+                             if nodo in dist and nodo not in snap.prohibidos)
         con_cupo = [o for o in alcanzables if libres.get(o[1], INF) >= c["pasajeros"]]
         if not alcanzables:
             objetivos[c["id"]] = {"tipo": "libre"}

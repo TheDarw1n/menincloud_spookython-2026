@@ -340,7 +340,8 @@ class Simulador:
                     if sig in vetados or not g.hay_calle(c["nodo"], sig, bloq):
                         break
                     c["nodo"] = sig
-            if c["nodo"] in g.nodos_refugio and c["pasajeros"]:
+            if c["nodo"] in g.nodos_refugio and c["pasajeros"] and c["nodo"] not in vetados:
+                # (sin refugios fortificados un zombie o una horda puede tomar el refugio: no se entrega)
                 rid, siguen = g.refugio_de_nodo[c["nodo"]], []
                 for p in c["pasajeros"]:
                     if self._admitir(rid):
