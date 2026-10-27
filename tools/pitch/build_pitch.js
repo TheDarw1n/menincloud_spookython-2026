@@ -117,8 +117,8 @@ s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Solución" });
 s.addText("Manta real, cada 2 segundos", { placeholder: "title" });
 const pasos = [
   ["🧟", "1. Se mueven los zombies", "Caminantes, corredores que persiguen, hordas que bloquean y dormidos invisibles.", C.accent4],
-  ["🧠", "2. El planner recalcula una vez", "4 Dijkstra inversos (uno por refugio) con los zombies del turno: ≈ 3 ms.", C.accent2],
-  ["📡", "3. 200 sobrevivientes piden POST /paso", "Cada respuesta solo consulta las tablas del turno: ≈ 3 µs de cálculo.", C.accent1],
+  ["🧠", "2. El planner recalcula una vez", "4 Dijkstra inversos (uno por refugio) con los zombies del turno: unos milisegundos.", C.accent2],
+  ["📡", "3. 200 sobrevivientes piden POST /paso", "Cada respuesta solo consulta las tablas del turno: microsegundos de cálculo.", C.accent1],
   ["🏠", "4. Mordidas y llegadas", "El simulador valida cada movimiento y lleva el puntaje de la rúbrica en vivo.", C.accent3],
 ];
 pasos.forEach(([e, t, d, col], i) => {
@@ -166,8 +166,8 @@ s.addNotes("Reglas duras: nunca pisa un zombie, ni la horda ni sus vecinos, ni u
 pres.addSection({ title: "Resultados" });
 s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Resultados" });
 s.addText("Resultados medidos, no prometidos", { placeholder: "title" });
-cifra(s, "puntaje", "9.48", "de 10 como mínimo en 9 corridas de la CI (hasta 9.70), ARM64 con 0.5 vCPU", 0.6, 1.5, 2.85, C.accent1);
-cifra(s, "p95", "16 ms", "p95 de POST /paso en R3 con 200 internos, 200 externos y 30 visores a la vez (umbral 150 ms)", 3.6, 1.5, 2.85, C.accent3);
+cifra(s, "puntaje", "9.6", "de 10: mediana de 20 corridas de la CI (rango 9.31–9.70), ARM64 con 0.5 vCPU", 0.6, 1.5, 2.85, C.accent1);
+cifra(s, "p95", "17 ms", "p95 máximo de POST /paso en R3 con 200 internos, 200 externos y 30 visores a la vez (umbral 150 ms)", 3.6, 1.5, 2.85, C.accent3);
 cifra(s, "errores", "0 %", "errores o respuestas de más de 500 ms", 0.6, 3.5, 2.85, C.accent3);
 cifra(s, "supervivencia", "98 %", "supervivencia en la ronda 3 de 150 turnos: 200 a la vez, todos los zombies", 3.6, 3.5, 2.85, C.accent5);
 texto(s, "resultados_pie", "Rondas de 150 turnos, grafo de Manta, 6 semillas: supervivencia+eficiencia 6.54 de 7 (tools/ab_planner.py).",
@@ -175,7 +175,7 @@ texto(s, "resultados_pie", "Rondas de 150 turnos, grafo de Manta, 6 semillas: su
 s.addChart(pres.charts.BAR, [{
   name: "Supervivencia + eficiencia (de 7)",
   labels: ["Sin PRO ni costo por cruce", "Sin costo por cruce", "Sin los 3 PRO", "Sin flota", "Sin predicción", "Producción"],
-  values: [6.282, 6.339, 6.473, 6.478, 6.502, 6.539],
+  values: [6.282, 6.339, 6.473, 6.478, 6.492, 6.539],
 }], {
   objectName: "grafico_ab", x: 6.75, y: 1.45, w: 5.95, h: 5.0, barDir: "bar",
   chartColors: ["8B5CF6", "8B5CF6", "8B5CF6", "8B5CF6", "8B5CF6", "F6AD55"],
@@ -189,7 +189,7 @@ s.addChart(pres.charts.BAR, [{
   showLegend: false, plotArea: { fill: { color: "1E1A3A" } }, chartArea: { fill: { color: "1E1A3A" }, roundedCorners: false },
   barGapWidthPct: 60,
 });
-s.addNotes("Todo esto está medido. En la CI de GitHub levantamos el contenedor en ARM64, como Graviton en Fargate, con 0.5 vCPU, y jugamos las 3 rondas por HTTP: en 9 corridas, entre 9.48 y 9.70 de 10. Y con todo a la vez, la ronda 3, 200 consultas externas y 30 visores del mapa, el p95 fue de 16 ms con cero errores. A la derecha, el A/B: a la versión final le quitamos una pieza a la vez y siempre empeora; lo que más pesa es el costo por cruce, y los tres PRO juntos suman 0.07.");
+s.addNotes("Todo esto está medido. En la CI de GitHub levantamos el contenedor en ARM64, como Graviton en Fargate, con 0.5 vCPU, y jugamos las 3 rondas por HTTP: en 20 corridas la mediana es 9.6 de 10, con un rango de 9.31 a 9.70, porque cada corrida es una partida distinta. Y con todo a la vez, la ronda 3, 200 consultas externas y 30 visores del mapa, el p95 fue como máximo de 17 ms, con cero errores. A la derecha, el A/B: a la versión final le quitamos una pieza a la vez y siempre empeora; lo que más pesa es el costo por cruce, y los tres PRO juntos suman 0.07.");
 
 // ---------- 6. PRO ----------
 s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Resultados" });
