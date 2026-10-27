@@ -1,7 +1,7 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from ..world.zombies import zonas_horda
-from . import capacidad, riesgo
+from . import capacidad, flota, riesgo
 from .dijkstra import INF, dijkstra_inverso
 
 ESPERA_S = 20.0  # costo de quedarse quieto un turno (~ lo que toma una calle a pie)
@@ -18,6 +18,8 @@ class Snapshot:
     penal: dict = field(default_factory=dict)    # nodo -> segundos extra (trampas y prediccion)
     asignacion: dict = field(default_factory=dict)  # sobreviviente -> refugio (PRO capacidad)
     llenos: frozenset = frozenset()                 # refugios sin cupo en este turno
+    flota: dict = field(default_factory=dict)       # camioneta -> objetivo del turno (PRO flota)
+    esperar: frozenset = frozenset()                # sobrevivientes que esperan a su camioneta
 
 
 class Planner:
@@ -25,10 +27,11 @@ class Planner:
     turno) a partir del estado publicado. Los snapshots son inmutables y se reemplazan de forma
     atomica, asi que /paso los lee desde muchos hilos sin lock: cada consulta es O(grado)."""
 
-    def __init__(self, grafo, prediccion=True, capacidad=True):
+    def __init__(self, grafo, prediccion=True, capacidad=True, flota=True):
         self.grafo = grafo
         self.prediccion = prediccion  # PRO: anticipar a corredores, caminantes y hordas
         self.usa_capacidad = capacidad  # PRO: repartir segun el cupo de los refugios
+        self.usa_flota = flota          # PRO: decidir a quien recoge cada camioneta
         self._snap = Snapshot(-1)
 
     @property
@@ -53,8 +56,13 @@ class Planner:
         if self.usa_capacidad:
             asignacion, llenos = capacidad.asignar(tablas, saltos, est.get("sobrevivientes", ()),
                                                    est.get("refugios", ()), self._snap.asignacion)
-        self._snap = Snapshot(est.get("turno", 0), tablas, saltos, prohibidos, bloqueadas, cruces, penal,
-                              asignacion, llenos)
+        snap = Snapshot(est.get("turno", 0), tablas, saltos, prohibidos, bloqueadas, cruces, penal,
+                        asignacion, llenos)
+        if self.usa_flota and est.get("camionetas"):
+            objetivos, esperar = flota.planificar(g, snap, est.get("sobrevivientes", ()), est["camionetas"],
+                                                  est.get("refugios", ()), self._snap.flota)
+            snap = replace(snap, flota=objetivos, esperar=esperar)
+        self._snap = snap
 
     # ---------- consultas (ruta caliente de /paso) ----------
     def _tablas(self, snap, sid):
@@ -96,6 +104,8 @@ class Planner:
     def _siguiente(self, snap, nodo, sid=None):
         if nodo not in self.grafo.nodos or nodo in self.grafo.nodos_refugio:
             return nodo  # nodo desconocido o ya en un refugio: se queda
+        if sid in snap.esperar and nodo not in snap.prohibidos:
+            return nodo  # su camioneta llega en <= 3 turnos
         mejor, costo = self._mejor(snap, nodo, self._tablas(snap, sid))
         if costo == INF:
             mejor, costo = self._mejor(snap, nodo, list(snap.tablas.values()))
@@ -108,6 +118,23 @@ class Planner:
 
     def siguiente_nodo(self, nodo, sid=None):
         return self._siguiente(self._snap, nodo, sid)
+
+    # ---------- flota (PRO) ----------
+    def objetivos_flota(self):
+        return self._snap.flota
+
+    def esperando(self, sid):
+        return sid in self._snap.esperar
+
+    def camino_camioneta(self, origen, destino):
+        """Camino completo de una camioneta (evita zombies visibles, hordas y calles cerradas)."""
+        snap = self._snap
+        _, padre, _ = flota.arbol(self.grafo, origen, snap.bloqueadas, snap.prohibidos)
+        return flota.camino(padre, destino)
+
+    def pasos_camioneta(self, origen, destino):
+        """Las (hasta) 2 calles que avanza este turno."""
+        return self.camino_camioneta(origen, destino)[1:1 + flota.VELOCIDAD]
 
     def ruta(self, nodo, sid=None, max_nodos=25):
         """Ruta planificada (para el mapa): baja por la tabla hasta el refugio."""

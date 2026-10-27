@@ -58,7 +58,8 @@ def test_rondas_completas_sin_romper():
         asyncio.run(sim.correr(ronda))
         r = sim.resultados[-1]
         assert r["turnos"] == 45 and r["errores_o_timeout"] == 0
-        assert len(mundo.estado["sobrevivientes"]) == {1: 20, 2: 80, 3: 200}[ronda]
+        en_juego = len(mundo.estado["sobrevivientes"]) + mundo.estado["metricas"]["aBordo"]
+        assert en_juego == {1: 20, 2: 80, 3: 200}[ronda]  # N a la vez: en la calle o en camioneta
         assert r["salvados"] + r["mordidos"] > 0
         assert 0 < r["eficiencia"] <= 1 and mundo.estado["corriendo"] is False
         assert mundo.estado["resultados"][-1]["ronda"] == ronda and mundo.estado["puntaje"]["rondas"] == [ronda]

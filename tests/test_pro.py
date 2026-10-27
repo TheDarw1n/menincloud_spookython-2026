@@ -5,6 +5,7 @@ import os
 from src.routing import capacidad
 from src.routing.planner import Planner
 from src.simulator.engine import Simulador
+from src.world import zombies as zm
 from src.world.graph import Grafo
 from src.world.mundo import Mundo
 
@@ -86,3 +87,55 @@ def test_sin_capacidad_no_hay_cupos():
     asyncio.run(sim.correr(2))
     assert sim.s["refugios"] == {} and sim.resultados[-1]["rechazados"] == 0
     assert all("capacidad" not in r for r in mundo.estado["refugios"])
+
+
+def test_camioneta_recoge_al_que_mas_ahorra_y_lo_hace_esperar():
+    # linea R - A - B - C - D - E - F - G (cada calle 100 m)
+    nodos = ["R", "A", "B", "C", "D", "E", "F", "G"]
+    g = _grafo([(a, b, 100) for a, b in zip(nodos, nodos[1:])], ["R"])
+    p = Planner(g, prediccion=False, capacidad=False)
+    svs = [{"id": "lejos", "nodo": "G"}, {"id": "cerca", "nodo": "A"}]
+    # desde el refugio no conviene: 4 turnos para llegar + 4 de vuelta > 7 caminando
+    p.actualizar({"turno": 1, "sobrevivientes": svs, "camionetas": [{"id": "C-1", "nodo": "R", "pasajeros": 0}]})
+    assert p.objetivos_flota()["C-1"] == {"tipo": "libre"} and not p.esperando("lejos")
+    # con la camioneta en F si: 1 turno para llegar + 4 de vuelta = 2 turnos menos que caminar 7
+    p.actualizar({"turno": 2, "sobrevivientes": svs, "camionetas": [{"id": "C-1", "nodo": "F", "pasajeros": 0}]})
+    assert p.objetivos_flota()["C-1"] == {"tipo": "recoger", "sid": "lejos", "nodo": "G"}
+    assert p.esperando("lejos") and p.siguiente_nodo("G", "lejos") == "G"   # llega el proximo turno: espera
+    assert p.siguiente_nodo("A", "cerca") == "R"                             # a 1 calle: camina
+    assert p.pasos_camioneta("C", "R") == ["B", "A"]                         # 2 calles por turno
+
+
+def test_camioneta_con_pasajeros_entrega_en_refugio_con_cupo():
+    g = _grafo([("X", "R0", 100), ("X", "M", 100), ("M", "R1", 300)], ["R0", "R1"])
+    p = Planner(g, prediccion=False)
+    p.actualizar({"turno": 1, "sobrevivientes": [],
+                  "camionetas": [{"id": "C-1", "nodo": "X", "pasajeros": 3, "capacidad": 4}],
+                  "refugios": [_cupo("R0", 4, 3), _cupo("R1", 10)]})  # R0 solo tiene 1 lugar
+    assert p.objetivos_flota()["C-1"] == {"tipo": "entregar", "refugio": "R1", "nodo": "R1"}
+
+
+def test_flota_en_una_ronda_rescata_sin_pasar_por_zombies_ni_perder_gente():
+    mundo, sim = _sim(turnos_ronda=50)
+    sim._preparar(3)
+
+    async def jugar():
+        for _ in range(50):
+            antes = {c["id"]: c["nodo"] for c in sim.s["camionetas"]}
+            await sim.turno()
+            vetados = {z["nodo"] for z in sim.s["zombies"] if z["visible"]} | zm.zonas_horda(G, sim.s["zombies"])
+            for c in sim.s["camionetas"]:
+                assert len(c["pasajeros"]) <= c["capacidad"]
+                assert c["nodo"] == antes[c["id"]] or c["nodo"] not in vetados  # nunca entra a un zombie/horda
+            assert len(sim.s["sobrevivientes"]) + sim._a_bordo() == 200
+
+    asyncio.run(jugar())
+    cam = mundo.estado["camionetas"]
+    assert len(cam) == 5 and all({"id", "nodo", "pasajeros", "capacidad", "estado", "ruta"} <= set(c) for c in cam)
+    assert sim.s["stats"]["en_camioneta"] > 0
+
+
+def test_sin_flota_no_hay_camionetas():
+    mundo, sim = _sim(turnos_ronda=3, flota=False)
+    asyncio.run(sim.correr(1))
+    assert sim.s["camionetas"] == [] and mundo.estado["camionetas"] == []

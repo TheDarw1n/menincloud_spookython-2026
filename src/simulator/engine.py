@@ -11,6 +11,7 @@ import time
 
 import httpx
 
+from ..routing.flota import PLAZAS
 from ..world import bites, events, zombies as zm
 from . import puntaje
 
@@ -30,6 +31,7 @@ MAX_MUESTRAS = 100_000
 # esperadas, repartida segun la demanda de cada refugio; el de mayor demanda queda chico (CUELLO):
 # si todos van al mas cercano se llena, asi que el planner tiene que repartir.
 EVAC_FACTOR, CUELLO, BUFFER_TURNOS = 1.6, 0.45, 4
+CAMIONETAS = 5  # PRO flota: salen de los refugios; el servidor decide a quien recogen
 
 
 def log_json(evento, **datos):
@@ -39,13 +41,15 @@ def log_json(evento, **datos):
 
 class Simulador:
     def __init__(self, mundo, consulta=None, turno_s=2.0, turnos_ronda=150, snapshots=None,
-                 snapshot_cada=10, ruta_max=25, seed=None, reponer=True, capacidad=True, log=log_json):
+                 snapshot_cada=10, ruta_max=25, seed=None, reponer=True, capacidad=True, flota=True,
+                 log=log_json):
         self.mundo, self.grafo = mundo, mundo.grafo
         self.consulta = consulta or self._consulta_http
         self.turno_s, self.turnos_ronda = turno_s, turnos_ronda
         self.snapshots, self.snapshot_cada, self.ruta_max = snapshots, snapshot_cada, ruta_max
         self.reponer = reponer  # True: N sobrevivientes a la vez toda la ronda; False: poblacion fija
         self.capacidad = capacidad  # PRO: refugios con cupo y evacuacion
+        self.flota = flota          # PRO: camionetas de rescate
         self.log = log
         self.rng = random.Random(seed)
         self.s = None
@@ -109,9 +113,9 @@ class Simulador:
                   "poblacion": cfg["sobrevivientes"],
                   "zombies": zm.crear(self.grafo, cfg["zombies"], self.rng, excluir=self.grafo.nodos_refugio),
                   "bloqueadas": [], "eventos": [list(e) for e in cfg["eventos"]], "log_eventos": [],
-                  "seq": 0, "sobrevivientes": [], "refugios": {},
-                  "stats": {"salvados": 0, "mordidos": 0, "rechazados": 0, "turnos_salvado": 0,
-                            "ef_suma": 0.0, "ef_n": 0}}
+                  "seq": 0, "sobrevivientes": [], "refugios": {}, "camionetas": self._camionetas(),
+                  "stats": {"salvados": 0, "mordidos": 0, "rechazados": 0, "en_camioneta": 0,
+                            "turnos_salvado": 0, "ef_suma": 0.0, "ef_n": 0}}
         self._calcular_optimo()
         self.s["refugios"] = self._cupos(cfg["sobrevivientes"])
         self.s["sobrevivientes"] = self._nuevos(cfg["sobrevivientes"])
@@ -119,6 +123,13 @@ class Simulador:
         self.mundo.publicar_zombies(0, self.s["zombies"], [], ronda=ronda, corriendo=True,
                                     turnosRestantes=self.turnos_ronda, eventos=[], refugios=self._pub_refugios())
         self._publicar_turno()
+
+    def _camionetas(self):
+        if not self.flota:
+            return []
+        bases = sorted(self.grafo.nodos_refugio)
+        return [{"id": f"C-{i + 1}", "nodo": bases[i % len(bases)], "pasajeros": [], "capacidad": PLAZAS,
+                 "destino": None, "estado": "libre"} for i in range(CAMIONETAS)]
 
     def _cupos(self, n):
         """{refugio: cupo, evacuacion por turno y ocupacion} para N sobrevivientes a la vez.
@@ -157,9 +168,10 @@ class Simulador:
         s.setdefault("poblacion", RONDAS[s["ronda"]]["sobrevivientes"])
         s.setdefault("log_eventos", [])
         s.setdefault("refugios", {})
+        s.setdefault("camionetas", [])
         st = dict(s.get("stats", {}))
-        for k, v in (("salvados", 0), ("mordidos", 0), ("rechazados", 0), ("turnos_salvado", 0),
-                     ("ef_suma", 0.0), ("ef_n", 0)):
+        for k, v in (("salvados", 0), ("mordidos", 0), ("rechazados", 0), ("en_camioneta", 0),
+                     ("turnos_salvado", 0), ("ef_suma", 0.0), ("ef_n", 0)):
             st.setdefault(k, v)
         s["stats"] = st
         return s
@@ -205,8 +217,8 @@ class Simulador:
             t0 = time.monotonic()
             await self.turno()
             s["turnos_restantes"] -= 1
-            if not self.reponer and not s["sobrevivientes"]:
-                break  # poblacion fija: ya no queda nadie en la calle
+            if not self.reponer and not s["sobrevivientes"] and not self._a_bordo():
+                break  # poblacion fija: ya no queda nadie en la calle ni en camioneta
             await asyncio.sleep(max(0.0, self.turno_s - (time.monotonic() - t0)))
         await self._finalizar()
 
@@ -282,9 +294,12 @@ class Simulador:
                 if prev != sv["nodo"]:
                     st["rechazados"] += 1  # llego a un refugio lleno: espera en la puerta
             quedan.append(sv)
-        # 7) poblacion continua: siempre N a la vez en la calle
+        # 7) camionetas (PRO): avanzan 2 calles, entregan en refugios con cupo y recogen
+        if s["camionetas"]:
+            quedan = self._mover_camionetas(quedan, t, bloq, zonas)
+        # 8) poblacion continua: siempre N a la vez (en la calle o en camioneta)
         if self.reponer:
-            quedan += self._nuevos(s["poblacion"] - len(quedan))
+            quedan += self._nuevos(s["poblacion"] - len(quedan) - self._a_bordo())
         s["sobrevivientes"] = quedan
         metricas = self._publicar_turno()
         if t % 10 == 0:
@@ -294,6 +309,48 @@ class Simulador:
                 await asyncio.to_thread(self.snapshots.guardar, t, self.exportar())
             except Exception as e:  # un fallo de DynamoDB no debe romper el juego
                 print("snapshot fallo:", e)
+
+    def _a_bordo(self):
+        return sum(len(c["pasajeros"]) for c in self.s["camionetas"])
+
+    def _mover_camionetas(self, quedan, t, bloq, zonas):
+        """El servidor (planner) decide el objetivo de cada camioneta; aqui se valida cada calle
+        (sin zombies visibles, zonas de horda ni calles cerradas), se entrega y se recoge."""
+        g, s, planner = self.grafo, self.s, self.mundo.planner
+        objetivos = planner.objetivos_flota()
+        en_calle = {sv["id"]: sv for sv in quedan}
+        vetados = {z["nodo"] for z in s["zombies"] if z["visible"]} | zonas
+        subieron = set()
+        for c in s["camionetas"]:
+            obj = objetivos.get(c["id"], {"tipo": "libre"})
+            destino = None
+            if obj["tipo"] == "recoger" and obj["sid"] in en_calle and obj["sid"] not in subieron:
+                destino = en_calle[obj["sid"]]["nodo"]
+            elif obj["tipo"] == "entregar":
+                destino = obj["nodo"]
+            c["destino"] = destino
+            c["estado"] = {"recoger": "recogiendo", "entregar": "entregando"}[obj["tipo"]] if destino else "libre"
+            if destino and destino != c["nodo"]:
+                for sig in planner.pasos_camioneta(c["nodo"], destino):
+                    if sig in vetados or not g.hay_calle(c["nodo"], sig, bloq):
+                        break
+                    c["nodo"] = sig
+            if c["nodo"] in g.nodos_refugio and c["pasajeros"]:
+                rid, siguen = g.refugio_de_nodo[c["nodo"]], []
+                for p in c["pasajeros"]:
+                    if self._admitir(rid):
+                        self._salvar(p, t)
+                        s["stats"]["en_camioneta"] += 1
+                    else:
+                        siguen.append(p)
+                c["pasajeros"] = siguen
+            elif c["nodo"] not in g.nodos_refugio:
+                aqui = sorted((sv for sv in quedan if sv["nodo"] == c["nodo"] and sv["id"] not in subieron),
+                              key=lambda sv: sv["id"] != obj.get("sid"))
+                for sv in aqui[:c["capacidad"] - len(c["pasajeros"])]:
+                    c["pasajeros"].append(sv)
+                    subieron.add(sv["id"])
+        return [sv for sv in quedan if sv["id"] not in subieron]
 
     def _admitir(self, rid):
         r = self.s["refugios"].get(rid)
@@ -323,6 +380,7 @@ class Simulador:
         s, st = self.s, self.s["stats"]
         p95 = puntaje.percentil(sorted(self.lat), 0.95)
         return {"salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
+                "rescatadosEnCamioneta": st["en_camioneta"], "aBordo": self._a_bordo(),
                 "supervivencia": self._supervivencia(),
                 "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                 "latenciaP95": round(p95, 2) if p95 is not None else None,
@@ -335,16 +393,22 @@ class Simulador:
         self.mundo.publicar(
             sobrevivientes=[{"id": sv["id"], "nodo": sv["nodo"],
                              "refugio": g.refugio_de_nodo.get(sv["nodo"]) or planner.refugio_de(sv["id"], sv["nodo"]),
-                             "estado": "en_puerta" if sv["nodo"] in g.nodos_refugio else "caminando",
+                             "estado": ("en_puerta" if sv["nodo"] in g.nodos_refugio
+                                        else "esperando" if planner.esperando(sv["id"]) else "caminando"),
                              "ruta": planner.ruta(sv["nodo"], sv["id"], self.ruta_max)}
                             for sv in s["sobrevivientes"]],
+            camionetas=[{"id": c["id"], "nodo": c["nodo"], "pasajeros": len(c["pasajeros"]),
+                         "capacidad": c["capacidad"], "destino": c["destino"], "estado": c["estado"],
+                         "ruta": planner.camino_camioneta(c["nodo"], c["destino"])[:40] if c["destino"] else []}
+                        for c in s["camionetas"]],
             refugios=self._pub_refugios(), metricas=metricas)
         return metricas
 
     def exportar(self):
         s = self.s
         return {**s, "zombies": [dict(z) for z in s["zombies"]],
-                "sobrevivientes": [dict(sv) for sv in s["sobrevivientes"]]}
+                "sobrevivientes": [dict(sv) for sv in s["sobrevivientes"]],
+                "camionetas": [dict(c, pasajeros=[dict(p) for p in c["pasajeros"]]) for c in s["camionetas"]]}
 
     async def _finalizar(self):
         s, st = self.s, self.s["stats"]
@@ -352,6 +416,7 @@ class Simulador:
         pct = lambda p: round(puntaje.percentil(lat, p), 2) if lat else None
         res = {"ronda": s["ronda"], "nombre": RONDAS[s["ronda"]]["nombre"], "turnos": s["turno"],
                "salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
+               "rescatados_en_camioneta": st["en_camioneta"],
                "supervivencia": self._supervivencia(),
                "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                "turnos_promedio_por_rescate": round(st["turnos_salvado"] / st["salvados"], 2) if st["salvados"] else None,
@@ -365,6 +430,7 @@ class Simulador:
         nota = puntaje.calcular(self.ultimos, self.lat_rondas)
         resumen = [{"ronda": r["ronda"], "nombre": r["nombre"], "turnos": r["turnos"],
                     "salvados": r["salvados"], "mordidos": r["mordidos"], "rechazados": r["rechazados"],
+                    "rescatadosEnCamioneta": r["rescatados_en_camioneta"],
                     "supervivencia": r["supervivencia"], "eficiencia": r["eficiencia"],
                     "latenciaP95": r["latencia_ms"]["p95"], "pctErrores": r["pct_errores"]}
                    for r in (self.ultimos[k] for k in sorted(self.ultimos))]
