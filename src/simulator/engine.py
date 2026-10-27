@@ -424,7 +424,7 @@ class Simulador:
                 "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                 "latenciaP95": round(p95, 2) if p95 is not None else None,
                 "pctErrores": round(100 * self.errores / self.consultas, 3) if self.consultas else 0.0,
-                "consultas": self.consultas, "turnosRestantes": s["turnos_restantes"] - 1}
+                "consultas": self.consultas, "turnosRestantes": max(0, s["turnos_restantes"] - 1)}
 
     def _publicar_turno(self):
         s, planner, g = self.s, self.mundo.planner, self.grafo
@@ -479,7 +479,9 @@ class Simulador:
                     "eficiencia": r["eficiencia"],
                     "latenciaP95": r["latencia_ms"]["p95"], "pctErrores": r["pct_errores"]}
                    for r in (self.ultimos[k] for k in sorted(self.ultimos))]
-        self.mundo.publicar(corriendo=False, resultados=resumen, puntaje=nota, metricas=self._metricas())
+        # terminada la ronda no queda ningun turno (con poblacion fija termina antes del ultimo)
+        self.mundo.publicar(corriendo=False, turnosRestantes=0, resultados=resumen, puntaje=nota,
+                            metricas=dict(self._metricas(), turnosRestantes=0))
         self.log("resultado_ronda", **res)
         if nota:
             self.log("puntaje", **nota)

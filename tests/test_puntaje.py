@@ -147,6 +147,13 @@ def test_reanudar_juega_solo_los_turnos_que_faltaban():
         sim2.reanudar(dict(foto, turnos_restantes=0))  # ronda ya terminada
 
 
+def test_al_terminar_la_ronda_no_quedan_turnos():
+    for reponer in (True, False):  # con poblacion fija la ronda termina antes del ultimo turno
+        mundo, sim = _sim(turnos_ronda=40, reponer=reponer)
+        asyncio.run(sim.correr(1))
+        assert mundo.estado["turnosRestantes"] == 0 and mundo.estado["metricas"]["turnosRestantes"] == 0
+
+
 def test_los_sobrevivientes_nacen_en_los_barrios_del_enunciado():
     g = Grafo.desde_archivo("data/manta_graph.json")
     mundo = Mundo(g, Planner(g))
