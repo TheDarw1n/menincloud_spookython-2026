@@ -4,7 +4,7 @@ from ..world.zombies import zonas_horda
 from . import capacidad, flota, riesgo
 from .dijkstra import INF, dijkstra_inverso
 
-ESPERA_S = 20.0  # costo de quedarse quieto un turno (~ lo que toma una calle a pie)
+ESPERA_S = 60.0  # costo de quedarse quieto un turno (~ una calle tipica con su interseccion)
 
 
 @dataclass(frozen=True)

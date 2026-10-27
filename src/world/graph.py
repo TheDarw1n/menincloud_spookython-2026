@@ -3,6 +3,10 @@ from collections import defaultdict
 
 # km/h por tipo de calle (propuesta, ajustable)
 VELOCIDAD_KMH = {"avenida": 50, "calle": 30, "callejon": 15, "puente": 40}
+# Segundos por cruzar cada interseccion (mirar que no haya zombies). En el juego cada calle es un
+# turno, asi que este costo alinea las rutas con los turnos sin dejar de pesar distancia y tipo.
+# Medido en el grafo de Manta sin zombies: eficiencia 0.86 con 0 s y 0.98 con 30 s.
+CRUCE_S = 30.0
 
 
 class Grafo:
@@ -18,7 +22,7 @@ class Grafo:
         self.arista = {}                  # (u, v) -> id_calle (en ambos sentidos)
         for c in data["calles"]:
             kmh = VELOCIDAD_KMH.get(c["tipo"], 30)
-            seg = c["distancia_m"] / (kmh / 3.6)
+            seg = c["distancia_m"] / (kmh / 3.6) + CRUCE_S
             self.vecinos[c["de"]].append((c["a"], c["id"], seg))
             self.vecinos[c["a"]].append((c["de"], c["id"], seg))
             self.arista.setdefault((c["de"], c["a"]), c["id"])

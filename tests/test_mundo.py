@@ -173,3 +173,13 @@ def test_caminante_que_acaba_de_moverse_no_amenaza_el_proximo_turno():
     sin_pred = riesgo.penalizacion(G, [z("Z", "caminante", "N-0008", previo="N-0003")], frozenset(), frozenset(),
                                    prediccion=False)
     assert sin_pred["N-0007"] == riesgo.P_VECINO
+
+
+def test_costo_por_interseccion_prefiere_menos_calles_si_el_tiempo_es_parecido():
+    from src.world.graph import CRUCE_S
+    # A-R directo 400 m (48 s a pie) vs A-B-C-R 3 x 120 m (43 s): sin cruce gana el de 3 calles;
+    # con CRUCE_S cada interseccion suma y gana la calle directa (1 turno en vez de 3)
+    g = _grafo([("A", "R", 400), ("A", "B", 120), ("B", "C", 120), ("C", "R", 120)], ["R"])
+    p = Planner(g, prediccion=False)
+    p.actualizar({"turno": 1})
+    assert CRUCE_S > 0 and p.siguiente_nodo("A") == "R"
