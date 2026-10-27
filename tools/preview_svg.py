@@ -52,12 +52,13 @@ def main(entrada, salida):
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{ANCHO}" height="{alto:.0f}" '
          f'viewBox="0 0 {ANCHO} {alto:.0f}" {FUENTE}>',
          f'<rect width="100%" height="100%" fill="#ffffff"/>']
-    # barrios: circulo del radio usado + etiqueta
+    # barrios: circulo del radio usado (la zona real se recorta a su parroquia) + etiqueta
     for b in barrios:
         x, y = xy(b["lat"], b["lng"])
+        parroquia = f', solo dentro de la parroquia {b["parroquia"]}' if b.get("parroquia") else ""
         o.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{b["radio_m"] * px_m:.1f}" fill="#f0efec" '
                  f'fill-opacity="0.65" stroke="{BORDE}" stroke-width="1"><title>{escape(b["nombre"])}: '
-                 f'radio {b["radio_m"]} m</title></circle>')
+                 f'radio {b["radio_m"]} m{escape(parroquia)}</title></circle>')
     # calles por tipo (los puentes encima, con borde oscuro para que resalten)
     for tipo in ("callejon", "calle", "avenida", "puente"):
         color, grosor, _ = ESTILO[tipo]
@@ -124,7 +125,8 @@ def main(entrada, salida):
     o.append(f'<path d="M{MARGEN + 280},{y1 - 6} l6,6 l-6,6 l-6,-6 z" fill="#ffffff" stroke="{TINTA}" stroke-width="1.4"/>')
     o.append(texto(MARGEN + 292, y1 + 4.5, "refugio: nodo del juego (cuadro) y lugar real (rombo)", 13, halo=False))
     o.append(f'<circle cx="{MARGEN + 690}" cy="{y1}" r="9" fill="#f0efec" stroke="{BORDE}"/>')
-    o.append(texto(MARGEN + 705, y1 + 4.5, "barrio (radio usado; cada nodo va al centroide más cercano)", 13, halo=False))
+    o.append(texto(MARGEN + 705, y1 + 4.5, "barrio (radio usado, recortado a su parroquia de OSM; cada nodo va al centroide más cercano)",
+                   13, halo=False))
     # barra de escala de 1 km
     xb, yb = ANCHO - MARGEN - 1000 * px_m, y1 + 30
     o.append(f'<line x1="{xb:.1f}" y1="{yb}" x2="{ANCHO - MARGEN}" y2="{yb}" stroke="{TINTA}" stroke-width="2"/>')

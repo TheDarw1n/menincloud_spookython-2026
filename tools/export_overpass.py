@@ -1,8 +1,9 @@
 """Exporta el grafo vial REAL de Manta desde OpenStreetMap (API Overpass) a data/manta_graph.json.
 
 Solo usa la libreria estandar de Python (sin osmnx ni networkx). Necesita internet solo la
-primera vez: la respuesta cruda de Overpass queda en disco (--cache) y las corridas siguientes
-no consultan la API (borra la cache para bajar datos nuevos de OSM).
+primera vez: las dos respuestas crudas de Overpass (calles y limites de parroquias) quedan en
+disco (--cache) y las corridas siguientes no consultan la API (borra la cache para bajar datos
+nuevos de OSM).
 
 Uso:
   python tools/export_overpass.py --salida data/manta_graph.json
@@ -24,7 +25,8 @@ Como se arma el grafo (~300 intersecciones):
   1. Calles: todas las motorway..tertiary (y enlaces) de la zona de juego; de las residential,
      unclassified y living_street solo las que pasan por un barrio del juego y cuyo 'trazo'
      (calle continua, aunque OSM la parta en muchas ways) mide al menos trazo_m de ese barrio.
-     Las privadas (access=private/no) quedan fuera.
+     La zona de un barrio es un circulo alrededor de su nodo place de OSM, recortado a su
+     parroquia urbana (limite admin_level 9 de OSM). Las privadas (access=private/no) quedan fuera.
   2. Se unen las cadenas de nodos de grado 2 en una sola calle (largo = suma haversine).
   3. Se fusionan intersecciones cercanas (--tolerancia) sin cruzar puentes, al estilo osmnx.
   4. Se podan en cascada los callejones sin salida (--poda) y los lazos de ida y vuelta
@@ -60,19 +62,24 @@ PRINCIPALES = ("motorway", "trunk", "primary", "secondary", "tertiary")
 MENORES = ("unclassified", "residential", "living_street")
 RANGO = {"callejon": 0, "calle": 1, "avenida": 2, "puente": 3}
 
-# Barrios de la historia: nodos place de OSM (consultados el 2026-10-27). Cada nodo del grafo
-# va al barrio de centroide mas cercano dentro de radio_m. trazo_m: largo minimo de una calle
-# menor para entrar (Barbasquillo tiene calles cortas y muchas privadas; Tarqui y Jocay, una
-# cuadricula densa), ajustado para que cada barrio tenga ~35 nodos.
+# Barrios de la historia: nodos place de OSM (consultados el 2026-10-27). La zona de un barrio
+# es el circulo de radio_m alrededor del nodo place, recortado a su parroquia urbana de OSM
+# (limite admin_level 9): Tarqui y Los Esteros son parroquias, Jocay queda dentro de Tarqui y
+# Barbasquillo dentro de Manta. Asi la zona de Tarqui no cruza el rio Manta hacia el puerto.
+# Cada nodo del grafo va al barrio de centroide mas cercano entre las zonas que lo contienen.
+# trazo_m: largo minimo de una calle menor para entrar (Barbasquillo tiene calles cortas y
+# muchas privadas; Tarqui y Jocay, una cuadricula densa), ajustado para que cada barrio tenga
+# ~35 nodos.
 BARRIOS = [
     {"id": "barbasquillo", "nombre": "Barbasquillo", "lat": -0.9515404, "lng": -80.7527254,
-     "radio_m": 1000, "trazo_m": 250, "osm": "node/12066773600 (place=quarter)"},
+     "radio_m": 1000, "trazo_m": 250, "parroquia": "Manta", "osm": "node/12066773600 (place=quarter)"},
     {"id": "tarqui", "nombre": "Tarqui", "lat": -0.9532678, "lng": -80.7152080,
-     "radio_m": 900, "trazo_m": 800, "osm": "node/13095205932 (place=neighbourhood, Tarqui Centro)"},
+     "radio_m": 900, "trazo_m": 600, "parroquia": "Tarqui",
+     "osm": "node/13095205932 (place=neighbourhood, Tarqui Centro)"},
     {"id": "jocay", "nombre": "Jocay", "lat": -0.9598756, "lng": -80.7161161,
-     "radio_m": 900, "trazo_m": 700, "osm": "node/13111139050 (place=neighbourhood)"},
+     "radio_m": 900, "trazo_m": 700, "parroquia": "Tarqui", "osm": "node/13111139050 (place=neighbourhood)"},
     {"id": "los-esteros", "nombre": "Los Esteros", "lat": -0.9621547, "lng": -80.6922764,
-     "radio_m": 1100, "trazo_m": 450, "osm": "node/10213104582 (place=suburb)"},
+     "radio_m": 1100, "trazo_m": 450, "parroquia": "Los Esteros", "osm": "node/10213104582 (place=suburb)"},
 ]
 
 # Refugios en lugares reales (centro del objeto OSM, consultado el 2026-10-27)
@@ -93,6 +100,11 @@ def consulta_overpass(area=DESCARGA):
     """Todas las vias de autos del area (tambien service/track, por si se quieren usar luego)."""
     clases = f'^(({"|".join(PRINCIPALES)})(_link)?|{"|".join(MENORES)}|service|road|track)$'
     return f'[out:json][timeout:300];\nway["highway"~"{clases}"]({area});\nout geom;\n'
+
+
+def consulta_parroquias(area=DESCARGA):
+    """Limites de las parroquias urbanas del area (admin_level 9), con su geometria."""
+    return f'[out:json][timeout:120];\nrelation["boundary"="administrative"]["admin_level"="9"]({area});\nout geom;\n'
 
 
 def descargar(consulta, cache, servidor=SERVIDOR, sin_red=False, intentos=6):
@@ -139,6 +151,31 @@ def haversine(a, b):
 
 def largo_linea(puntos):
     return sum(haversine(p, q) for p, q in zip(puntos, puntos[1:]))
+
+
+def bordes_parroquias(crudo):
+    """{nombre: [((lat, lng), (lat, lng)) de cada tramo del borde]} de cada parroquia."""
+    bordes = {}
+    for r in crudo["elements"]:
+        if r["type"] == "relation":
+            bordes[r["tags"]["name"]] = [((p["lat"], p["lon"]), (q["lat"], q["lon"]))
+                                         for m in r["members"] if m["type"] == "way" and m["role"] in ("outer", "inner")
+                                         for p, q in zip(m["geometry"], m["geometry"][1:])]
+    return bordes
+
+
+def dentro(p, borde):
+    """Punto en poligono por paridad de cruces: no hace falta ordenar los tramos del borde."""
+    adentro = False
+    for (la1, ln1), (la2, ln2) in borde:
+        if (la1 > p[0]) != (la2 > p[0]) and p[1] < ln1 + (p[0] - la1) * (ln2 - ln1) / (la2 - la1):
+            adentro = not adentro
+    return adentro
+
+
+def en_zona(p, b, bordes):
+    """True si el punto p cae en la zona del barrio b: su circulo, recortado a su parroquia."""
+    return haversine(p, (b["lat"], b["lng"])) <= b["radio_m"] and dentro(p, bordes[b["parroquia"]])
 
 
 # ---------- grafo ----------
@@ -268,17 +305,17 @@ def trazos(ways):
     return {w: total[raiz(w)] for w in largo}
 
 
-def seleccionar(ways, barrios):
+def seleccionar(ways, barrios, bordes):
     """Entran todas las motorway..tertiary (y enlaces). De las calles menores solo las que
-    tocan el radio de un barrio del juego y cuyo trazo mide >= trazo_m de ese barrio (calles
+    tocan la zona de un barrio del juego y cuyo trazo mide >= trazo_m de ese barrio (calles
     de paso, no pasajes). Las privadas (access=private/no) quedan fuera."""
     publicas = [w for w in ways if w["tags"].get("access") not in ("private", "no")
                 and w["tags"].get("area") != "yes"]
     largo = trazos([w for w in publicas if w["tags"]["highway"] in MENORES])
 
     def en_barrio(w):
-        return any(largo[w["id"]] >= b["trazo_m"] and haversine((p["lat"], p["lon"]), (b["lat"], b["lng"])) <= b["radio_m"]
-                   for b in barrios for p in w["geometry"])
+        return any(largo[w["id"]] >= b["trazo_m"] and any(en_zona((p["lat"], p["lon"]), b, bordes) for p in w["geometry"])
+                   for b in barrios)
 
     return [w for w in publicas
             if w["tags"]["highway"].replace("_link", "") in PRINCIPALES or (w["id"] in largo and en_barrio(w))]
@@ -422,8 +459,8 @@ def partir_largas(g, max_m):
         g.agregar(Tramo(previo, t.b, pts, segs))
 
 
-def construir(ways, bbox=BBOX, tolerancia=40, poda=math.inf, max_arista=900, barrios=BARRIOS):
-    g = grafo_osm(seleccionar(ways, barrios), bbox)
+def construir(ways, bordes, bbox=BBOX, tolerancia=40, poda=math.inf, max_arista=900, barrios=BARRIOS):
+    g = grafo_osm(seleccionar(ways, barrios, bordes), bbox)
     contraer(g)
     g = consolidar(g, tolerancia)
     while podar(g, poda) + quitar_lazos(g, tolerancia, poda) + contraer(g):
@@ -434,18 +471,17 @@ def construir(ways, bbox=BBOX, tolerancia=40, poda=math.inf, max_arista=900, bar
 
 
 # ---------- salida ----------
-def barrio_de(p, barrios):
-    """Id del barrio con el centroide mas cercano dentro de su radio, o 'otro'."""
-    cerca = [(haversine(p, (b["lat"], b["lng"])), b["id"]) for b in barrios]
-    cerca = [(d, i) for (d, i), b in zip(cerca, barrios) if d <= b["radio_m"]]
+def barrio_de(p, barrios, bordes):
+    """Id del barrio de centroide mas cercano entre las zonas que contienen p, o 'otro'."""
+    cerca = [(haversine(p, (b["lat"], b["lng"])), b["id"]) for b in barrios if en_zona(p, b, bordes)]
     return min(cerca)[1] if cerca else "otro"
 
 
-def a_json(g, fuente, barrios=BARRIOS, refugios=REFUGIOS):
+def a_json(g, fuente, bordes, barrios=BARRIOS, refugios=REFUGIOS):
     orden = sorted(g.ady, key=lambda v: (g.pos[v][1], g.pos[v][0]))  # de oeste a este
     ids = {v: f"N-{i:04d}" for i, v in enumerate(orden, 1)}
     nodos = [{"id": ids[v], "lat": round(g.pos[v][0], 6), "lng": round(g.pos[v][1], 6),
-              "barrio": barrio_de(g.pos[v], barrios)} for v in orden]
+              "barrio": barrio_de(g.pos[v], barrios, bordes)} for v in orden]
     calles = []
     for t in sorted(g.tramos(), key=lambda t: tuple(sorted((ids[t.a], ids[t.b])))):
         de, a = sorted((ids[t.a], ids[t.b]))
@@ -464,7 +500,8 @@ def a_json(g, fuente, barrios=BARRIOS, refugios=REFUGIOS):
                                 "distancia_nodo_m": round(haversine(g.pos[v], (r["lat"], r["lng"])))})
     por_barrio = Counter(n["barrio"] for n in nodos)
     salida_barrios = [{"id": b["id"], "nombre": b["nombre"], "lat": round(b["lat"], 6), "lng": round(b["lng"], 6),
-                       "radio_m": b["radio_m"], "osm": b["osm"], "nodos": por_barrio[b["id"]]} for b in barrios]
+                       "radio_m": b["radio_m"], "parroquia": b["parroquia"], "osm": b["osm"],
+                       "nodos": por_barrio[b["id"]]} for b in barrios]
     return {"_fuente": fuente, "barrios": salida_barrios, "nodos": nodos, "calles": calles,
             "refugios": salida_refugios}
 
@@ -483,7 +520,7 @@ def escribir(datos, ruta):
             lineas.append(f' "{k}": {json.dumps(valor, ensure_ascii=False)}{fin}')
     lineas.append("}")
     Path(ruta).parent.mkdir(parents=True, exist_ok=True)
-    Path(ruta).write_text("\n".join(lineas) + "\n", encoding="utf-8")
+    Path(ruta).write_text("\n".join(lineas) + "\n", encoding="utf-8", newline="\n")  # igual en Windows
 
 
 def resumen(datos):
@@ -504,13 +541,18 @@ def resumen(datos):
 
 def main(args):
     bbox = tuple(float(x) for x in args.bbox.split(","))
-    consulta = consulta_overpass(args.descarga)
-    crudo = descargar(consulta, args.cache, args.servidor, args.sin_red)
+    crudo = descargar(consulta_overpass(args.descarga), args.cache, args.servidor, args.sin_red)
     ways = [e for e in crudo["elements"] if e["type"] == "way"]
-    g = construir(ways, bbox, args.tolerancia, args.poda, args.max_arista)
+    limites = descargar(consulta_parroquias(args.descarga), args.cache, args.servidor, args.sin_red)
+    bordes = bordes_parroquias(limites)
+    faltan = {b["parroquia"] for b in BARRIOS} - set(bordes)
+    if faltan:
+        sys.exit(f"OSM no trae el limite de las parroquias {sorted(faltan)}; revisa BARRIOS")
+    g = construir(ways, bordes, bbox, args.tolerancia, args.poda, args.max_arista)
     fuente = {
         "datos": "© colaboradores de OpenStreetMap, licencia ODbL 1.0 (https://www.openstreetmap.org/copyright)",
         "overpass": args.servidor, "osm_base": crudo["osm3s"]["timestamp_osm_base"],
+        "osm_base_parroquias": limites["osm3s"]["timestamp_osm_base"],
         "generado": datetime.date.today().isoformat(),
         "comando": "python tools/export_overpass.py " + " ".join(sys.argv[1:]),
         "parametros": {"descarga": args.descarga, "bbox": list(bbox), "tolerancia_m": args.tolerancia,
@@ -518,7 +560,7 @@ def main(args):
                        "max_arista_m": args.max_arista,
                        "trazo_m": {b["id"]: b["trazo_m"] for b in BARRIOS}},
     }
-    datos = a_json(g, fuente)
+    datos = a_json(g, fuente, bordes)
     escribir(datos, args.salida)
     resumen(datos)
     print("->", args.salida)
