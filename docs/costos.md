@@ -197,7 +197,7 @@ aws ce get-cost-and-usage --time-period Start=2026-10-26,End=2026-10-31 \
 
 **Con 10 veces más sobrevivientes** (2 000 `/paso` por turno, es decir, ráfagas de 1 000 peticiones/s):
 
-- **CPU.** Con 200 consultas por turno, la CI mide un p95 de 12–20 ms en 0.5 vCPU: cada ráfaga se atiende en decenas de milisegundos. Con 2 000 por turno la ráfaga es 10 veces más larga *(estimado: del orden de 200 ms por turno)*, así que el p95 pasaría el umbral de 150 ms. Un proceso de Python con 1 worker (obligatorio mientras el estado viva en memoria) no aprovecha más de 1 vCPU. **Agrandar la tarea no basta.**
+- **CPU.** Con 200 consultas por turno, la CI mide un p95 de 14–16 ms en ARM64 con 0.5 vCPU (también con 200 consultas externas y 30 visores a la vez): cada ráfaga se atiende en decenas de milisegundos. Con 2 000 por turno la ráfaga es 10 veces más larga *(estimado: del orden de 200 ms por turno)*, así que el p95 pasaría el umbral de 150 ms. Un proceso de Python con 1 worker (obligatorio mientras el estado viva en memoria) no aprovecha más de 1 vCPU. **Agrandar la tarea no basta.**
 - **Estado compartido.** Habría que repartir `/paso` en varias réplicas, y eso exige compartir el estado. Hay dos opciones:
   - el planner calcula las tablas una vez por turno y las publica (Valkey `cache.t4g.micro`, 9.34 USD/mes);
   - cada réplica recalcula a partir del estado del turno, que son 4 Dijkstra sobre unos 300 nodos y sale barato.
