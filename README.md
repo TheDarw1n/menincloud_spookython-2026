@@ -18,19 +18,19 @@ Motor de rutas en AWS que recalcula en tiempo real alrededor de zombies y calles
 
 ## Resultados
 
-**Prueba de fuego en un contenedor ARM64 con los límites de la tarea de Fargate** (Graviton en AWS; aquí el runner ARM64 de GitHub Actions con `--cpus 0.5 --memory 1g`, el simulador llamando `POST /paso` por HTTP; 3 rondas de 30 turnos con sus eventos de ciudad, en cada push a `main` y en cada PR):
+**Prueba de fuego en un contenedor ARM64 con los límites de la tarea de Fargate** (Graviton en AWS; aquí el runner ARM64 de GitHub Actions con `--cpus 0.5 --memory 1g`, el simulador llamando `POST /paso` por HTTP; 3 rondas de 30 turnos con sus eventos de ciudad, en cada push a `main` y en cada PR). Rangos de las últimas 9 corridas:
 
 | | R1 Anochecer | R2 Medianoche | R3 Apocalipsis |
 |---|---|---|---|
-| Supervivencia | 1.000 | 0.992–0.993 | 0.947–0.954 |
-| Eficiencia (contra el mínimo de calles) | 0.88–0.97 | 0.87–0.89 | 0.80–0.83 |
-| p95 de `POST /paso` | 1.8–1.9 ms | 6.1 ms | 14.2–14.6 ms |
+| Supervivencia | 1.000 | 0.967–1.000 | 0.947–0.993 |
+| Eficiencia (contra el mínimo de calles) | 0.88–0.98 | 0.75–0.89 | 0.72–0.88 |
+| p95 de `POST /paso` | 1.8–3.0 ms | 5.8–6.9 ms | 13.6–15.8 ms |
 | Errores o respuestas > 500 ms | 0 % | 0 % | 0 % |
-| **Puntaje de la rúbrica** | | | **9.54–9.61 / 10** |
+| **Puntaje de la rúbrica** | | | **9.48–9.70 / 10** |
 
-Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo contenedor, un turno cada 2 s: 200 concurrentes → **p95 26–28 ms, 0 % de errores** (80 → p95 12–15 ms). El umbral de 10 puntos es 150 ms.
+Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo contenedor, un turno cada 2 s: 200 concurrentes → **p95 24–35 ms, 0 % de errores** (80 → p95 12–22 ms). El umbral de 10 puntos es 150 ms.
 
-**Todo a la vez** (lo que pasaría frente al jurado): R3 del simulador interno + 200 consultas externas por turno con `latency.py` + 30 visores del mapa por WebSocket, en el mismo contenedor ARM64 de 0.5 vCPU → R3 interna **p95 15.8 ms**, externa **p95 13.8 ms** (p99 30 ms), **0 % de errores** y 0 visores caídos. Las cifras de cada corrida quedan como anotaciones públicas del job `carga` en [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml).
+**Todo a la vez** (lo que pasaría frente al jurado): R3 del simulador interno + 200 consultas externas por turno con `latency.py` + 30 visores del mapa por WebSocket, en el mismo contenedor ARM64 de 0.5 vCPU, en 6 corridas → R3 interna **p95 14–16 ms**, externa **p95 12–16 ms**, **0 % de errores** y 0 visores caídos. Las cifras de cada corrida quedan como anotaciones públicas del job `carga` en [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml).
 
 **Rondas completas de 150 turnos** (5 minutos), simulador sin HTTP, grafo de Manta, promedio por ronda de 6 semillas ([`tools/ab_planner.py`](tools/ab_planner.py)):
 
@@ -93,12 +93,15 @@ Supuestos propios (no están en el enunciado; se pueden cambiar):
 | **Supervivencia** = salvados ÷ (salvados + mordidos) | Con población continua siempre quedan N en juego | cada resultado trae también `supervivencia_cohorte` (cuenta en juego como no salvados) | — |
 | **Eficiencia** = mínimo de calles posible hasta el refugio más cercano (sin zombies) ÷ turnos reales, tope 1 | La lectura más estricta de «turnos vs. ruta más corta sin zombies» | — | — |
 | Cupos de refugios y cantidad de zombies por ronda | El enunciado no los fija | `src/simulator/engine.py` (`RONDAS`, `EVAC_FACTOR`, `CUELLO`) | — |
+| **Camionetas inmunes**: sus pasajeros no pueden ser mordidos, pero nunca entran a un nodo con zombie visible, a una zona de horda ni a una calle cerrada | El enunciado no fija reglas para la flota | `PRO_FLOTA=0` la apaga | R3: eficiencia 0.699 → 0.737 |
 
 ## Arquitectura en AWS
 
 ![Arquitectura](docs/arquitectura.png)
 
 `Navegador / jurado → CloudFront (HTTPS, plan Free con WAF) → S3 (mapa y grafo) | ALB → ECS Fargate (1 tarea ARM64 0.5 vCPU / 1 GB: API + simulador + planner con el estado en memoria) → DynamoDB (snapshots) · SSM (keys) · CloudWatch (logs) · ECR (imagen)`. Todo en **us-east-1**.
+
+### Decisiones de diseño
 
 - **Fargate y no Lambda:** sin arranques en frío y con el estado del mundo en la memoria de un solo proceso (la rúbrica penaliza guardar estado en la memoria de una Lambda, donde cada instancia tiene su copia).
 - **Rutas calculadas por turno, no por petición:** el planner se recalcula una vez, al publicar los zombies del turno, y deja snapshots inmutables; `POST /paso` es una ruta ASGI directa (sin pydantic) que solo consulta tablas.
@@ -203,6 +206,14 @@ La infraestructura se creó **a mano en la consola** (sin IaC); la configuració
 
    También se puede correr por partes: `./infra/deploy.sh backend | frontend`.
 4. **Verificar:** desde CloudShell en us-east-1, con el repo clonado: `API_KEY=... ./infra/deploy.sh prueba` (salud, grafo, un `/paso` y `latency.py`).
+5. **Prueba de fuego en AWS:** la tarea arranca en modo `demo` (el ciclo se repite solo). Para la prueba oficial, en el mapa abrir **Control del operador**, pegar la key de operador, pulsar **Detener** y después **Las 3 seguidas (ciclo)**: 3 rondas de 5 minutos. Por consola:
+
+   ```bash
+   URL=https://d160b5kavxovby.cloudfront.net
+   curl -X POST "$URL/ws/sim/detener" -H "x-api-key: $ADMIN_API_KEY"
+   curl -X POST "$URL/ws/sim/iniciar?ronda=ciclo" -H "x-api-key: $ADMIN_API_KEY"
+   curl -H "x-api-key: $ADMIN_API_KEY" "$URL/ws/sim/resultados" | python3 tools/resumen_resultados.py   # al terminar
+   ```
 
 - `deploy.sh` usa `minimumHealthyPercent=0 / maximumPercent=100`: **nunca hay 2 tareas con estados distintos**, a costa de ~1 min de corte por despliegue.
 - Construir ARM64 desde un PC x86 usa emulación (lento). Alternativa: `PLATFORM=linux/amd64 ./infra/deploy.sh backend` y `runtimePlatform` a `X86_64`.
@@ -239,7 +250,7 @@ Resumen de [`docs/costos.md`](docs/costos.md) (precios verificados el 2026-10-27
 
 - **Un solo contenedor con el estado en memoria** (1 worker de uvicorn, nunca `--workers > 1`). Un reinicio pierde la ronda en curso (se retoma con `/ws/sim/reanudar`). Escalar a varias réplicas exige compartir las tablas del turno (ver `docs/costos.md` § 8).
 - El tramo CloudFront → ALB va por **HTTP** (sin dominio propio). El ALB solo acepta el prefix list de CloudFront; `ORIGIN_SECRET` está listo (el simulador interno también manda el header) pero sin activar.
-- **WebSocket por CloudFront (plan Free) sin probar en AWS:** si no conecta, el mapa cae solo a polling de `/estado` cada 2 s (el HUD dice cuál usa).
+- **WebSocket por CloudFront (plan Free):** verificado el 27-oct (`wss://…/ws` entrega el primer estado en 0.38 s). Si en algún momento no conecta, el mapa cae solo a polling de `/estado` cada 2 s (el HUD dice cuál usa).
 - `POST /paso` responde con el mundo del servidor aunque el cliente mande otro `turno`, y el reparto por cupo de refugios cubre a los sobrevivientes del simulador propio (los ids externos reciben la mejor ruta sin cupo, aunque su id coincida con uno propio).
 - En el grafo, una calle es `puente` si cualquier tramo suyo lo es (una avenida larga con un puente corto va a 40 km/h y colapsa entera); no hay callejones (las vías de servicio no se incluyeron); las calles son de doble sentido.
 - Infraestructura manual, sin IaC.
