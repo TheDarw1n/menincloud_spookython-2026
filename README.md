@@ -6,12 +6,15 @@ Motor de rutas en AWS que recalcula en tiempo real alrededor de zombies y calles
 
 | | |
 |---|---|
-| **Mapa en vivo** | https://d160b5kavxovby.cloudfront.net |
+| **Mapa en vivo** | https://d160b5kavxovby.cloudfront.net ([captura](docs/mapa_en_vivo.png)) |
 | **Endpoint del track** | `POST https://d160b5kavxovby.cloudfront.net/paso` con header `x-api-key` |
+| **Pitch** | [`docs/pitch.pdf`](docs/pitch.pdf) (8 diapositivas, 5 minutos) · [`docs/pitch.pptx`](docs/pitch.pptx) con notas del orador |
 | **Arquitectura** | [`docs/arquitectura.png`](docs/arquitectura.png) · fuente editable [`docs/arquitectura.drawio`](docs/arquitectura.drawio) · [SVG](docs/arquitectura.svg) |
 | **Costos** | [`docs/costos.md`](docs/costos.md): ≈ 41.86 USD/mes 24/7 · ≈ 6.90 USD el evento |
 | **AWS Budget con alerta** | [captura](#aws-budget) |
 | **Grafo de Manta** | [`docs/grafo_manta.png`](docs/grafo_manta.png): 307 intersecciones reales de OpenStreetMap |
+
+![Mapa en vivo durante la ronda 3: zombies por tipo, zonas de horda, rutas planificadas, camionetas y refugios con su ocupación](docs/mapa_en_vivo.png)
 
 ## Resultados
 
