@@ -143,6 +143,8 @@ flowchart LR
 
 `siguienteNodo` siempre es un vecino por una calle abierta o el mismo nodo; un nodo desconocido responde el mismo nodo.
 
+Todas las claves de `/estado` existen desde el arranque (`puntaje` es `null` hasta que termina la primera ronda). `capacidad`, `ocupacion` y `evacuaPorTurno` de cada refugio aparecen al iniciar una ronda con `PRO_CAPACIDAD=1`. `/ws` manda el estado completo cada vez que cambia y `{"ping": true}` tras ~20 s sin cambios; si el cliente envía datos, se cierra con 1008.
+
 ## Cómo probar en local
 
 ```bash

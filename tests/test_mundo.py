@@ -223,3 +223,9 @@ def test_texto_de_eventos_con_y_sin_nombre_de_calle():
     assert ev[0]["texto"] == "Colapsó un puente: Av. de la Cultura (E1)"
     ev = events.aplicar(g, [(2, "puente")], 2, bloq, random.Random(0))
     assert ev[0]["texto"] == "Colapsó un puente (E0)"
+
+
+def test_el_estado_trae_todas_las_claves_del_contrato_desde_el_arranque():
+    claves = {"turno", "ronda", "corriendo", "turnosRestantes", "zombies", "aristasBloqueadas", "zonasHorda",
+              "sobrevivientes", "refugios", "camionetas", "eventos", "metricas", "resultados", "puntaje"}
+    assert claves <= set(Mundo(G, Planner(G)).estado)

@@ -19,7 +19,7 @@ class Mundo:
             "zombies": [], "aristasBloqueadas": [], "zonasHorda": [], "sobrevivientes": [],
             "refugios": [{"id": r, "nodo": n, "nombre": grafo.info_refugios[r].get("nombre", r)}
                          for r, n in grafo.refugios.items()],
-            "metricas": {},
+            "camionetas": [], "eventos": [], "metricas": {}, "resultados": [], "puntaje": None,
         }
 
     def publicar_zombies(self, turno, zombies, bloqueadas, **extra):
