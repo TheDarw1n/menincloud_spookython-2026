@@ -53,27 +53,27 @@
 |---|---|---|---|
 | `/estado` o mensaje del WebSocket, por turno | 3.7 KB | 11.0 KB | 25.8 KB (máx. 38.3) |
 | Snapshot en DynamoDB (cada 10 turnos) | 3.7 KB = 4 WRU | 10.1 KB = 11 WRU | 20.9 KB = 21 WRU |
-| WRU por ronda (15 snapshots y el resultado) | 61 | 152 | 316 |
+| WRU por ronda (15 snapshots y el resultado) | 61 | 166 | 316 |
 
 Otros tamaños medidos:
 
 - `POST /paso`: 67 B de cuerpo en la petición y 27 B en la respuesta.
-- `manta_graph.json`: unos 81 KB. `index.html`: 5 KB.
+- `manta_graph.json`: unos 81 KB. `index.html` (el mapa en vivo, un solo archivo): 85 KB.
 - El log de acceso de uvicorn está **desactivado** (`--no-access-log` en el `Dockerfile`): antes eran unos 60 B por cada petición.
 - Logs JSON del simulador (una línea cada 10 turnos, más el resultado y el puntaje de cada ronda): unos 11 KB por simulacro.
-- Un simulacro completo (3 rondas) escribe **529 WRU**, es decir, 0.0003 USD.
+- Un simulacro completo (3 rondas) escribe **543 WRU**, es decir, 0.0003 USD.
 
 **Uso del evento *(estimado)*:**
 
 - **`POST /paso` por CloudFront:** 330 000, que salen de la prueba del jurado y 5 ensayos completos (6 × 45 000) más 20 corridas de `latency.py` (20 × 3 000).
-- **Resto del tráfico por CloudFront:** 300 cargas del mapa (3 peticiones cada una), 20 pestañas-hora en modo polling (1 800 peticiones por hora) y 200 peticiones de control. Con eso, el evento suma **≈ 367 000 peticiones y ≈ 0.87 GB**.
+- **Resto del tráfico por CloudFront:** 300 cargas del mapa (3 peticiones cada una), 20 pestañas-hora en modo polling (1 800 peticiones por hora) y 200 peticiones de control. Con eso, el evento suma **≈ 367 000 peticiones y ≈ 0.89 GB**.
 - **Simulador interno:** además se cuentan 20 ciclos con `SIM_MODO=http`. Van por localhost, así que no pasan por CloudFront ni por el ALB, pero sí escriben logs.
 
 **¿Cabe en el plan Free de CloudFront (1 M de peticiones y 100 GB)?**
 
 | Escenario | Peticiones al mes por CloudFront | ¿Cabe? |
 |---|---|---|
-| Solo el evento (lo de arriba) | ≈ 0.37 M · 0.87 GB | **Sí**: 37 % de las peticiones y menos del 1 % de los datos. |
+| Solo el evento (lo de arriba) | ≈ 0.37 M · 0.89 GB | **Sí**: 37 % de las peticiones y menos del 1 % de los datos. |
 | Demo continua: el simulacro de 3 rondas en bucle 24/7 con clientes externos | 45 000 × 4 ciclos/h × 730 h = **131.4 M** | **No** (131 veces la asignación). Haría falta como mínimo el plan Business (200 USD/mes, 125 M), o el Premium (1 000 USD/mes, 500 M). En pago por uso serían ≈ 121 USD de peticiones y ≈ 87 USD de WAF. |
 | Carga máxima sostenida: 200 por turno, 24/7 | 100/s × 3 600 × 730 = **262.8 M** | **No** (263 veces). |
 | Demo continua con el simulador interno | 0 de `/paso`, porque van por localhost | **Sí, pero solo si el mapa usa WebSocket.** Una sola pestaña en modo polling 24/7 suma 1.31 M al mes (ya se pasa), y cada visor recibe ≈ 18 GB al mes. |
@@ -89,9 +89,9 @@ La infraestructura queda encendida las 730 h, con el mismo tráfico del evento.
 | ALB por hora (Elastic Load Balancing) | 1 ALB × 0.0225 USD/h × 730 h | 16.43 |
 | ALB por LCU (Elastic Load Balancing) *(estimado)* | ≈ 5 LCU-h × 0.008 USD. Son ≈ 0.07 LCU en las horas con rondas (≈ 200 conexiones activas desde CloudFront) y ≈ 0 en reposo. | 0.04 |
 | IPv4 públicas (Amazon Virtual Private Cloud) | 3 IP × 0.005 USD/h × 730 h | 10.95 |
-| CloudFront + WAF (plan Free) | 0.37 M de 1 M peticiones; 0.87 GB de 100 GB | 0.00 |
+| CloudFront + WAF (plan Free) | 0.37 M de 1 M peticiones; 0.89 GB de 100 GB | 0.00 |
 | S3 | 0.1 MB × 0.023 USD/GB + ≈ 100 PUT/LIST × 0.005/1 000 + ≈ 1 000 GET × 0.0004/1 000. El plan Free da 5 GB de crédito. | < 0.01 |
-| DynamoDB on-demand | 26 simulacros × 529 WRU = 13 754 WRU × 0.625 USD/M. Guarda 14 MB (menos de los 25 GB gratis). | 0.01 |
+| DynamoDB on-demand | 26 simulacros × 543 WRU = 14 118 WRU × 0.625 USD/M. Guarda 14 MB (menos de los 25 GB gratis). | 0.01 |
 | CloudWatch Logs *(estimado)* | Sin log de acceso: solo los logs JSON del simulador, 26 simulacros × 11 KB ≈ 0.3 MB × 0.50 USD/GB. Con 7 días de retención, el almacenamiento es ≈ 0. | < 0.01 |
 | CloudWatch, métricas y alarmas | Supuesto: 10 métricas o menos, creadas con filtros de métricas sobre los logs JSON o con EMF (por ejemplo, p95, % de errores y supervivencia por ronda), y 10 alarmas o menos. Cada métrica extra cuesta 0.30 USD/mes y cada alarma extra, 0.10 USD/mes. **No usar `sobrevivienteId` como dimensión.** | 0.00 |
 | ECR *(estimado)* | ≈ 0.1 GB de capas × 0.10 USD/GB-mes | 0.01 |
@@ -117,9 +117,9 @@ Son 5 días × 24 h = **120 h**. AWS cuenta los días en UTC. **Cada día adicio
 | ALB por hora | 0.0225 USD/h × 120 h | 2.70 |
 | ALB por LCU *(estimado)* | ≈ 1.5 LCU-h × 0.008 USD | 0.01 |
 | IPv4 públicas | 3 × 0.005 USD/h × 120 h | 1.80 |
-| CloudFront + WAF (plan Free) | 0.37 M de peticiones, 0.87 GB | 0.00 |
+| CloudFront + WAF (plan Free) | 0.37 M de peticiones, 0.89 GB | 0.00 |
 | S3 | Igual que en el mes | < 0.01 |
-| DynamoDB | 13 754 WRU × 0.625 USD/M | 0.01 |
+| DynamoDB | 14 118 WRU × 0.625 USD/M | 0.01 |
 | CloudWatch Logs *(estimado)* | Solo logs JSON del simulador (sin log de acceso) ≈ 0.3 MB × 0.50 USD/GB | < 0.01 |
 | ECR *(estimado)* | 0.1 GB × 0.10 USD × 120/730 | < 0.01 |
 | Transferencia *(estimado)* | ≈ 1 GB entre AZ × 0.01 USD/GB | 0.01 |
@@ -149,9 +149,7 @@ Si la infraestructura se creó antes del 2026-10-26, hay que sumar 1.374 USD por
 
 Si alguna diferencia supera ±20 %, anotar la causa debajo de la tabla (por ejemplo, días extra encendidos o una IP pública de más).
 
-Captura de Cost Explorer (guardarla en `docs/gasto_real.png`, paso 8):
-
-![Gasto real del evento en Cost Explorer](gasto_real.png)
+Captura de Cost Explorer: _pendiente del equipo_ (guardarla en `docs/gasto_real.png` con el paso 8 y enlazarla aquí).
 
 **Cómo llenarla** (en la consola, sin costo):
 
@@ -190,7 +188,7 @@ aws ce get-cost-and-usage --time-period Start=2026-10-26,End=2026-10-31 \
 | **Una sola tarea ARM (Graviton).** | La misma tarea en x86 cuesta 18.02 USD/mes. Una segunda tarea duplicaría Fargate y obligaría a compartir el estado. | 3.60 USD/mes (−20 %) |
 | **CloudFront en plan Free.** | En pago por uso, el CDN también costaría 0 a este volumen (1 TB y 10 M de peticiones gratis), pero el WAF costaría 5 USD por web ACL + 1 USD por regla: ≈ 8 USD/mes con 3 reglas. | ≈ 8 USD/mes |
 | **Logs con retención de 7 días.** | Con retención indefinida, el almacenamiento (0.03 USD/GB-mes) se acumularía mes a mes. | Centavos hoy; evita que crezca |
-| **DynamoDB on-demand**, con un snapshot cada 10 turnos y TTL de 7 días. | Capacidad provisionada ociosa, o un snapshot por turno (10 veces más escrituras). | 529 WRU por simulacro = 0.0003 USD |
+| **DynamoDB on-demand**, con un snapshot cada 10 turnos y TTL de 7 días. | Capacidad provisionada ociosa, o un snapshot por turno (10 veces más escrituras). | 543 WRU por simulacro = 0.0003 USD |
 | **AWS Budget de 50 USD** con alertas al 50, 80 y 100 % sobre el gasto bruto. | — | Es gratis. Avisa, pero **no corta** el gasto. |
 
 **Ya aplicado:** uvicorn escribía una línea de log por cada petición (unos 60 B): en una demo continua serían ≈ 7.9 GB/mes (≈ 3.94 USD/mes). El `CMD` del `Dockerfile` usa `--no-access-log` y quedan solo los errores y los logs JSON del simulador (uno cada 10 turnos y uno por ronda).
@@ -199,7 +197,7 @@ aws ce get-cost-and-usage --time-period Start=2026-10-26,End=2026-10-31 \
 
 **Con 10 veces más sobrevivientes** (2 000 `/paso` por turno, es decir, ráfagas de 1 000 peticiones/s):
 
-- **CPU.** El README mide ≈ 0.43 ms de CPU por petición en el sandbox. Eso da 0.86 s de CPU por turno en un solo núcleo, así que el p95 pasaría de 500 ms. Un proceso de Python con 1 worker (obligatorio mientras el estado viva en memoria) no aprovecha más de 1 vCPU. **Agrandar la tarea no basta.**
+- **CPU.** Con 200 consultas por turno, la CI mide un p95 de 12–20 ms en 0.5 vCPU: cada ráfaga se atiende en decenas de milisegundos. Con 2 000 por turno la ráfaga es 10 veces más larga *(estimado: del orden de 200 ms por turno)*, así que el p95 pasaría el umbral de 150 ms. Un proceso de Python con 1 worker (obligatorio mientras el estado viva en memoria) no aprovecha más de 1 vCPU. **Agrandar la tarea no basta.**
 - **Estado compartido.** Habría que repartir `/paso` en varias réplicas, y eso exige compartir el estado. Hay dos opciones:
   - el planner calcula las tablas una vez por turno y las publica (Valkey `cache.t4g.micro`, 9.34 USD/mes);
   - cada réplica recalcula a partir del estado del turno, que son 4 Dijkstra sobre unos 300 nodos y sale barato.
