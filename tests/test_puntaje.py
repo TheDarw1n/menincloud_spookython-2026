@@ -105,6 +105,48 @@ def test_dynamodb_lento_no_frena_el_turno():
     assert Lento.llamadas >= 1          # se intento guardar; los que encontraron uno en curso se omiten
 
 
+def test_reanudar_juega_solo_los_turnos_que_faltaban():
+    import json
+
+    import pytest
+
+    guardados = {}
+
+    class Memoria:
+        habilitado = True
+
+        def guardar(self, turno, texto):
+            guardados[turno] = texto
+
+        def guardar_resultado(self, ronda, texto):
+            pass
+
+    _, sim = _sim(turnos_ronda=6, snapshots=Memoria(), snapshot_cada=2)
+
+    async def jugar():  # 4 turnos como en _bucle
+        sim._preparar(3)
+        for _ in range(4):
+            await sim.turno()
+            sim.s["turnos_restantes"] -= 1
+            await asyncio.sleep(0.05)  # deja terminar el guardado en segundo plano
+
+    asyncio.run(jugar())
+    foto = json.loads(guardados[4])
+    assert foto["turno"] == 4 and foto["turnos_restantes"] == 2
+
+    mundo2, sim2 = _sim(turnos_ronda=6)  # proceso nuevo: reanuda desde el snapshot
+
+    async def reanudar():
+        sim2.reanudar(foto)
+        assert mundo2.estado["sobrevivientes"] and mundo2.estado["camionetas"]  # antes del 1er turno
+        await sim2._tarea
+
+    asyncio.run(reanudar())
+    assert sim2.s["turno"] == 6 and sim2.resultados[-1]["turnos"] == 6
+    with pytest.raises(RuntimeError):
+        sim2.reanudar(dict(foto, turnos_restantes=0))  # ronda ya terminada
+
+
 def test_los_sobrevivientes_nacen_en_los_barrios_del_enunciado():
     g = Grafo.desde_archivo("data/manta_graph.json")
     mundo = Mundo(g, Planner(g))

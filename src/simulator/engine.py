@@ -89,9 +89,14 @@ class Simulador:
     def reanudar(self, snap):
         if self.corriendo:
             raise RuntimeError("ya hay una ronda en curso")
+        if snap.get("turnos_restantes", 0) <= 0:
+            raise RuntimeError("la ronda de ese snapshot ya termino")
         self.s = self._normalizar(snap)
         self._reset_metricas()
         self._calcular_optimo()
+        # en un proceso nuevo el mundo no tiene sobrevivientes ni camionetas hasta el primer turno: se
+        # publican ya para que el planner del turno reanudado reparta cupos y planifique la flota
+        self._publicar_turno()
         self._tarea = asyncio.create_task(self._bucle())
 
     async def detener(self):
@@ -320,7 +325,9 @@ class Simulador:
         if t % 10 == 0:
             self.log("turno", ronda=s["ronda"], turno=t, **metricas)
         if self.snapshots and self.snapshots.habilitado and t % self.snapshot_cada == 0:
-            self._guardar_en_fondo(self.snapshots.guardar, t, json.dumps(self.exportar()))
+            # el turno t ya se jugo: al reanudar faltan turnos_restantes - 1 (sin esto se jugaba uno de mas)
+            foto = dict(self.exportar(), turnos_restantes=s["turnos_restantes"] - 1)
+            self._guardar_en_fondo(self.snapshots.guardar, t, json.dumps(foto))
 
     def _a_bordo(self):
         return sum(len(c["pasajeros"]) for c in self.s["camionetas"])
