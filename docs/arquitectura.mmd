@@ -1,0 +1,56 @@
+flowchart LR
+  %% Escape de Manta Zombie: arquitectura en AWS (us-east-1). Version detallada: arquitectura.svg / arquitectura.drawio
+  nav["Navegador: mapa en vivo"]
+  jurado["Jurado / simulador externo"]
+  operador["Operador del equipo"]
+  equipo["Equipo: infra/deploy.sh"]
+
+  subgraph aws["AWS us-east-1"]
+    cf["CloudFront + WAF, HTTPS"]
+    s3[("S3 frontend-manta")]
+    subgraph vpc["VPC sin NAT Gateway"]
+      alb["ALB, SG solo CloudFront"]
+      subgraph tarea["ECS Fargate: 1 tarea"]
+        api["API FastAPI"]
+        sim["Simulador, turno de 2 s"]
+        mundo["Mundo en memoria"]
+        planner["Planner: Dijkstra inverso + PRO"]
+      end
+    end
+    cw["CloudWatch: logs y métricas"]
+    ddb[("DynamoDB manta-snapshots")]
+    ssm["SSM: /manta/api-key y /manta/admin-key"]
+    ecr["ECR: imagen ARM64"]
+    subgraph gobierno["Gobierno"]
+      iam["IAM: MFA, MantaTeam, 2 roles"]
+      budgets["Budgets: 50 USD/mes"]
+    end
+  end
+
+  nav -->|"(1) página y grafo"| cf
+  nav -->|"(2) WS /ws o GET /estado"| cf
+  jurado ==>|"(3) POST /paso + x-api-key"| cf
+  operador ==>|"/ws/sim/* + key de operador"| cf
+  cf -->|"(1) OAC"| s3
+  cf -->|"(2)(3) /paso /estado /salud /ws*"| alb
+  alb -->|"puerto 8000"| api
+  sim ==>|"(4) POST /paso"| api
+  api -->|"(3) consulta tablas"| planner
+  api -->|"(2) lee estado"| mundo
+  sim -->|"(4) publica"| mundo
+  mundo -->|"(4) recalcula 1 vez"| planner
+  sim -->|"(6) logs JSON"| cw
+  %% enlace invisible: deja DynamoDB y CloudWatch lado a lado (sin flechas cruzadas)
+  ddb ~~~ cw
+  sim -->|"(5) snapshots"| ddb
+  ssm -.->|"API_KEY"| api
+  ecr -.->|"(7) imagen"| api
+  equipo -.->|"(7) docker push"| ecr
+  equipo -.->|"(7) s3 sync"| s3
+
+  classDef publico fill:#E6F4EA,stroke:#1D8102,color:#0D3B0D
+  classDef clave fill:#FEF3C7,stroke:#D97706,color:#3B2A05
+  classDef privado fill:#EEF0F3,stroke:#414D5C,color:#16191F
+  class cf publico
+  class api clave
+  class s3,alb,ddb,ssm,ecr,cw privado

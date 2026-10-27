@@ -1,1 +1,403 @@
-<mxfile host="app.diagrams.net"><diagram name="Arquitectura" id="manta"><mxGraphModel dx="1200" dy="700" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1250" pageHeight="700"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="usr" value="Navegador / Simulador&lt;br&gt;(HTTPS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#232f3e;fontSize=11;" vertex="1" parent="1"><mxGeometry x="20" y="200" width="140" height="60" as="geometry"/></mxCell><mxCell id="reg" value="AWS · us-east-1 · cuenta propia" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#232f3e;fontSize=11;dashed=1;verticalAlign=top;align=left;spacingLeft=8;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="180" y="20" width="1000" height="640" as="geometry"/></mxCell><mxCell id="cf" value="&lt;b&gt;CloudFront manta-cdn&lt;/b&gt;&lt;br&gt;plan Free flat-rate ($0) · PÚBLICO&lt;br&gt;d160b5kavxovby.cloudfront.net" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;verticalAlign=top;" vertex="1" parent="1"><mxGeometry x="200" y="60" width="280" height="300" as="geometry"/></mxCell><mxCell id="beh" value="5 behaviors (máximo del plan):&lt;br&gt;1) Default → S3 (OAC)&lt;br&gt;2) /paso  3) /estado  4) /salud&lt;br&gt;5) /ws* (WebSocket + control del simulador)&lt;br&gt;→ ALB · CachingDisabled · AllViewer · todos los métodos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="215" y="120" width="250" height="120" as="geometry"/></mxCell><mxCell id="waf" value="WAF básico (incluido) · puede dar 403 ante ráfagas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1"><mxGeometry x="215" y="255" width="250" height="40" as="geometry"/></mxCell><mxCell id="vpc" value="VPC por defecto · subredes públicas (sin NAT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#248814;fontSize=11;dashed=1;verticalAlign=top;align=left;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="520" y="60" width="640" height="300" as="geometry"/></mxCell><mxCell id="alb" value="&lt;b&gt;ALB manta-alb&lt;/b&gt; · PÚBLICO&lt;br&gt;HTTP 80 · manta-sg-alb&lt;br&gt;(solo prefix list de CloudFront)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="110" width="210" height="90" as="geometry"/></mxCell><mxCell id="tg" value="Target group manta-tg&lt;br&gt;IP:8000 · health /salud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="540" y="230" width="210" height="60" as="geometry"/></mxCell><mxCell id="ecs" value="&lt;b&gt;ECS Fargate · servicio manta-api&lt;/b&gt;&lt;br&gt;ARM64 · 0.5 vCPU · 1 GB · 1 tarea&lt;br&gt;FastAPI (1 worker) + simulador&lt;br&gt;estado del mundo en memoria&lt;br&gt;manta-sg-tarea: :8000 solo desde sg-alb · PRIVADA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="790" y="100" width="350" height="170" as="geometry"/></mxCell><mxCell id="s3" value="S3 frontend-manta&lt;br&gt;privado · solo vía CloudFront (OAC)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="200" y="400" width="280" height="60" as="geometry"/></mxCell><mxCell id="ecr" value="ECR&lt;br&gt;manta-zombie" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="520" y="400" width="140" height="60" as="geometry"/></mxCell><mxCell id="ddb" value="DynamoDB&lt;br&gt;manta-snapshots&lt;br&gt;(on-demand)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="680" y="400" width="140" height="60" as="geometry"/></mxCell><mxCell id="ssm" value="SSM Parameter Store&lt;br&gt;/manta/api-key&lt;br&gt;(SecureString)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1"><mxGeometry x="840" y="400" width="150" height="60" as="geometry"/></mxCell><mxCell id="cw" value="CloudWatch Logs&lt;br&gt;/ecs/manta-zombie (7 d)&lt;br&gt;+ alarma 5xx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1010" y="400" width="150" height="60" as="geometry"/></mxCell><mxCell id="bud" value="AWS Budget manta-zombie-mensual&lt;br&gt;50 USD/mes · alertas 50/80/100 % · 3 correos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#232f3e;fontSize=11;" vertex="1" parent="1"><mxGeometry x="200" y="500" width="280" height="60" as="geometry"/></mxCell><mxCell id="iam" value="IAM: manta-execution-role (ECR pull, logs, ssm:GetParameters) · manta-task-role (DynamoDB PutItem/GetItem/Query)&lt;br&gt;Usuarios individuales con MFA en grupo MantaTeam · root solo para crear los roles&lt;br&gt;PÚBLICO: CloudFront y ALB · PRIVADO: tarea (solo acepta del ALB), DynamoDB, SSM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#232f3e;fontSize=11;" vertex="1" parent="1"><mxGeometry x="520" y="500" width="640" height="80" as="geometry"/></mxCell><mxCell id="e1" value="HTTPS" style="endArrow=classic;html=1;fontSize=10;rounded=1;" edge="1" parent="1" source="usr" target="cf"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e2" value="Default · OAC" style="endArrow=classic;html=1;fontSize=10;rounded=1;" edge="1" parent="1" source="cf" target="s3"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e3" value="HTTP 80 (sin cifrar)" style="endArrow=classic;html=1;fontSize=10;rounded=1;" edge="1" parent="1" source="cf" target="alb"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e4" value="" style="endArrow=classic;html=1;fontSize=10;rounded=1;" edge="1" parent="1" source="alb" target="tg"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e5" value=":8000" style="endArrow=classic;html=1;fontSize=10;rounded=1;" edge="1" parent="1" source="tg" target="ecs"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e6" value="task role" style="endArrow=classic;html=1;fontSize=10;rounded=1;dashed=1;" edge="1" parent="1" source="ecs" target="ddb"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e7" value="API_KEY al arrancar" style="endArrow=classic;html=1;fontSize=10;rounded=1;dashed=1;" edge="1" parent="1" source="ecs" target="ssm"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e8" value="logs" style="endArrow=classic;html=1;fontSize=10;rounded=1;dashed=1;" edge="1" parent="1" source="ecs" target="cw"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="e9" value="pull imagen" style="endArrow=classic;html=1;fontSize=10;rounded=1;dashed=1;" edge="1" parent="1" source="ecr" target="ecs"><mxGeometry relative="1" as="geometry"/></mxCell></root></mxGraphModel></diagram></mxfile>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="arquitectura-manta" name="Arquitectura">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" value="&lt;b&gt;Escape de Manta Zombie · Arquitectura en AWS&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;fontSize=24;fontColor=#16191F;" parent="1" vertex="1">
+          <mxGeometry x="24" y="18" width="620" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitulo" value="Spookython 2026 · Track A · rutas recalculadas cada turno (2 s) alrededor de zombies y calles cerradas" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;fontSize=13;fontColor=#545B64;" parent="1" vertex="1">
+          <mxGeometry x="24" y="50" width="760" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="aws" value="" style="rounded=1;html=1;whiteSpace=wrap;arcSize=2;align=left;spacingLeft=10;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=2;fillColor=none;strokeColor=#232F3E;strokeWidth=1.6;fontColor=#232F3E;fontStyle=1;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="254" y="84" width="1324" height="782" as="geometry" />
+        </mxCell>
+        <mxCell id="aws_tab" value="&lt;b&gt;AWS us-east-1 · una sola cuenta del equipo&lt;/b&gt;" style="rounded=0;html=1;whiteSpace=nowrap;align=left;spacingLeft=11;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=13;" parent="aws" vertex="1">
+          <mxGeometry x="0" y="0" width="290.736" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="nav" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Navegador&lt;/font&gt;&lt;/b&gt;&lt;br&gt;mapa en vivo (Leaflet)&lt;br&gt;GET / y /manta_graph.json&lt;br&gt;WS /ws o GET /estado c/2 s&lt;br&gt;sin API key" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="20" y="112" width="186" height="108" as="geometry" />
+        </mxCell>
+        <mxCell id="nav_cat" value="Internet" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#545B64;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="nav" vertex="1">
+          <mxGeometry x="10" y="-9" width="60.004" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="jurado" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Jurado / simulador&lt;/font&gt;&lt;/b&gt;&lt;br&gt;POST /paso + x-api-key&lt;br&gt;respuesta en &amp;lt; 500 ms&lt;br&gt;pruebas de latencia (p95)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="20" y="238" width="186" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="jurado_cat" value="Internet" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#545B64;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="jurado" vertex="1">
+          <mxGeometry x="10" y="-9" width="60.004" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="operador" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Operador del equipo&lt;/font&gt;&lt;/b&gt;&lt;br&gt;panel «Control» del mapa&lt;br&gt;/ws/sim/* + key de operador&lt;br&gt;iniciar · detener · reanudar" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="20" y="344" width="186" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="operador_cat" value="Internet" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#545B64;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="operador" vertex="1">
+          <mxGeometry x="10" y="-9" width="60.004" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="equipo" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Despliegue (equipo)&lt;/font&gt;&lt;/b&gt;&lt;br&gt;usuarios IAM propios + MFA&lt;br&gt;./infra/deploy.sh (AWS CLI)&lt;br&gt;access key solo durante&lt;br&gt;el evento" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="20" y="700" width="186" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="equipo_cat" value="Equipo" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#545B64;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="equipo" vertex="1">
+          <mxGeometry x="10" y="-9" width="56.668" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc" value="" style="rounded=1;html=1;whiteSpace=wrap;arcSize=2;align=left;spacingLeft=10;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=2;fillColor=none;strokeColor=#8C4FFF;strokeWidth=1.4;fontColor=#7B3FE4;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="264" y="28" width="836" height="578" as="geometry" />
+        </mxCell>
+        <mxCell id="vpc_tab" value="&lt;b&gt;VPC por defecto&lt;/b&gt;" style="rounded=0;html=1;whiteSpace=nowrap;align=left;spacingLeft=11;fillColor=#7B3FE4;strokeColor=none;fontColor=#FFFFFF;fontSize=12;" parent="vpc" vertex="1">
+          <mxGeometry x="0" y="0" width="115.348" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="cf" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon CloudFront&lt;/font&gt;&lt;/b&gt;&lt;br&gt;HTTPS · servicio global&lt;br&gt;d160b5kavxovby.cloudfront.net&lt;br&gt;plan Free (tarifa plana)&lt;br&gt;&lt;b&gt;5 behaviors (máx. del plan):&lt;/b&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;/paso → ALB&lt;/font&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;/estado → ALB&lt;/font&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;/salud → ALB&lt;/font&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;/ws* → ALB&lt;/font&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;Default → S3&lt;/font&gt;" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=1.5;fontSize=12;fontColor=#333D47;container=1;collapsible=0;recursiveResize=0;" parent="aws" vertex="1">
+          <mxGeometry x="16" y="36" width="196" height="284" as="geometry" />
+        </mxCell>
+        <mxCell id="cf_cat" value="Redes" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#7B3FE4;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="cf" vertex="1">
+          <mxGeometry x="10" y="-9" width="52.012" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="cf_acceso" value="PÚBLICO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#1D8102;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="cf" vertex="1">
+          <mxGeometry x="116" y="-9" width="70" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon S3&lt;/font&gt;&lt;/b&gt;&lt;br&gt;bucket frontend-manta&lt;br&gt;index.html, manta_graph.json&lt;br&gt;solo vía CloudFront (OAC)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#7AA116;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="16" y="352" width="196" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="s3_cat" value="Almacenamiento" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#3F8624;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="s3" vertex="1">
+          <mxGeometry x="10" y="-9" width="112.024" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="s3_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="s3" vertex="1">
+          <mxGeometry x="115.328" y="103" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="iam" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;AWS IAM&lt;/font&gt;&lt;/b&gt;&lt;br&gt;usuarios individuales + MFA&lt;br&gt;(root solo creó los 2 roles)&lt;br&gt;&lt;b&gt;grupo MantaTeam&lt;/b&gt;&lt;br&gt;9 políticas administradas,&lt;br&gt;sin AdministratorAccess&lt;br&gt;PassRole solo a 2 roles&lt;br&gt;&lt;b&gt;manta-execution-role&lt;/b&gt;&lt;br&gt;ECR, logs y /manta/* (SSM)&lt;br&gt;&lt;b&gt;manta-task-role&lt;/b&gt;&lt;br&gt;DynamoDB manta-snapshots" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="1130" y="28" width="180" height="206" as="geometry" />
+        </mxCell>
+        <mxCell id="iam_cat" value="Seguridad" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C7131F;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="iam" vertex="1">
+          <mxGeometry x="10" y="-9" width="74.68" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ddb" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon DynamoDB&lt;/font&gt;&lt;/b&gt;&lt;br&gt;tabla manta-snapshots&lt;br&gt;on-demand · TTL 7 días&lt;br&gt;snapshot cada 10 turnos&lt;br&gt;+ resultado de cada ronda&lt;br&gt;/ws/sim/reanudar lee el&lt;br&gt;último snapshot&lt;br&gt;vía manta-task-role:&lt;br&gt;PutItem/GetItem/Query" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#C925D1;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="1130" y="272" width="180" height="196" as="geometry" />
+        </mxCell>
+        <mxCell id="ddb_cat" value="Base de datos" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#A1189E;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="ddb" vertex="1">
+          <mxGeometry x="10" y="-9" width="97.36" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ddb_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="ddb" vertex="1">
+          <mxGeometry x="99.328" y="187" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="budgets" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;AWS Budgets&lt;/font&gt;&lt;/b&gt;&lt;br&gt;manta-zombie-mensual&lt;br&gt;50 USD/mes · alertas&lt;br&gt;50/80/100 % + pronóstico&lt;br&gt;a 3 correos del equipo&lt;br&gt;(avisa, no corta el gasto)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#7AA116;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="1130" y="636" width="180" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="budgets_cat" value="Finanzas" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#3F8624;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="budgets" vertex="1">
+          <mxGeometry x="10" y="-9" width="67.348" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon ECR&lt;/font&gt;&lt;/b&gt;&lt;br&gt;repositorio manta-zombie&lt;br&gt;imagen ARM64 (:latest, :sha)&lt;br&gt;la tarea la descarga con&lt;br&gt;manta-execution-role" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="346" y="636" width="196" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr_cat" value="Contenedores" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C8511B;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="ecr" vertex="1">
+          <mxGeometry x="10" y="-9" width="96.676" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ecr_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="ecr" vertex="1">
+          <mxGeometry x="115.328" y="123" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ssm" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;AWS Systems Manager&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Parameter Store (SecureString)&lt;br&gt;/manta/api-key → API_KEY&lt;br&gt;/manta/admin-key (operador)&lt;br&gt;(manta-execution-role)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="566" y="636" width="214" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="ssm_cat" value="Gestión" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C7105E;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="ssm" vertex="1">
+          <mxGeometry x="10" y="-9" width="60.676" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ssm_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="ssm" vertex="1">
+          <mxGeometry x="133.328" y="123" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="cw" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon CloudWatch&lt;/font&gt;&lt;/b&gt;&lt;br&gt;Logs /ecs/manta-zombie · retención 7 días&lt;br&gt;filtros de métricas sobre los logs:&lt;br&gt;p95 de /paso, errores, mordidos y&lt;br&gt;salvados por ronda · alarmas (opcional)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#E7157B;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+          <mxGeometry x="800" y="636" width="300" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="cw_cat" value="Gestión" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C7105E;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="cw" vertex="1">
+          <mxGeometry x="10" y="-9" width="60.676" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="cw_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="cw" vertex="1">
+          <mxGeometry x="219.328" y="-9" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="subred" value="Subredes públicas (2 AZ) · sin NAT Gateway" style="rounded=1;html=1;whiteSpace=wrap;arcSize=2;align=left;spacingLeft=10;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=2;fillColor=#F4F8EC;strokeColor=#7AA116;strokeWidth=1.2;fontColor=#3F6212;fontStyle=1;fontSize=12;" parent="vpc" vertex="1">
+          <mxGeometry x="12" y="30" width="812" height="538" as="geometry" />
+        </mxCell>
+        <mxCell id="waf" value="&lt;b&gt;&lt;font style=&quot;font-size:13px&quot; color=&quot;#16191F&quot;&gt;AWS WAF (incluido)&lt;/font&gt;&lt;/b&gt;&lt;br&gt;puede dar 403 en ráfagas" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#DD344C;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="cf" vertex="1">
+          <mxGeometry x="12" y="208" width="172" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="waf_cat" value="Seguridad" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C7131F;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="waf" vertex="1">
+          <mxGeometry x="10" y="-9" width="74.68" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="sg_alb" value="SG manta-sg-alb:&lt;br&gt;:80 solo desde el prefix&lt;br&gt;list de CloudFront" style="rounded=1;html=1;whiteSpace=wrap;arcSize=2;align=left;spacingLeft=10;container=1;collapsible=0;recursiveResize=0;verticalAlign=bottom;spacingBottom=4;fillColor=none;strokeColor=#DD344C;strokeWidth=1.2;dashed=1;dashPattern=5 4;fontColor=#B91C32;fontSize=12;" parent="subred" vertex="1">
+          <mxGeometry x="12" y="94" width="172" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="sg_tarea" value="SG manta-sg-tarea · :8000 solo desde manta-sg-alb" style="rounded=1;html=1;whiteSpace=wrap;arcSize=2;align=left;spacingLeft=10;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=2;fillColor=none;strokeColor=#DD344C;strokeWidth=1.2;dashed=1;dashPattern=5 4;fontColor=#B91C32;fontSize=12;" parent="subred" vertex="1">
+          <mxGeometry x="210" y="28" width="590" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="alb" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Application&lt;br&gt;Load Balancer&lt;/font&gt;&lt;/b&gt;&lt;br&gt;manta-alb · HTTP :80&lt;br&gt;target group manta-tg&lt;br&gt;destino IP :8000&lt;br&gt;health check /salud" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#8C4FFF;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="sg_alb" vertex="1">
+          <mxGeometry x="10" y="14" width="152" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="alb_cat" value="Redes" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#7B3FE4;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="alb" vertex="1">
+          <mxGeometry x="10" y="-9" width="52.012" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="alb_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="alb" vertex="1">
+          <mxGeometry x="71.328" y="211" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="tarea" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon ECS en AWS Fargate&lt;/font&gt;&lt;/b&gt;&lt;br&gt;cluster manta · servicio manta-api · 1 sola tarea (el estado del juego vive en memoria)&lt;br&gt;ARM64 (Graviton) · 0.5 vCPU · 1 GB · IP pública, sin NAT Gateway" style="rounded=1;html=1;whiteSpace=wrap;arcSize=4;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#ED7100;strokeWidth=1.5;fontSize=12;fontColor=#333D47;container=1;collapsible=0;recursiveResize=0;" parent="sg_tarea" vertex="1">
+          <mxGeometry x="10" y="34" width="570" height="456" as="geometry" />
+        </mxCell>
+        <mxCell id="tarea_cat" value="Contenedores" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C8511B;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="tarea" vertex="1">
+          <mxGeometry x="10" y="-9" width="96.676" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="tarea_acceso" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="tarea" vertex="1">
+          <mxGeometry x="489.328" y="-9" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="contenedor" value="" style="rounded=1;html=1;whiteSpace=wrap;arcSize=2;align=left;spacingLeft=10;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=2;fillColor=#FFF8F1;strokeColor=#ED7100;strokeWidth=1.2;fontColor=#C8511B;fontStyle=1;fontSize=12;" parent="tarea" vertex="1">
+          <mxGeometry x="12" y="82" width="546" height="364" as="geometry" />
+        </mxCell>
+        <mxCell id="contenedor_tag" value="Contenedor api · uvicorn con 1 worker en :8000 · usuario no root" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#C8511B;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="contenedor" vertex="1">
+          <mxGeometry x="10" y="-9" width="384.1" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="&lt;b&gt;&lt;font style=&quot;font-size:13px&quot; color=&quot;#16191F&quot;&gt;API FastAPI&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;POST /paso&lt;/font&gt; &lt;span style=&quot;background-color:#FBBF24;color:#1F2937;font-weight:bold;&quot;&gt;&amp;nbsp;API KEY&amp;nbsp;&lt;/span&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;/ws/sim/*&lt;/font&gt; &lt;span style=&quot;background-color:#F59E0B;color:#1F2937;font-weight:bold;&quot;&gt;&amp;nbsp;KEY OPERADOR&amp;nbsp;&lt;/span&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;GET /estado&lt;/font&gt; &lt;span style=&quot;background-color:#1D8102;color:#FFFFFF;font-weight:bold;&quot;&gt;&amp;nbsp;PÚBLICO&amp;nbsp;&lt;/span&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;WS /ws&lt;/font&gt; &lt;span style=&quot;background-color:#1D8102;color:#FFFFFF;font-weight:bold;&quot;&gt;&amp;nbsp;PÚBLICO&amp;nbsp;&lt;/span&gt;&lt;br&gt;&lt;font face=&quot;Courier New&quot;&gt;GET /salud&lt;/font&gt; &lt;span style=&quot;background-color:#1D8102;color:#FFFFFF;font-weight:bold;&quot;&gt;&amp;nbsp;PÚBLICO&amp;nbsp;&lt;/span&gt;" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fillColor=#FFFFFF;strokeColor=#7D8998;strokeWidth=1.2;fontSize=12;fontColor=#333D47;" parent="contenedor" vertex="1">
+          <mxGeometry x="12" y="20" width="234" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="sim" value="&lt;b&gt;&lt;font style=&quot;font-size:13px&quot; color=&quot;#16191F&quot;&gt;Simulador del Apocalipsis&lt;/font&gt;&lt;/b&gt;&lt;br&gt;cada 2 s, en este orden:&lt;br&gt;eventos (puente o avenida cae)&lt;br&gt;→ se mueven los zombies&lt;br&gt;→ publica el Mundo&lt;br&gt;→ sobrevivientes piden /paso&lt;br&gt;→ mordidas, refugios y camionetas" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fillColor=#FFFFFF;strokeColor=#7D8998;strokeWidth=1.2;fontSize=12;fontColor=#333D47;" parent="contenedor" vertex="1">
+          <mxGeometry x="300" y="20" width="234" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="planner" value="&lt;b&gt;&lt;font style=&quot;font-size:13px&quot; color=&quot;#16191F&quot;&gt;Planner de rutas&lt;/font&gt;&lt;/b&gt;&lt;br&gt;1 Dijkstra inverso por refugio, 1 vez por turno&lt;br&gt;costo = segundos por tipo de calle + riesgo&lt;br&gt;nodos con zombie y zonas de horda: prohibidos&lt;br&gt;POST /paso solo consulta estas tablas&lt;br&gt;&lt;span style=&quot;background-color:#0F766E;color:#FFFFFF;font-weight:bold;&quot;&gt;&amp;nbsp;PRO&amp;nbsp;&lt;/span&gt; predicción de corredores&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;capacidad de refugios · flota de 5 camionetas" style="rounded=1;html=1;whiteSpace=wrap;arcSize=4;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fillColor=#FFFFFF;strokeColor=#7D8998;strokeWidth=1.2;fontSize=12;fontColor=#333D47;" parent="contenedor" vertex="1">
+          <mxGeometry x="12" y="204" width="306" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="mundo" value="&lt;b&gt;&lt;font style=&quot;font-size:13px&quot; color=&quot;#16191F&quot;&gt;Mundo&lt;/font&gt;&lt;/b&gt;&lt;br&gt;estado publicado inmutable&lt;br&gt;turno, zombies, zonas de&lt;br&gt;horda, calles bloqueadas,&lt;br&gt;sobrevivientes, camionetas,&lt;br&gt;cupos de refugios, métricas&lt;br&gt;en memoria de la tarea" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=4;fillColor=#FFFFFF;strokeColor=#7D8998;strokeWidth=1.2;fontSize=12;fontColor=#333D47;" parent="contenedor" vertex="1">
+          <mxGeometry x="358" y="204" width="176" height="148" as="geometry" />
+        </mxCell>
+        <mxCell id="f_nav1" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.3333;exitPerimeter=0;entryX=0.0000;entryY=0.0986;entryPerimeter=0;" parent="1" source="nav" target="cf" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_nav2" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.7037;exitPerimeter=0;entryX=0.0000;entryY=0.2394;entryPerimeter=0;" parent="1" source="nav" target="cf" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_jurado" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#D97706;strokeWidth=2.6;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.5000;exitPerimeter=0;entryX=0.0000;entryY=0.5704;entryPerimeter=0;" parent="1" source="jurado" target="cf" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_operador" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#D97706;strokeWidth=2.6;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.5000;exitPerimeter=0;entryX=0.0000;entryY=0.9437;entryPerimeter=0;" parent="1" source="operador" target="cf" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_cf_s3" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.8265;exitY=1.0000;exitPerimeter=0;entryX=0.8265;entryY=0.0000;entryPerimeter=0;" parent="aws" source="cf" target="s3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_cf_alb3" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#D97706;strokeWidth=2.6;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.8099;exitPerimeter=0;entryX=0.0000;entryY=0.4545;entryPerimeter=0;" parent="aws" source="cf" target="alb" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_cf_alb2" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.9437;exitPerimeter=0;entryX=0.0000;entryY=0.6273;entryPerimeter=0;" parent="aws" source="cf" target="alb" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_alb_api3" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#D97706;strokeWidth=2.6;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.4545;exitPerimeter=0;entryX=0.0000;entryY=0.3143;entryPerimeter=0;" parent="subred" source="alb" target="api" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_alb_api2" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.6273;exitPerimeter=0;entryX=0.0000;entryY=0.5857;entryPerimeter=0;" parent="subred" source="alb" target="api" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_sim_api" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#D97706;strokeWidth=2.6;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.0000;exitY=0.3143;exitPerimeter=0;entryX=1.0000;entryY=0.3143;entryPerimeter=0;" parent="contenedor" source="sim" target="api" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_api_plan" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.2393;exitY=1.0000;exitPerimeter=0;entryX=0.1830;entryY=0.0000;entryPerimeter=0;" parent="contenedor" source="api" target="planner" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_api_mundo" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.8803;exitY=1.0000;exitPerimeter=0;entryX=0.1705;entryY=0.0000;entryPerimeter=0;" parent="contenedor" source="api" target="mundo" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="218" y="182" />
+              <mxPoint x="388" y="182" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f_sim_mundo" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.7607;exitY=1.0000;exitPerimeter=0;entryX=0.6818;entryY=0.0000;entryPerimeter=0;" parent="contenedor" source="sim" target="mundo" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_mundo_plan" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.0000;exitY=0.5135;exitPerimeter=0;entryX=1.0000;entryY=0.5135;entryPerimeter=0;" parent="contenedor" source="mundo" target="planner" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_sim_ddb" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.6714;exitPerimeter=0;entryX=0.0000;entryY=0.2245;entryPerimeter=0;" parent="aws" source="sim" target="ddb" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_tarea_cw" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.7895;exitY=1.0000;exitPerimeter=0;entryX=0.4867;entryY=0.0000;entryPerimeter=0;" parent="aws" source="tarea" target="cw" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_ecr_tarea" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#5F6B7A;strokeWidth=1.5;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.9184;exitY=0.0000;exitPerimeter=0;entryX=0.0526;entryY=1.0000;entryPerimeter=0;dashed=1;dashPattern=6 4;" parent="aws" source="ecr" target="tarea" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_ssm_tarea" value="" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#5F6B7A;strokeWidth=1.5;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=0.5140;exitY=0.0000;exitPerimeter=0;entryX=0.3158;entryY=1.0000;entryPerimeter=0;dashed=1;dashPattern=6 4;" parent="aws" source="ssm" target="tarea" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_deploy" value="docker buildx (ARM64) --push → ecs update-service" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#5F6B7A;strokeWidth=1.5;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.7667;exitPerimeter=0;entryX=0.0000;entryY=0.5455;entryPerimeter=0;dashed=1;dashPattern=6 4;" parent="1" source="equipo" target="ecr" edge="1">
+          <mxGeometry relative="1" as="geometry" x="0.0222">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f_s3sync" value="s3 sync + invalidación&lt;br&gt;de CloudFront" style="html=1;rounded=1;edgeStyle=none;endArrow=block;endFill=1;endSize=7;strokeColor=#5F6B7A;strokeWidth=1.5;fontSize=12;fontColor=#333D47;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.2500;exitPerimeter=0;entryX=0.2551;entryY=1.0000;entryPerimeter=0;dashed=1;dashPattern=6 4;" parent="1" source="equipo" target="s3" edge="1">
+          <mxGeometry relative="1" as="geometry" x="0.3514">
+            <mxPoint x="68.524" y="0" as="offset" />
+            <Array as="points">
+              <mxPoint x="320" y="730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f_nav1_num" value="1" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="220" y="138" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_nav2_num" value="2" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="220" y="178" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_jurado_num" value="3" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="220" y="272" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_cf_s3_num" value="1" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="186" y="326" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_cf_alb3_num" value="3" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="228" y="256" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_cf_alb2_num" value="2" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="228" y="294" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_sim_api_num" value="4" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="contenedor" vertex="1">
+          <mxGeometry x="263" y="54" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_api_plan_num" value="3" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="contenedor" vertex="1">
+          <mxGeometry x="58" y="171" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_api_mundo_num" value="2" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="contenedor" vertex="1">
+          <mxGeometry x="293" y="172" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_sim_mundo_num" value="4" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="contenedor" vertex="1">
+          <mxGeometry x="468" y="171" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_mundo_plan_num" value="4" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="contenedor" vertex="1">
+          <mxGeometry x="328" y="252" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_sim_ddb_num" value="5" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="1105" y="290" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_tarea_cw_num" value="6" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="952" y="611" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_ecr_tarea_num" value="7" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="aws" vertex="1">
+          <mxGeometry x="500" y="611" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_deploy_num" value="7" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="220" y="782" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="f_s3sync_num" value="7" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="220" y="720" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="leyenda" value="" style="rounded=1;arcSize=8;html=1;fillColor=#F7F8FA;strokeColor=#D5DBDB;" parent="1" vertex="1">
+          <mxGeometry x="700" y="10" width="878" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_lineas" value="&lt;b&gt;Líneas&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="712" y="16" width="50" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_linea_datos" value="" parent="1" edge="1" style="html=1;endArrow=block;endFill=1;endSize=7;strokeColor=#232F3E;strokeWidth=1.8;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="770" y="26" as="sourcePoint" />
+            <mxPoint x="806" y="26" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ley_linea_datos_t" value="flujo de datos" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="812" y="16" width="79.376" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_linea_clave" value="" parent="1" edge="1" style="html=1;endArrow=block;endFill=1;endSize=7;strokeColor=#D97706;strokeWidth=2.6;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="909.376" y="26" as="sourcePoint" />
+            <mxPoint x="945.376" y="26" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ley_linea_clave_t" value="requiere x-api-key" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="951.376" y="16" width="104.024" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_linea_control" value="" parent="1" edge="1" style="html=1;endArrow=block;endFill=1;endSize=7;strokeColor=#5F6B7A;strokeWidth=1.5;dashed=1;dashPattern=6 4;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1073.4" y="26" as="sourcePoint" />
+            <mxPoint x="1109.4" y="26" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ley_linea_control_t" value="control / despliegue" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="1115.4" y="16" width="112.052" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_num" value="n" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="1245.45" y="16" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_num_t" value="n.º de flujo (abajo)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="1271.45" y="16" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso" value="&lt;b&gt;Acceso&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="712" y="42" width="56" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso_publico_p" value="PÚBLICO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#1D8102;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="770" y="43" width="70" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso_publico_t" value="sin key" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="846" y="42" width="45.344" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso_clave_p" value="API KEY" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#FBBF24;strokeColor=none;fontColor=#1F2937;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="909.344" y="43" width="64.012" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso_clave_t" value="header x-api-key" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="979.356" y="42" width="97.364" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso_privado_p" value="PRIVADO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#414D5C;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="1094.72" y="43" width="70.672" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_acceso_privado_t" value="sin acceso directo desde Internet" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="1171.39" y="42" width="184.088" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_pro_p" value="PRO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#0F766E;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="1373.48" y="43" width="42.004" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="ley_pro_t" value="nivel PRO" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="1421.48" y="42" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujos" value="" style="rounded=1;arcSize=6;html=1;fillColor=#F7F8FA;strokeColor=#D5DBDB;" parent="1" vertex="1">
+          <mxGeometry x="20" y="878" width="1558" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo1" value="1" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="34" y="888" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo1_t" value="Página y grafo: Navegador → CloudFront → S3 (index.html y manta_graph.json, con OAC)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="60" y="888" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo2" value="2" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="34" y="908" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo2_t" value="Estado en vivo: WS /ws (o GET /estado cada 2 s) → CloudFront → ALB → API, que lee el Mundo publicado." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="60" y="908" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo3" value="3" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="34" y="928" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo3_t" value="POST /paso con x-api-key → CloudFront → ALB → ruta ASGI directa → consulta las tablas del planner (&amp;lt; 500 ms)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="60" y="928" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo4" value="4" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="34" y="948" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo4_t" value="Turno de 2 s: el simulador aplica eventos y mueve zombies → publica el Mundo → el planner recalcula 1 vez → /paso." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="60" y="948" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo5" value="5" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="814" y="888" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo5_t" value="Snapshot cada 10 turnos y resultado de cada ronda → DynamoDB (manta-task-role)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="840" y="888" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo6" value="6" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="814" y="908" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo6_t" value="Logs JSON del contenedor → CloudWatch Logs; filtros de métricas (p95, errores, mordidos y salvados) y alarmas." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="840" y="908" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo7" value="7" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
+          <mxGeometry x="814" y="928" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="flujo7_t" value="Despliegue: docker buildx ARM64 → ECR → ecs update-service; frontend: s3 sync + invalidación de CloudFront." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+          <mxGeometry x="840" y="928" width="740" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="nota" value="Notas: el ALB es internet-facing, pero su SG solo admite el prefix list de CloudFront (header x-origin-verify listo, sin activar) · WebSocket por CloudFront Free sin probar: el mapa cae a polling de /estado · /estado y /ws son públicos por PUBLIC_STATE=true." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;fontColor=#545B64;" parent="1" vertex="1">
+          <mxGeometry x="34" y="970" width="1530" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
