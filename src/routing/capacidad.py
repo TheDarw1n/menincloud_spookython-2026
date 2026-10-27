@@ -5,7 +5,9 @@ mismo turno ya no ve otra evacuacion) el cupo proyectado es
     capacidad - ocupacion + E * (t - 1) - (asignados que llegan antes).
 Cada turno se asigna en orden de llegada (el mas cercano primero) al refugio mas barato que
 tenga cupo proyectado. Se recalcula desde cero: medido, "fijar" el refugio previo (aunque sea con
-un 15 % de preferencia) hacia que los zombies acorralaran a mas gente (R3: 178 -> 309 mordidas)."""
+un 15 % de preferencia) hacia que los zombies acorralaran a mas gente (R3, suma de 6 semillas:
+178 -> 309 mordidas). Tiene un costo medido (README): desviar a alguien a un refugio mas lejano lo
+expone mas, y en R3 sube las mordidas a cambio de -84 % de llegadas a refugios llenos."""
 import bisect
 
 from .dijkstra import INF

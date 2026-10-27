@@ -117,7 +117,7 @@ class Planner:
         if nodo not in self.grafo.nodos or (nodo in self.grafo.nodos_refugio and nodo not in snap.prohibidos):
             return nodo  # nodo desconocido o en la puerta de un refugio seguro: se queda
         if sid in snap.esperar and nodo not in snap.prohibidos and self._propio(snap, sid, nodo):
-            return nodo  # su camioneta llega en <= 3 turnos
+            return nodo  # su camioneta lo recoge este mismo turno (flota.ESPERA_MAX = 1)
         mejor, costo = self._mejor(snap, nodo, self._tablas(snap, sid, nodo))
         if costo == INF:
             mejor, costo = self._mejor(snap, nodo, list(snap.tablas.values()))

@@ -1,7 +1,8 @@
-"""Simulador del apocalipsis. Cada turno (2 s): (1) eventos de ciudad, (2) se mueven los
-zombies, (3) se publica el mundo y el planner se recalcula UNA vez, (4) cada sobreviviente
-consulta POST /paso (500 ms o se queda quieto), (5) mordidas, (6) llegadas a refugios,
-(7) se reponen sobrevivientes y se publican el turno y las metricas de la rubrica."""
+"""Simulador del apocalipsis. Cada turno (2 s), en el orden de los comentarios 0) a 8) de turno():
+(0) los refugios evacuan, (1) eventos de ciudad, (2) se mueven los zombies, (3) se publica el
+mundo y el planner se recalcula UNA vez, (4) cada sobreviviente consulta POST /paso (500 ms o se
+queda quieto), (5) mordidas, (6) llegadas a refugios, (7) camionetas, (8) se reponen
+sobrevivientes; al final se publican el turno y las metricas de la rubrica."""
 import asyncio
 import json
 from collections import Counter, deque
@@ -16,8 +17,9 @@ from .cliente import ClientePaso
 
 # Fracciones de zombies respecto al numero de nodos; eventos = (turno, tipo de calle) en una ronda
 # de TURNOS_REF turnos: con TURNOS_RONDA menor se escalan (la CI juega 30 y el puente de R2 nunca
-# colapsaba). Con poblacion fija la ronda dura lo que tarda la ultima persona (~15-30 turnos en
-# Manta), asi que sus eventos van antes (eventos_fija, sin escalar) mientras todavia hay gente.
+# colapsaba). Con poblacion fija la ronda dura lo que tarda la ultima persona (en Manta, R1
+# 12-24 turnos, R2 19-28 y R3 28-55), asi que sus eventos van antes (eventos_fija, sin escalar)
+# mientras todavia hay gente.
 TURNOS_REF = 150
 RONDAS = {
     1: dict(nombre="Anochecer", sobrevivientes=20, zombies={"caminante": 0.05}, eventos=[], eventos_fija=[]),

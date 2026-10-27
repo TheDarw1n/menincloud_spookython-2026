@@ -5,7 +5,8 @@ puede caer el proximo turno y desde los que no quedaria salida. Para eso se anti
   replica su persecucion y se marca todo lo que alcanza a 2 calles;
 - caminante: 1 calle cada 2 turnos; si acaba de moverse (previo != nodo) el proximo turno se queda;
 - horda: casi inmovil; si avanza, su zona letal (nodo + vecinos) se corre una calle.
-Valores en segundos (una calle de Manta toma ~15-30 s a pie)."""
+Valores en segundos, comparables con el costo de una calle (en Manta, ~20-27 s de recorrido + 30 s
+de cruce: ~50-57 s)."""
 from collections import defaultdict
 
 from ..world.zombies import PROB_HORDA, nodos_vetados, paso_persecucion
