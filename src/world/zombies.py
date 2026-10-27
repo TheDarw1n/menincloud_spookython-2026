@@ -1,8 +1,13 @@
 """Zombies: caminante (1 calle/2 turnos), corredor (2 calles/turno, persigue a <=3 nodos),
 horda (casi inmovil; su nodo y TODOS sus vecinos son letales), dormido (invisible hasta que un
-sobreviviente esta a <=2 nodos; despierta como caminante). Ningun zombie entra a un refugio
-(son puntos fortificados)."""
+sobreviviente esta a <=2 nodos; despierta como caminante).
 
+Supuesto propio (no esta en el enunciado), activo por defecto: REFUGIOS_FORTIFICADOS. Ningun
+zombie entra a un refugio, la zona de una horda no cubre refugios y las hordas no nacen pegadas
+a uno. Con REFUGIOS_FORTIFICADOS=0 se juega la lectura literal."""
+import os
+
+FORTIFICADOS = os.environ.get("REFUGIOS_FORTIFICADOS", "1") != "0"
 RADIO_CORREDOR = 3
 RADIO_DORMIDO = 2
 PROB_HORDA = 0.1  # probabilidad de que una horda avance una calle en un turno
@@ -10,7 +15,7 @@ PROB_HORDA = 0.1  # probabilidad de que una horda avance una calle en un turno
 
 def crear(grafo, fracciones, rng, excluir=()):
     excluir = set(excluir)
-    junto_refugio = {v for r in grafo.nodos_refugio for v, _, _ in grafo.vecinos[r]}
+    junto_refugio = {v for r in grafo.nodos_refugio for v, _, _ in grafo.vecinos[r]} if FORTIFICADOS else set()
     zombies, k = [], 1
     for tipo, f in fracciones.items():
         # una horda pegada a un refugio le bloquearia la entrada: nace a 2+ calles
@@ -24,13 +29,18 @@ def crear(grafo, fracciones, rng, excluir=()):
 
 
 def zonas_horda(grafo, zombies):
-    """Nodos letales de las hordas: su nodo y todos sus vecinos (menos los refugios)."""
+    """Nodos letales de las hordas: su nodo y todos sus vecinos (menos los refugios fortificados)."""
     zona = set()
     for z in zombies:
         if z["tipo"] == "horda":
             zona.add(z["nodo"])
             zona.update(v for v, _, _ in grafo.vecinos[z["nodo"]])
-    return zona - grafo.nodos_refugio
+    return zona - grafo.nodos_refugio if FORTIFICADOS else zona
+
+
+def nodos_vetados(grafo):
+    """Nodos a los que ningun zombie entra."""
+    return grafo.nodos_refugio if FORTIFICADOS else frozenset()
 
 
 def _ir(z, v):

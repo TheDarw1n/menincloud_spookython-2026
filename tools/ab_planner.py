@@ -7,7 +7,7 @@ rubrica). Todas las decisiones de diseno del README salen de aqui.
       "todo:" "sin_prediccion:pred=0" "sin_capacidad:cap=0" "sin_flota:flota=0" "sin_cruce:cruce=0"
 
 Claves de cada variante (por defecto todo activo, como en produccion): pred, cap, flota (0/1),
-cruce (segundos por interseccion), evac y cuello (cupos de refugios)."""
+cruce (segundos por interseccion), evac y cuello (cupos de refugios), fort (refugios fortificados)."""
 import argparse
 import asyncio
 import os
@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from src.routing.planner import Planner  # noqa: E402
 from src.simulator import engine, puntaje  # noqa: E402
 from src.simulator.engine import Simulador  # noqa: E402
-from src.world import graph  # noqa: E402
+from src.world import graph, zombies  # noqa: E402
 from src.world.mundo import Mundo  # noqa: E402
 
 BASE = dict(cruce=graph.CRUCE_S, evac=engine.EVAC_FACTOR, cuello=engine.CUELLO)
@@ -29,6 +29,7 @@ def correr(ruta_grafo, ronda, seed, cfg):
     graph.CRUCE_S = float(cfg.get("cruce", BASE["cruce"]))
     engine.EVAC_FACTOR = float(cfg.get("evac", BASE["evac"]))
     engine.CUELLO = float(cfg.get("cuello", BASE["cuello"]))
+    zombies.FORTIFICADOS = cfg.get("fort", "1") != "0"
     pred, cap, flota = (cfg.get(k, "1") != "0" for k in ("pred", "cap", "flota"))
     g = graph.Grafo.desde_archivo(ruta_grafo)
     mundo = Mundo(g, Planner(g, prediccion=pred, capacidad=cap, flota=flota))

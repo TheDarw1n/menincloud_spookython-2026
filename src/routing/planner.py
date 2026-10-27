@@ -49,6 +49,9 @@ class Planner:
                                     est.get("sobrevivientes", ()), self.prediccion)
         tablas, saltos = {}, {}
         for rid, nodo in g.refugios.items():
+            if nodo in prohibidos:  # un zombie ocupa el refugio (solo si no son fortificados)
+                tablas[rid], saltos[rid] = {}, {}
+                continue
             # no se planifica a traves de OTRO refugio: pisarlo ya es llegar a ese refugio
             evitar = prohibidos | (g.nodos_refugio - {nodo})
             tablas[rid], saltos[rid] = dijkstra_inverso(g, nodo, bloqueadas, evitar, penal)
@@ -102,8 +105,8 @@ class Planner:
         return mejor, costo
 
     def _siguiente(self, snap, nodo, sid=None):
-        if nodo not in self.grafo.nodos or nodo in self.grafo.nodos_refugio:
-            return nodo  # nodo desconocido o ya en un refugio: se queda
+        if nodo not in self.grafo.nodos or (nodo in self.grafo.nodos_refugio and nodo not in snap.prohibidos):
+            return nodo  # nodo desconocido o en la puerta de un refugio seguro: se queda
         if sid in snap.esperar and nodo not in snap.prohibidos:
             return nodo  # su camioneta llega en <= 3 turnos
         mejor, costo = self._mejor(snap, nodo, self._tablas(snap, sid))

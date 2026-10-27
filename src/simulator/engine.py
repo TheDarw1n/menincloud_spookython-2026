@@ -276,7 +276,7 @@ class Simulador:
         bloq = frozenset(s["bloqueadas"])
         # 2) primero se mueven los zombies (no entran a refugios)
         zm.mover_todos(g, s["zombies"], bloq, {sv["nodo"] for sv in s["sobrevivientes"]}, t, self.rng,
-                       g.nodos_refugio)
+                       zm.nodos_vetados(g))
         zonas = zm.zonas_horda(g, s["zombies"])
         # 3) se publica el mundo: el planner se recalcula UNA vez para todo el turno
         self.mundo.publicar_zombies(t, s["zombies"], s["bloqueadas"], ronda=s["ronda"], corriendo=True,

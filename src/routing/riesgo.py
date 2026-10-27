@@ -8,7 +8,7 @@ puede caer el proximo turno y desde los que no quedaria salida. Para eso se anti
 Valores en segundos (una calle de Manta toma ~15-30 s a pie)."""
 from collections import defaultdict
 
-from ..world.zombies import PROB_HORDA, paso_persecucion
+from ..world.zombies import PROB_HORDA, nodos_vetados, paso_persecucion
 
 P_TRAMPA = (240.0, 45.0)   # caer ahi con 0 o 1 salidas libres (sin contar por donde entra el zombie)
 P_PREDICCION = 25.0        # nodos por los que pasara el corredor que persigue a alguien
@@ -20,7 +20,7 @@ def predecir_corredor(grafo, nodo, nodos_sobrev, bloqueadas):
     regla que el simulador (sobreviviente mas cercano a <= 3 calles, sin entrar a refugios)."""
     camino = []
     for _ in range(2):
-        sig = paso_persecucion(grafo, nodo, nodos_sobrev, bloqueadas, grafo.nodos_refugio)
+        sig = paso_persecucion(grafo, nodo, nodos_sobrev, bloqueadas, nodos_vetados(grafo))
         if sig is None or sig == nodo:
             break
         camino.append(sig)
@@ -34,12 +34,12 @@ def llegadas(grafo, zombies, bloqueadas):
     for z in zombies:
         n, tipo = z["nodo"], z["tipo"]
         if tipo == "corredor":
-            for v, (d, padre) in grafo.bfs(n, 2, bloqueadas, evitar=grafo.nodos_refugio).items():
+            for v, (d, padre) in grafo.bfs(n, 2, bloqueadas, evitar=nodos_vetados(grafo)).items():
                 if d:
                     entra[v].add(padre)
         elif tipo == "caminante" and z.get("previo", n) == n:  # le toca moverse
             for v, c, _ in grafo.vecinos[n]:
-                if c not in bloqueadas and v not in grafo.nodos_refugio:
+                if c not in bloqueadas and v not in nodos_vetados(grafo):
                     entra[v].add(n)
     return entra
 

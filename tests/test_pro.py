@@ -140,3 +140,23 @@ def test_sin_flota_no_hay_camionetas():
     mundo, sim = _sim(turnos_ronda=3, flota=False)
     asyncio.run(sim.correr(1))
     assert sim.s["camionetas"] == [] and mundo.estado["camionetas"] == []
+
+
+def test_lectura_literal_sin_refugios_fortificados(monkeypatch):
+    import random
+
+    from src.world import zombies as zmod
+    monkeypatch.setattr(zmod, "FORTIFICADOS", False)
+    assert zmod.zonas_horda(G, [{"tipo": "horda", "nodo": "N-0019"}]) >= {"N-0020"}  # la zona cubre el refugio
+    caminante = {"id": "Z", "tipo": "caminante", "nodo": "N-0015", "previo": "N-0015", "visible": True,
+                 "fase": 0, "pasos": []}
+    entro = False
+    for t in range(0, 200, 2):
+        zmod.mover_todos(G, [caminante], frozenset(), set(), t, random.Random(t), zmod.nodos_vetados(G))
+        entro |= caminante["nodo"] in G.nodos_refugio
+    assert entro
+    # con un zombie en el refugio, quien espera en la puerta huye y el refugio queda sin tabla
+    p = Planner(G, prediccion=False, capacidad=False, flota=False)
+    p.actualizar({"turno": 1, "zombies": [{"id": "Z", "tipo": "caminante", "nodo": "N-0020", "previo": "N-0015",
+                                           "visible": True, "pasos": [["N-0015", "N-0020"]]}]})
+    assert p._snap.tablas["R-1"] == {} and p.siguiente_nodo("N-0020", "S") == "N-0019"
