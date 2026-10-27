@@ -22,13 +22,15 @@ Motor de rutas en AWS que recalcula en tiempo real alrededor de zombies y calles
 
 | | R1 Anochecer | R2 Medianoche | R3 Apocalipsis |
 |---|---|---|---|
-| Supervivencia | 1.000 | 0.992 | 0.954 |
-| Eficiencia (contra el mínimo de calles) | 0.968 | 0.869 | 0.834 |
-| p95 de `POST /paso` | 1.8 ms | 6.1 ms | 14.2 ms |
+| Supervivencia | 1.000 | 0.992–0.993 | 0.947–0.954 |
+| Eficiencia (contra el mínimo de calles) | 0.88–0.97 | 0.87–0.89 | 0.80–0.83 |
+| p95 de `POST /paso` | 1.8–1.9 ms | 6.1 ms | 14.2–14.6 ms |
 | Errores o respuestas > 500 ms | 0 % | 0 % | 0 % |
-| **Puntaje de la rúbrica** | | | **9.61 / 10** |
+| **Puntaje de la rúbrica** | | | **9.54–9.61 / 10** |
 
-Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo contenedor, un turno cada 2 s: 200 concurrentes → **p95 26 ms, 0 % de errores** (80 → p95 12 ms). El umbral de 10 puntos es 150 ms. Las cifras de cada corrida quedan como anotaciones públicas del job `carga` en [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml).
+Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo contenedor, un turno cada 2 s: 200 concurrentes → **p95 26–28 ms, 0 % de errores** (80 → p95 12–15 ms). El umbral de 10 puntos es 150 ms.
+
+**Todo a la vez** (lo que pasaría frente al jurado): R3 del simulador interno + 200 consultas externas por turno con `latency.py` + 30 visores del mapa por WebSocket, en el mismo contenedor ARM64 de 0.5 vCPU → R3 interna **p95 15.8 ms**, externa **p95 13.8 ms** (p99 30 ms), **0 % de errores** y 0 visores caídos. Las cifras de cada corrida quedan como anotaciones públicas del job `carga` en [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml).
 
 **Rondas completas de 150 turnos** (5 minutos), simulador sin HTTP, grafo de Manta, promedio por ronda de 6 semillas ([`tools/ab_planner.py`](tools/ab_planner.py)):
 
@@ -102,7 +104,7 @@ Supuestos propios (no están en el enunciado; se pueden cambiar):
 - **Rutas calculadas por turno, no por petición:** el planner se recalcula una vez, al publicar los zombies del turno, y deja snapshots inmutables; `POST /paso` es una ruta ASGI directa (sin pydantic) que solo consulta tablas.
 - **El simulador consulta `/paso` por HTTP** con un cliente HTTP/1.1 mínimo de conexiones persistentes ([`src/simulator/cliente.py`](src/simulator/cliente.py)). Con httpx, en el mismo event loop, el 79 % de las consultas de la ronda 3 pasaba los 500 ms; con este cliente, 0 %.
 - **El estado se serializa una vez por publicación** (dos por turno: zombies y fin de turno) y lo comparten `/estado` y todos los WebSocket (máximo 100 visores; el resto cae a polling). El WebSocket va **sin compresión por mensaje**: comprimir ~40 KB costaba ~1 ms de CPU por visor y por mensaje.
-- **DynamoDB en segundo plano** con timeouts de 1 s: un DynamoDB lento nunca congela el turno. `POST /ws/sim/reanudar` retoma el último snapshot tras un reinicio.
+- **DynamoDB en segundo plano** con timeouts de 1 s: un DynamoDB lento nunca congela el turno, y boto3 se prepara al arrancar (importarlo en el primer snapshot costaba ~1 s de CPU a mitad de ronda). `POST /ws/sim/reanudar` retoma el último snapshot tras un reinicio.
 - **Sin Redis, NAT Gateway, API Gateway ni Secrets Manager:** costo fijo innecesario para una sola tarea.
 - **Límites del plan Free de CloudFront:** 5 cache behaviors (Default→S3, `/paso`, `/estado`, `/salud`, `/ws*`), por eso el grafo es un archivo estático de S3 y el control del simulador vive bajo `/ws/sim/*`. El WAF incluido puede devolver 403 ante ráfagas: medirlo con `./infra/deploy.sh prueba`.
 
@@ -236,9 +238,9 @@ Resumen de [`docs/costos.md`](docs/costos.md) (precios verificados el 2026-10-27
 ## Limitaciones conocidas
 
 - **Un solo contenedor con el estado en memoria** (1 worker de uvicorn, nunca `--workers > 1`). Un reinicio pierde la ronda en curso (se retoma con `/ws/sim/reanudar`). Escalar a varias réplicas exige compartir las tablas del turno (ver `docs/costos.md` § 8).
-- El tramo CloudFront → ALB va por **HTTP** (sin dominio propio). El ALB solo acepta el prefix list de CloudFront; `ORIGIN_SECRET` está listo pero sin activar.
+- El tramo CloudFront → ALB va por **HTTP** (sin dominio propio). El ALB solo acepta el prefix list de CloudFront; `ORIGIN_SECRET` está listo (el simulador interno también manda el header) pero sin activar.
 - **WebSocket por CloudFront (plan Free) sin probar en AWS:** si no conecta, el mapa cae solo a polling de `/estado` cada 2 s (el HUD dice cuál usa).
-- `POST /paso` responde con el mundo del servidor aunque el cliente mande otro `turno`, y el reparto por cupo de refugios cubre a los sobrevivientes del simulador propio (los ids externos reciben la mejor ruta sin cupo).
+- `POST /paso` responde con el mundo del servidor aunque el cliente mande otro `turno`, y el reparto por cupo de refugios cubre a los sobrevivientes del simulador propio (los ids externos reciben la mejor ruta sin cupo, aunque su id coincida con uno propio).
 - En el grafo, una calle es `puente` si cualquier tramo suyo lo es (una avenida larga con un puente corto va a 40 km/h y colapsa entera); no hay callejones (las vías de servicio no se incluyeron); las calles son de doble sentido.
 - Infraestructura manual, sin IaC.
 
@@ -250,9 +252,9 @@ src/world/       grafo, mundo publicado, zombies, eventos, mordidas
 src/routing/     Dijkstra inverso, planner, riesgo (predicción), capacidad, flota
 src/simulator/   motor de rondas, puntaje de la rúbrica, cliente HTTP, latency.py, run_simulator
 src/persistence.py   snapshots y resultados en DynamoDB
-tools/           export_overpass.py (OSM), validar_grafo.py, ab_planner.py, resumen_resultados.py, diagrama/
+tools/           export_overpass.py (OSM), validar_grafo.py, ab_planner.py, resumen_resultados.py, visores_ws.py, diagrama/, pitch/
 frontend/        mapa en vivo (Leaflet)        infra/  despliegue        docs/  arquitectura, costos, grafo
-tests/           58 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
+tests/           71 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
 ```
 
 ## Equipo
