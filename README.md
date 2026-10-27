@@ -158,7 +158,7 @@ Todas las claves de `/estado` existen desde el arranque (`puntaje` es `null` has
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                                                 # 71 tests
+pytest                                                 # 72 tests
 python tools/validar_grafo.py data/manta_graph.json
 
 # Ronda completa sin HTTP (rápido): 1, 2, 3 o ciclo
@@ -179,7 +179,7 @@ Si el servidor no corre en el puerto 8000, exporta `SIM_URL=http://127.0.0.1:PUE
 | `API_KEY` / `ADMIN_API_KEY` | — | key de `/paso` / key de operador (sin `ADMIN_API_KEY`, en local, sirve la `API_KEY`) |
 | `SIM_MODO` | `http` | `http`: el simulador llama a `POST /paso` por HTTP; `directo`: llama al planner sin HTTP |
 | `SIM_URL` | `http://127.0.0.1:8000` | a dónde llama el simulador en modo http |
-| `SIM_AUTOSTART` | `none` | `1`, `2`, `3` o `ciclo` arranca al iniciar (espera a que el puerto acepte conexiones) |
+| `SIM_AUTOSTART` | `none` | `1`, `2`, `3`, `ciclo` o `demo` arranca al iniciar (espera a que el puerto acepte conexiones). `demo` repite el ciclo sin fin para que el mapa nunca quede quieto; en AWS va en `demo` |
 | `SIM_POBLACION` | `continua` | `fija`: sin reponer sobrevivientes |
 | `TURNO_S` / `TURNOS_RONDA` | `2.0` / `150` | duración del turno y de la ronda |
 | `PRO_PREDICCION` / `PRO_CAPACIDAD` / `PRO_FLOTA` | `1` | apagar cada extra PRO con `0` |
@@ -254,7 +254,7 @@ src/simulator/   motor de rondas, puntaje de la rúbrica, cliente HTTP, latency.
 src/persistence.py   snapshots y resultados en DynamoDB
 tools/           export_overpass.py (OSM), validar_grafo.py, ab_planner.py, resumen_resultados.py, visores_ws.py, diagrama/, pitch/
 frontend/        mapa en vivo (Leaflet)        infra/  despliegue        docs/  arquitectura, costos, grafo
-tests/           71 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
+tests/           72 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
 ```
 
 ## Equipo

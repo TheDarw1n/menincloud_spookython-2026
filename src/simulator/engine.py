@@ -37,6 +37,7 @@ MAX_MUESTRAS = 100_000
 # Manta: con 1.6/0.45 la espera en puertas costaba ~4 puntos de eficiencia; con 2.0/0.6, ~2.
 EVAC_FACTOR, CUELLO, BUFFER_TURNOS = 2.0, 0.6, 4
 CAMIONETAS = 5  # PRO flota: salen de los refugios; el servidor decide a quien recogen
+PAUSA_DEMO_S = 30  # modo demo: pausa entre ciclos para que el puntaje se vea antes de volver a R1
 
 
 def log_json(evento, **datos):
@@ -81,10 +82,12 @@ class Simulador:
             raise RuntimeError("ya hay una ronda en curso")
         if modo == "ciclo":
             self._tarea = asyncio.create_task(self._ciclo())
+        elif modo == "demo":
+            self._tarea = asyncio.create_task(self._demo())
         elif modo in ("1", "2", "3"):
             self._tarea = asyncio.create_task(self.correr(int(modo)))
         else:
-            raise ValueError("modo invalido: 1, 2, 3 o ciclo")
+            raise ValueError("modo invalido: 1, 2, 3, ciclo o demo")
 
     def reanudar(self, snap):
         if self.corriendo:
@@ -109,8 +112,18 @@ class Simulador:
             self._cliente = None
 
     async def _ciclo(self):
+        # una prueba de fuego nueva: el puntaje solo cuenta las rondas de este ciclo
+        self.ultimos, self.lat_rondas = {}, {}
+        self.mundo.publicar(puntaje=None, resultados=[])
         for r in (1, 2, 3):
             await self.correr(r)
+
+    async def _demo(self):
+        """SIM_AUTOSTART=demo: repite el ciclo sin fin para que quien abra el mapa nunca lo vea
+        quieto. Para la prueba oficial: Detener y luego 'ciclo' (una sola vez, con su puntaje)."""
+        while True:
+            await self._ciclo()
+            await asyncio.sleep(PAUSA_DEMO_S)
 
     async def correr(self, ronda):
         self._preparar(ronda)

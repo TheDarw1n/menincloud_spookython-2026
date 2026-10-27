@@ -17,7 +17,7 @@
         {"name": "AWS_REGION", "value": "us-east-1"},
         {"name": "SNAPSHOTS_TABLE", "value": "manta-snapshots"},
         {"name": "PUBLIC_STATE", "value": "true"},
-        {"name": "SIM_AUTOSTART", "value": "none"},
+        {"name": "SIM_AUTOSTART", "value": "demo"},
         {"name": "SIM_MODO", "value": "http"},
         {"name": "SIM_POBLACION", "value": "continua"},
         {"name": "TURNO_S", "value": "2.0"},

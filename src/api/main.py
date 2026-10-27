@@ -51,7 +51,7 @@ async def autoarranque(modo, intentos=300):
     SIM.iniciar(modo)
 
 
-MODOS_AUTOSTART = ("none", "1", "2", "3", "ciclo")
+MODOS_AUTOSTART = ("none", "1", "2", "3", "ciclo", "demo")
 
 
 @asynccontextmanager

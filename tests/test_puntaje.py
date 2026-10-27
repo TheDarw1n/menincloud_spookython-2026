@@ -154,6 +154,33 @@ def test_al_terminar_la_ronda_no_quedan_turnos():
         assert mundo.estado["turnosRestantes"] == 0 and mundo.estado["metricas"]["turnosRestantes"] == 0
 
 
+def test_modo_demo_repite_el_ciclo_y_cada_ciclo_empieza_con_el_puntaje_en_cero(monkeypatch):
+    monkeypatch.setattr(engine, "PAUSA_DEMO_S", 0)
+    mundo, sim = _sim(turnos_ronda=2)
+    al_empezar = []
+    correr = sim.correr
+
+    async def espia(ronda):
+        al_empezar.append((ronda, sorted(sim.ultimos), mundo.estado.get("puntaje")))
+        await correr(ronda)
+
+    monkeypatch.setattr(sim, "correr", espia)
+
+    async def jugar():
+        sim.iniciar("demo")
+        for _ in range(1000):
+            await asyncio.sleep(0.005)
+            if len(al_empezar) >= 5:
+                break
+        assert sim.corriendo  # sigue jugando hasta que el operador lo detiene
+        await sim.detener()
+
+    asyncio.run(jugar())
+    assert [r for r, _, _ in al_empezar[:5]] == [1, 2, 3, 1, 2]
+    assert al_empezar[3][1] == [] and al_empezar[3][2] is None  # el 2.o ciclo no arrastra el puntaje
+    assert al_empezar[2][1] == [1, 2] and not sim.corriendo
+
+
 def test_los_sobrevivientes_nacen_en_los_barrios_del_enunciado():
     g = Grafo.desde_archivo("data/manta_graph.json")
     mundo = Mundo(g, Planner(g))
