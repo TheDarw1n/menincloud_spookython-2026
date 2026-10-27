@@ -15,12 +15,16 @@ CLUSTER=${CLUSTER:-manta}
 SERVICE=${SERVICE:-manta-api}
 TASK_FAMILY=${TASK_FAMILY:-manta-api}
 PLATFORM=${PLATFORM:-linux/arm64}
-ACCOUNT_ID=${ACCOUNT_ID:-$(aws sts get-caller-identity --query Account --output text | tr -d '\r')}  # aws.exe en Windows termina en CRLF
-REGISTRY="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
-REPO="$REGISTRY/manta-zombie"
 QUE=${1:-all}
 
+cuenta() {  # solo backend y taskdef necesitan la cuenta: prueba funciona sin credenciales de AWS
+  ACCOUNT_ID=${ACCOUNT_ID:-$(aws sts get-caller-identity --query Account --output text | tr -d '\r')}  # aws.exe en Windows termina en CRLF
+  REGISTRY="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
+  REPO="$REGISTRY/manta-zombie"
+}
+
 backend() {
+  cuenta
   if [[ "$PLATFORM" == "linux/arm64" && "$(uname -m)" =~ ^(x86_64|amd64)$ ]]; then
     echo "AVISO: construyes ARM64 desde x86 con emulacion (QEMU): sera lento. Alternativa: PLATFORM=linux/amd64"
     echo "       y cambiar runtimePlatform de la task definition a X86_64."
@@ -48,8 +52,10 @@ frontend() {
 taskdef() {
   # infra/task-definition.json se RECONSTRUYO a partir de la configuracion descrita (no se exporto de
   # la consola): comparala antes con la revision actual (ECS > Task definitions > manta-api > JSON).
-  local tmp
-  tmp=$(mktemp)
+  cuenta
+  # archivo temporal con ruta relativa: aws.exe (Git Bash en Windows) no encuentra el /tmp de mktemp
+  local tmp="infra/.taskdef-$$.json"
+  trap 'rm -f "$tmp"' EXIT
   sed "s/<ACCOUNT_ID>/$ACCOUNT_ID/g" infra/task-definition.json > "$tmp"
   aws ecs register-task-definition --region "$REGION" --cli-input-json "file://$tmp" \
     --query 'taskDefinition.taskDefinitionArn' --output text
@@ -61,7 +67,8 @@ prueba() {
   # us-east-1 mide el servidor sin la red de Ecuador. Requiere API_KEY (la del jurado, no la de operador).
   URL=${URL:-https://d160b5kavxovby.cloudfront.net}
   curl -sf "$URL/salud" >/dev/null && echo "salud OK" || { echo "FALLA: $URL/salud"; exit 1; }
-  curl -sf "$URL/manta_graph.json" -o /dev/null && echo "grafo OK" || echo "FALLA: grafo en S3"
+  # el grafo de S3 debe ser el de Manta (307 nodos), no el de prueba del prototipo (20)
+  curl -sf "$URL/manta_graph.json" | python3 -c "import json,sys; n=len(json.load(sys.stdin)['nodos']); print('grafo OK:', n, 'nodos') if n > 100 else print('FALLA: el grafo publicado tiene', n, 'nodos: corre ./infra/deploy.sh frontend')" || echo "FALLA: grafo en S3"
   curl -sf -X POST "$URL/paso" -H "x-api-key: ${API_KEY:?exporta API_KEY}" -H "content-type: application/json"     -d '{"sobrevivienteId":"S-0001","nodoActual":"N-0001","turno":1}' && echo
   python3 -m src.simulator.latency "$URL" "$API_KEY" --niveles 20,80,200 --turnos 5 --intervalo 2
 }
