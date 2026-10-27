@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape de Manta Zombie</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  html,body{height:100%;margin:0;background:#0b0b1a;color:#eee;font-family:system-ui,sans-serif}
+  #map{position:absolute;inset:0}
+  #hud{position:absolute;z-index:1000;top:10px;left:50px;background:#0b0b1ae6;border:1px solid #6b46c1;
+       padding:8px 12px;border-radius:8px;font-size:14px;line-height:1.5}
+  #hud b{color:#f6ad55} #hud input,#hud button,#hud select{font:inherit}
+  .ic{font-size:18px;line-height:18px;text-align:center}
+  .dormido{opacity:.35}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="hud">
+  <div><b>Escape de Manta Zombie</b> · <span id="conn">conectando…</span></div>
+  <div>Ronda <b id="ronda">-</b> · Turno <b id="turno">0</b> · Salvados <b id="salv">0</b> · Mordidos <b id="mord">0</b></div>
+  <div>🧟 caminante · 🏃 corredor · 👹 horda · 💤 dormido · 🙂 sobreviviente · 🏠 refugio</div>
+  <details><summary>Control (operador)</summary>
+    <input id="key" type="password" placeholder="API key (solo en memoria)">
+    <select id="modo"><option>1</option><option>2</option><option>3</option><option>ciclo</option></select>
+    <button onclick="ctl('iniciar')">Iniciar</button> <button onclick="ctl('detener')">Detener</button>
+    <div id="msg"></div>
+  </details>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const ICONO = {caminante:'🧟', corredor:'🏃', horda:'👹', dormido:'💤'};
+const map = L.map('map', {zoomControl:true}).setView([-0.95, -80.71], 15);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(map);
+const capaGrafo = L.layerGroup().addTo(map), capaBloq = L.layerGroup().addTo(map),
+      capaRutas = L.layerGroup().addTo(map), capaZ = L.layerGroup().addTo(map), capaS = L.layerGroup().addTo(map);
+let nodos = {}, calles = {}, refugiosPintados = false;
+
+const emoji = (e, cls='') => L.divIcon({className:'', html:`<div class="ic ${cls}">${e}</div>`, iconSize:[20,20]});
+const ll = id => [nodos[id].lat, nodos[id].lng];
+
+// El grafo es un archivo estatico en S3 (no hay ruta /grafo: CloudFront Free permite solo 5 behaviors)
+fetch('manta_graph.json').then(r => r.json()).then(g => {
+  g.nodos.forEach(n => nodos[n.id] = n);
+  g.calles.forEach(c => { calles[c.id] = c;
+    L.polyline([ll(c.de), ll(c.a)], {color:'#7c6fb0', weight:2, opacity:.6}).addTo(capaGrafo); });
+  g.refugios.forEach(r => L.marker(ll(r.nodo), {icon: emoji('🏠')}).bindTooltip(r.id).addTo(map));
+  map.fitBounds(L.latLngBounds(g.nodos.map(n => [n.lat, n.lng])), {padding:[40,40]});
+}).catch(() => $('conn').textContent = 'no se pudo cargar manta_graph.json');
+
+function pintar(e) {
+  if (!e.turno && e.turno !== 0 || !Object.keys(nodos).length) return;
+  $('turno').textContent = e.turno; $('ronda').textContent = e.ronda ?? '-';
+  $('salv').textContent = e.metricas?.salvados ?? 0; $('mord').textContent = e.metricas?.mordidos ?? 0;
+  capaBloq.clearLayers(); capaZ.clearLayers(); capaS.clearLayers(); capaRutas.clearLayers();
+  (e.aristasBloqueadas||[]).forEach(id => { const c = calles[id];
+    if (c) L.polyline([ll(c.de), ll(c.a)], {color:'#e53e3e', weight:5, dashArray:'6 6'}).addTo(capaBloq); });
+  (e.zombies||[]).forEach(z => L.marker(ll(z.nodo), {icon: emoji(ICONO[z.tipo]||'🧟', z.visible ? '' : 'dormido')})
+      .bindTooltip(`${z.id} · ${z.tipo}`).addTo(capaZ));
+  (e.sobrevivientes||[]).forEach(s => {
+    if (s.ruta && s.ruta.length > 1)
+      L.polyline(s.ruta.map(ll), {color:'#4299e1', weight:2, opacity:.5}).addTo(capaRutas);
+    L.marker(ll(s.nodo), {icon: emoji('🙂')}).bindTooltip(s.id).addTo(capaS);
+  });
+}
+
+// WebSocket con respaldo: si /ws no conecta (CloudFront Free sin probar) hace polling a /estado cada 2 s
+let poll = null;
+function empezarPolling() {
+  if (poll) return;
+  $('conn').textContent = 'modo polling (2 s)';
+  poll = setInterval(() => fetch('/estado').then(r => r.json()).then(pintar).catch(() => {}), 2000);
+}
+function conectar() {
+  const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+  const t = setTimeout(() => { ws.close(); empezarPolling(); }, 4000);
+  ws.onopen = () => { clearTimeout(t); $('conn').textContent = 'en vivo (WebSocket)'; if (poll) { clearInterval(poll); poll = null; } };
+  ws.onmessage = m => { const d = JSON.parse(m.data); if (!d.ping) pintar(d); };
+  ws.onclose = () => { clearTimeout(t); empezarPolling(); setTimeout(conectar, 5000); };
+}
+conectar();
+
+async function ctl(accion) {
+  const q = accion === 'iniciar' ? '?ronda=' + $('modo').value : '';
+  const r = await fetch('/ws/sim/' + accion + q, {method:'POST', headers:{'x-api-key': $('key').value}});
+  $('msg').textContent = r.status + ' ' + JSON.stringify(await r.json());
+}
+</script>
+</body>
+</html>
