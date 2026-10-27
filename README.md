@@ -15,26 +15,27 @@ Motor de rutas en AWS que recalcula en tiempo real alrededor de zombies y calles
 
 ## Resultados
 
-**Prueba de fuego en un contenedor igual a la tarea de Fargate** (0.5 vCPU y 1 GB, Linux, el simulador llamando `POST /paso` por HTTP; 3 rondas de 30 turnos en la CI de GitHub Actions, que corre en cada push):
+**Prueba de fuego en un contenedor ARM64 con los límites de la tarea de Fargate** (Graviton en AWS; aquí el runner ARM64 de GitHub Actions con `--cpus 0.5 --memory 1g`, el simulador llamando `POST /paso` por HTTP; 3 rondas de 30 turnos con sus eventos de ciudad, en cada push a `main` y en cada PR):
 
 | | R1 Anochecer | R2 Medianoche | R3 Apocalipsis |
 |---|---|---|---|
-| Supervivencia | 1.000 | 1.000 | 0.964–0.972 |
-| Eficiencia (contra el mínimo de calles) | 0.94–0.98 | 0.83–0.85 | 0.77 |
-| p95 de `POST /paso` | 1.7–2.4 ms | 5.4–8.5 ms | 12–20 ms |
+| Supervivencia | 1.000 | 0.992 | 0.954 |
+| Eficiencia (contra el mínimo de calles) | 0.968 | 0.869 | 0.834 |
+| p95 de `POST /paso` | 1.8 ms | 6.1 ms | 14.2 ms |
 | Errores o respuestas > 500 ms | 0 % | 0 % | 0 % |
-| **Puntaje de la rúbrica** | | | **9.56–9.58 / 10** |
+| **Puntaje de la rúbrica** | | | **9.61 / 10** |
 
-Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo contenedor, un turno cada 2 s: 200 concurrentes → **p95 24–39 ms, 0 % de errores** (80 → p95 15–18 ms). El umbral de 10 puntos es 150 ms.
+Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo contenedor, un turno cada 2 s: 200 concurrentes → **p95 26 ms, 0 % de errores** (80 → p95 12 ms). El umbral de 10 puntos es 150 ms. Las cifras de cada corrida quedan como anotaciones públicas del job `carga` en [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml).
 
-**Rondas completas de 150 turnos** (5 minutos), simulador sin HTTP, grafo de Manta, 6 semillas ([`tools/ab_planner.py`](tools/ab_planner.py)):
+**Rondas completas de 150 turnos** (5 minutos), simulador sin HTTP, grafo de Manta, promedio por ronda de 6 semillas ([`tools/ab_planner.py`](tools/ab_planner.py)):
 
 | | R1 | R2 | R3 |
 |---|---|---|---|
 | Supervivencia | 0.9997 | 0.9953 | 0.9800 |
 | Eficiencia | 0.939 | 0.820 | 0.737 |
-| Rescatados en camioneta | 80 | 1 644 | 2 675 |
-| Llegadas a un refugio lleno | 0 | 19 | 58 |
+| Mordidos | 0.2 | 5.7 | 49.5 |
+| Rescatados en camioneta | 13 | 274 | 446 |
+| Llegadas a un refugio lleno | 0 | 3.2 | 9.7 |
 
 Supervivencia + eficiencia ponderadas como la rúbrica: **6.54 de 7**. Con latencia y disponibilidad en 10 (medidas arriba), la prueba de fuego estimada es **≈ 9.5 / 10**.
 
@@ -53,23 +54,25 @@ Para el sobreviviente en `u`, `/paso` elige el vecino `v` que minimiza `calle(u,
 
 - **Costo de una calle** = distancia ÷ velocidad del tipo (avenida 50 km/h, calle 30, callejón 15, puente 40) **+ 30 s por intersección**. En el juego cada calle es un turno, así que sin ese término el planner prefería tres calles cortas a una larga: medido sin zombies, la eficiencia sube de 0.86 a 0.98.
 - **Prohibido** (con los zombies que ya se movieron este turno): nodos con zombie visible, el nodo de cada horda **y todos sus vecinos**, calles cerradas, y **cruzarse** con un zombie por la misma calle en sentido opuesto (se publican los 2 pasos de cada corredor). Quedarse quieto también es una jugada válida; si su nodo es letal y no hay camino, huye a cualquier vecino seguro.
-- **Ninguna mordida evitable:** un test juega R2 y R3 en el grafo real y exige que cada mordido no tuviera ninguna jugada segura con las reglas reales ([`tests/test_puntaje.py`](tests/test_puntaje.py)).
+- **Ninguna mordida evitable:** un test juega R1, R2 y R3 completas (150 turnos, con todos los eventos de ciudad) en el grafo real y exige que cada mordido no tuviera ninguna jugada segura con las reglas reales ([`tests/test_puntaje.py`](tests/test_puntaje.py)).
 
 ### Nivel PRO
 
-Medido con [`tools/ab_planner.py`](tools/ab_planner.py) (3 rondas × 150 turnos × 6 semillas, supervivencia + eficiencia de 7):
+Medido con [`tools/ab_planner.py`](tools/ab_planner.py) (3 rondas × 150 turnos × 6 semillas, supervivencia + eficiencia de 7). Cada fila le quita una pieza a producción:
 
 | Variante | Supervivencia + eficiencia | Qué cambia |
 |---|---|---|
 | **Producción (todo activo)** | **6.539** | |
 | Sin predicción | 6.502 | R2 pierde 2.3 puntos de eficiencia |
 | Sin flota | 6.478 | R3: eficiencia 0.737 → 0.699 |
-| Sin capacidad (refugios sin límite) | 6.531 | el mundo es más fácil: no hay cupos |
+| Sin los 3 PRO | 6.473 | además el mundo queda sin cupos |
 | Sin costo por intersección | 6.339 | R1: eficiencia 0.939 → 0.797 |
 | Sin PRO ni costo por intersección (penalización ingenua por vecino) | 6.282 | R3: supervivencia 0.969, eficiencia 0.627 |
+| Sin capacidad (refugios sin límite) | 6.531 | el mundo es más fácil: no hay cupos |
+| Sin reparto por cupo (los cupos siguen; todos van al refugio más barato) | 6.554 | R3: 26 mordidas por ronda en vez de 50, pero 67 llegadas a un refugio lleno en vez de 10 |
 
 - **Predicción de corredores** ([`src/routing/riesgo.py`](src/routing/riesgo.py)). El planner replica la persecución de cada corredor (2 calles por turno hacia el sobreviviente más cercano a ≤ 3), sabe que un caminante que acaba de moverse no se mueve el turno siguiente y que una horda puede correr su zona. Con eso penaliza solo las **trampas**: nodos donde un zombie puede caer el próximo turno y desde los que no quedaría salida. Alejarse de cualquier zombie (lo que hacíamos al principio) alargaba las rutas y terminaba mordiendo más.
-- **Capacidad de refugios** ([`src/routing/capacidad.py`](src/routing/capacidad.py)). Cada refugio tiene cupo y evacúa E personas por turno hacia la zona segura. Cada turno el planner reparte en orden de llegada al refugio más barato que tenga cupo proyectado para la hora de llegada. Frente a mandar a todos al más cercano, los rechazos bajan ~97 % (R3: 2 087 → 55 en la medición con cupos estrechos).
+- **Capacidad de refugios** ([`src/routing/capacidad.py`](src/routing/capacidad.py)). Cada refugio tiene cupo y evacúa E personas por turno hacia la zona segura. Cada turno el planner reparte en orden de llegada al refugio más barato que tenga cupo proyectado para la hora de llegada. Frente a mandar a todos al más barato (y que esperen en la puerta), las llegadas a un refugio lleno bajan 84 % (R2+R3: 80 → 13 por ronda). **Tiene un costo:** desviar a alguien a un refugio más lejano lo expone más, y en R3 las mordidas suben de 28 a 45 por ronda (12 semillas, peor en 11 de ellas). Lo dejamos activo porque en el juego la puerta de un refugio fortificado es segura, pero en una evacuación real un refugio lleno no lo es. Cobrar la espera en la puerta o limitar el desvío a 60–240 s no mejoró el total (`asig=0` en `ab_planner.py` mide esta comparación).
 - **Flota de rescate** ([`src/routing/flota.py`](src/routing/flota.py)). 5 camionetas, 2 calles por turno, 4 plazas. Cada turno el servidor asigna a cada una el sobreviviente de mayor valor `(turnos ahorrados + 2 × riesgo) / (1 + turnos en llegar)` si le ahorra ≥ 2 turnos, con pasajeros solo se desvía 1 turno y si no, entrega en el refugio con cupo más cercano. Esperar quieto 3 turnos a la camioneta o desviarse 2 con gente a bordo empeoraba la eficiencia, por eso esos límites.
 
 ### Reglas del simulador y supuestos declarados
@@ -206,7 +209,7 @@ La infraestructura se creó **a mano en la consola** (sin IaC); la configuració
 - **El simulador mide cada `POST /paso`** desde que envía la petición hasta que llega la respuesta (incluye los timeouts de 500 ms) y reporta p50/p95/p99, errores y el puntaje de la rúbrica en `/ws/sim/resultados` y en el mapa.
 - **Carga externa:** `python -m src.simulator.latency URL API_KEY --niveles 20,80,200 --turnos 10 --intervalo 2` abre N conexiones (N sobrevivientes a la vez), manda N consultas por turno con nodos distintos e imprime p50/p95/p99, % de errores y el puntaje. Solo usa la librería estándar.
 - **Para separar red de servidor:** correrlo desde **CloudShell en us-east-1** (`./infra/deploy.sh prueba`). Desde Ecuador se suman ~100 ms de red.
-- **En cada push**, la CI levanta el contenedor con `--cpus 0.5 --memory 1g`, juega las 3 rondas por HTTP y corre `latency.py`; los resultados quedan como anotaciones en la pestaña [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions).
+- **En cada push a `main` y en cada PR**, la CI levanta el contenedor ARM64 con `--cpus 0.5 --memory 1g`, juega las 3 rondas por HTTP y corre `latency.py`; los resultados quedan como anotaciones en la pestaña [Actions](https://github.com/TheDarw1n/menincloud_spookython-2026/actions).
 - **CloudWatch:** el contenedor escribe una línea JSON por cada 10 turnos (`"evento": "turno"`), por evento de ciudad y por ronda (`"evento": "resultado_ronda"` y `"puntaje"`). Para graficarlas, crear filtros de métricas sobre `/ecs/manta-zombie`, por ejemplo `{ $.evento = "resultado_ronda" }` con valor `$.latencia_ms.p95`.
 
 ## Costos
