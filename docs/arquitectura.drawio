@@ -385,7 +385,7 @@
         <mxCell id="flujo6" value="6" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
           <mxGeometry x="814" y="908" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="flujo6_t" value="Logs JSON del contenedor → CloudWatch Logs; filtros de métricas (p95, errores, mordidos y salvados) y alarmas." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+        <mxCell id="flujo6_t" value="Logs JSON del contenedor → CloudWatch Logs; filtros de métricas y alarmas opcionales (p95, errores, mordidos)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
           <mxGeometry x="840" y="908" width="740" height="20" as="geometry" />
         </mxCell>
         <mxCell id="flujo7" value="7" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
@@ -394,7 +394,7 @@
         <mxCell id="flujo7_t" value="Despliegue: docker buildx ARM64 → ECR → ecs update-service; frontend: s3 sync + invalidación de CloudFront." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
           <mxGeometry x="840" y="928" width="740" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="nota" value="Notas: el ALB es internet-facing, pero su SG solo admite el prefix list de CloudFront (header x-origin-verify listo, sin activar) · WebSocket por CloudFront Free sin probar: el mapa cae a polling de /estado · /estado y /ws son públicos por PUBLIC_STATE=true." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;fontColor=#545B64;" parent="1" vertex="1">
+        <mxCell id="nota" value="Notas: el ALB es internet-facing, pero su SG solo admite el prefix list de CloudFront (header x-origin-verify listo, sin activar) · WebSocket por CloudFront Free probado (si falla, polling de /estado) · /estado y /ws son públicos por PUBLIC_STATE=true." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;fontColor=#545B64;" parent="1" vertex="1">
           <mxGeometry x="34" y="970" width="1530" height="20" as="geometry" />
         </mxCell>
       </root>

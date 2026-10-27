@@ -54,11 +54,11 @@
 <text x="840" y="902.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Snapshot cada 10 turnos y resultado de cada ronda → DynamoDB (manta-task-role).</text>
 <circle cx="824" cy="918" r="10" fill="#232F3E" stroke="#FFFFFF" stroke-width="1.5" data-num="flujo6" data-x="814" data-y="908"/>
 <text x="824" y="922.2" font-size="12" fill="#FFFFFF" font-weight="bold" text-anchor="middle" data-dueno="num:flujo6" data-rol="numero">6</text>
-<text x="840" y="922.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Logs JSON del contenedor → CloudWatch Logs; filtros de métricas (p95, errores, mordidos y salvados) y alarmas.</text>
+<text x="840" y="922.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Logs JSON del contenedor → CloudWatch Logs; filtros de métricas y alarmas opcionales (p95, errores, mordidos).</text>
 <circle cx="824" cy="938" r="10" fill="#232F3E" stroke="#FFFFFF" stroke-width="1.5" data-num="flujo7" data-x="814" data-y="928"/>
 <text x="824" y="942.2" font-size="12" fill="#FFFFFF" font-weight="bold" text-anchor="middle" data-dueno="num:flujo7" data-rol="numero">7</text>
 <text x="840" y="942.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Despliegue: docker buildx ARM64 → ECR → ecs update-service; frontend: s3 sync + invalidación de CloudFront.</text>
-<text x="34" y="980" font-size="12" fill="#545B64" data-dueno="flujos" data-rol="leyenda">Notas: el ALB es internet-facing, pero su SG solo admite el prefix list de CloudFront (header x-origin-verify listo, sin activar) · WebSocket por CloudFront Free sin probar: el mapa cae a polling de /estado · /estado y /ws son públicos por PUBLIC_STATE=true.</text>
+<text x="34" y="980" font-size="12" fill="#545B64" data-dueno="flujos" data-rol="leyenda">Notas: el ALB es internet-facing, pero su SG solo admite el prefix list de CloudFront (header x-origin-verify listo, sin activar) · WebSocket por CloudFront Free probado (si falla, polling de /estado) · /estado y /ws son públicos por PUBLIC_STATE=true.</text>
 <rect x="254" y="84" width="1324" height="782" rx="10" fill="none" stroke="#232F3E" stroke-width="1.6" data-rect="aws" data-tipo="grupo"/>
 <path d="M254 108V94Q254 84 264 84H544.736V108Z" fill="#232F3E" data-rect="aws_tab" data-tipo="tab" data-x="254" data-y="84" data-w="290.736" data-h="24"/>
 <text x="265" y="100.68" font-size="13" fill="#FFFFFF" font-weight="bold" data-dueno="aws_tab" data-rol="grupo">AWS us-east-1 · una sola cuenta del equipo</text>

@@ -194,11 +194,11 @@ FLUJOS = [
     (3, "POST /paso con x-api-key → CloudFront → ALB → ruta ASGI directa → consulta las tablas del planner (< 500 ms)."),
     (4, "Turno de 2 s: el simulador aplica eventos y mueve zombies → publica el Mundo → el planner recalcula 1 vez → /paso."),
     (5, "Snapshot cada 10 turnos y resultado de cada ronda → DynamoDB (manta-task-role)."),
-    (6, "Logs JSON del contenedor → CloudWatch Logs; filtros de métricas (p95, errores, mordidos y salvados) y alarmas."),
+    (6, "Logs JSON del contenedor → CloudWatch Logs; filtros de métricas y alarmas opcionales (p95, errores, mordidos)."),
     (7, "Despliegue: docker buildx ARM64 → ECR → ecs update-service; frontend: s3 sync + invalidación de CloudFront."),
 ]
 NOTA = ("Notas: el ALB es internet-facing, pero su SG solo admite el prefix list de CloudFront (header x-origin-verify "
-        "listo, sin activar) · WebSocket por CloudFront Free sin probar: el mapa cae a polling de /estado · "
+        "listo, sin activar) · WebSocket por CloudFront Free probado (si falla, polling de /estado) · "
         "/estado y /ws son públicos por PUBLIC_STATE=true.")
 CAJA_FLUJOS = dict(x=20, y=878, w=1558, h=114)
 
