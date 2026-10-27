@@ -4,13 +4,13 @@ consulta POST /paso (500 ms o se queda quieto), (5) mordidas, (6) llegadas a ref
 (7) se reponen sobrevivientes y se publican el turno y las metricas de la rubrica."""
 import asyncio
 import json
+from collections import deque
 import os
 import random
 import time
 
 import httpx
 
-from ..routing.dijkstra import INF, dijkstra_inverso
 from ..world import bites, events, zombies as zm
 from . import puntaje
 
@@ -124,15 +124,19 @@ class Simulador:
         return s
 
     def _calcular_optimo(self):
-        """Calles de la ruta mas corta SIN zombies (con las calles cerradas de ese momento) hasta
-        el refugio mas cercano: la base de la eficiencia de la rubrica."""
+        """Base de la eficiencia de la rubrica, en su lectura mas estricta: el MINIMO de calles
+        (= turnos) hasta el refugio mas cercano, sin zombies y con las calles cerradas de ese
+        momento (BFS desde los 4 refugios). El planner minimiza tiempo real, asi que sin zombies
+        su eficiencia contra esta base queda apenas bajo 1."""
         g, bloq = self.grafo, frozenset(self.s["bloqueadas"])
-        mejor, self.optimo = {}, {}
-        for nodo in g.refugios.values():
-            dist, saltos = dijkstra_inverso(g, nodo, bloq, g.nodos_refugio - {nodo})
-            for n, d in dist.items():
-                if d < mejor.get(n, INF):
-                    mejor[n], self.optimo[n] = d, saltos[n]
+        self.optimo = dict.fromkeys(g.nodos_refugio, 0)
+        cola = deque(g.nodos_refugio)
+        while cola:
+            u = cola.popleft()
+            for v, c, _ in g.vecinos[u]:
+                if c not in bloq and v not in self.optimo:
+                    self.optimo[v] = self.optimo[u] + 1
+                    cola.append(v)
 
     def _nuevos(self, k):
         """k sobrevivientes nuevos lejos de zombies (nadie nace pegado a uno ni en una zona de horda)."""

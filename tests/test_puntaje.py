@@ -63,3 +63,13 @@ def test_ciclo_completo_da_puntaje_con_las_tres_rondas():
     nota = mundo.estado["puntaje"]
     assert nota["completo"] and 0 <= nota["total"] <= 10 and nota["latencia"] == 10
     assert [r["ronda"] for r in mundo.estado["resultados"]] == [1, 2, 3]
+
+
+def test_eficiencia_se_mide_contra_el_minimo_de_calles():
+    mundo, sim = _sim(turnos_ronda=1)
+    sim._preparar(1)
+    # N-0001 -> N-0006 -> N-0011 -> N-0016 (R-2): 3 calles; con E-0002 cerrada sale por N-0002: 5
+    assert sim.optimo["N-0001"] == 3 and sim.optimo["N-0016"] == 0
+    sim.s["bloqueadas"].append("E-0002")
+    sim._calcular_optimo()
+    assert sim.optimo["N-0001"] == 5
