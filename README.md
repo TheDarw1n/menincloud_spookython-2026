@@ -186,8 +186,12 @@ Si el servidor no corre en el puerto 8000, exporta `SIM_URL=http://127.0.0.1:PUE
 La infraestructura se creó **a mano en la consola** (sin IaC); la configuración de la tarea está en [`infra/task-definition.json`](infra/task-definition.json).
 
 1. **Key de operador** (una vez): en SSM Parameter Store crear `/manta/admin-key` (SecureString, distinta de `/manta/api-key`) y agregar su ARN a la política de `manta-execution-role` (`ssm:GetParameters`). Con la clave administrada `aws/ssm` no hace falta `kms:Decrypt`.
-2. **Task definition:** registrar una revisión nueva con el JSON de `infra/task-definition.json` (reemplazar `<ACCOUNT_ID>`; trae `ADMIN_API_KEY` y la configuración de los PRO).
-3. **Backend y frontend:** `./infra/deploy.sh` (imagen ARM64 a ECR + `ecs update-service` + espera a estable; `frontend/` y `data/manta_graph.json` a S3 + invalidación de CloudFront). También `./infra/deploy.sh backend | frontend`.
+2. **Task definition:** `infra/task-definition.json` se **reconstruyó** a partir de la configuración descrita (no se exportó de la consola). Antes de registrarla, compararla con la revisión actual (ECS > Task definitions > manta-api > JSON). Después, `./infra/deploy.sh taskdef` registra una revisión nueva: reemplaza `<ACCOUNT_ID>` y trae `ADMIN_API_KEY` y la configuración de los PRO.
+3. **Backend y frontend:** `./infra/deploy.sh` hace dos cosas:
+   - backend: imagen ARM64 a ECR, `ecs update-service` con la **última revisión** de `manta-api` y espera a que el servicio quede estable;
+   - frontend: `frontend/` y `data/manta_graph.json` a S3 e invalidación de CloudFront.
+
+   También se puede correr por partes: `./infra/deploy.sh backend | frontend`.
 4. **Verificar:** desde CloudShell en us-east-1, con el repo clonado: `API_KEY=... ./infra/deploy.sh prueba` (salud, grafo, un `/paso` y `latency.py`).
 
 - `deploy.sh` usa `minimumHealthyPercent=0 / maximumPercent=100`: **nunca hay 2 tareas con estados distintos**, a costa de ~1 min de corte por despliegue.

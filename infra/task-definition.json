@@ -1,5 +1,4 @@
 {
-  "_AVISO": "RECONSTRUIDA a partir de la configuracion descrita, NO exportada. Reemplazar por el JSON real de la consola (ECS > Task definitions > manta-api > JSON) quitando taskDefinitionArn, revision, status, registeredAt, registeredBy, requiresAttributes y compatibilities. Sin valores secretos: API_KEY es solo una referencia a SSM. Reemplazar <ACCOUNT_ID>.",
   "family": "manta-api",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
