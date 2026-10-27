@@ -4,6 +4,9 @@
 # Variables opcionales: PLATFORM=linux/amd64 (si cambias la task definition a X86_64), BUCKET, DIST_ID,
 # TASK_FAMILY
 set -euo pipefail
+# En Git Bash (Windows) los argumentos que empiezan con "/" ("/*" de la invalidacion, "/manta/...")
+# se convierten en rutas de Windows y rompen los comandos; en Linux y CloudShell no tiene efecto.
+export MSYS_NO_PATHCONV=1
 
 REGION=us-east-1
 BUCKET=${BUCKET:-frontend-manta}
@@ -12,7 +15,7 @@ CLUSTER=${CLUSTER:-manta}
 SERVICE=${SERVICE:-manta-api}
 TASK_FAMILY=${TASK_FAMILY:-manta-api}
 PLATFORM=${PLATFORM:-linux/arm64}
-ACCOUNT_ID=${ACCOUNT_ID:-$(aws sts get-caller-identity --query Account --output text)}
+ACCOUNT_ID=${ACCOUNT_ID:-$(aws sts get-caller-identity --query Account --output text | tr -d '\r')}  # aws.exe en Windows termina en CRLF
 REGISTRY="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 REPO="$REGISTRY/manta-zombie"
 QUE=${1:-all}
