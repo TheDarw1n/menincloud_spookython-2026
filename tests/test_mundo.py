@@ -190,3 +190,12 @@ def test_los_dormidos_no_se_publican_hasta_despertar():
     m.publicar_zombies(1, [z("D", "dormido", "N-0009", visible=False), z("C", "caminante", "N-0001")], [])
     assert [x["id"] for x in m.estado["zombies"]] == ["C"]
     assert "N-0009" not in m.planner._snap.prohibidos
+
+
+def test_la_ruta_del_mapa_empieza_con_el_mismo_paso_que_paso():
+    # caminante que acaba de ir de N-0011 a N-0012, donde esta el sobreviviente: volver a N-0011
+    # es la ruta mas barata pero seria cruzarse con el; /paso y la ruta dibujada deben coincidir
+    m = Mundo(G, Planner(G))
+    m.publicar_zombies(1, [z("Z", "caminante", "N-0012", previo="N-0011", pasos=[("N-0011", "N-0012")])], [])
+    paso = m.planner.siguiente_nodo("N-0012", "S")
+    assert paso != "N-0011" and m.planner.ruta("N-0012", "S")[:2] == ["N-0012", paso]

@@ -137,11 +137,16 @@ class Planner:
         return self.camino_camioneta(origen, destino)[1:1 + flota.VELOCIDAD]
 
     def ruta(self, nodo, sid=None, max_nodos=25):
-        """Ruta planificada (para el mapa): baja por la tabla hasta el refugio."""
+        """Ruta planificada (para el mapa): el primer paso es exactamente el que responde /paso
+        (respeta cruces y esperas); desde ahi baja por la tabla hasta el refugio."""
         snap, g = self._snap, self.grafo
         tablas = self._tablas(snap, sid)
         ruta, actual = [nodo], nodo
-        for _ in range(max_nodos):
+        primero = self._siguiente(snap, nodo, sid)
+        if primero != nodo:
+            ruta.append(primero)
+            actual = primero
+        for _ in range(max_nodos - 1):
             if actual in g.nodos_refugio or actual not in g.nodos:
                 break
             sig, costo = None, INF
