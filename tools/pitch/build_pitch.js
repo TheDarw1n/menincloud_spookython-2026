@@ -1,6 +1,6 @@
 // Genera docs/pitch.pptx (pitch de 5 minutos, Track A Spookython 2026), con notas del orador.
 // Uso: npm install pptxgenjs@3.12.0 && PPTX_SKILL=<carpeta con scripts/apply_theme.js> node tools/pitch/build_pitch.js .
-// Las cifras salen de la CI (prueba de carga en 0.5 vCPU) y de tools/ab_planner.py; actualizarlas si cambian.
+// Las cifras salen de la CI (prueba de carga en ARM64 con 0.5 vCPU) y de tools/ab_planner.py; actualizarlas si cambian.
 const fs = require("fs");
 const path = require("path");
 const pptxgen = require("pptxgenjs");
@@ -131,11 +131,12 @@ pasos.forEach(([e, t, d, col], i) => {
 const mapa = existe("docs/mapa_en_vivo.png") ? "docs/mapa_en_vivo.png" : "docs/grafo_manta.png";
 s.addShape(pres.shapes.ROUNDED_RECTANGLE, { objectName: "marco_mapa_vivo", x: 7.9, y: 1.5, w: 4.8, h: 5.11, rectRadius: 0.12,
   fill: { color: C.text2 }, line: { color: C.accent1, width: 2 } });
-const altoMapa = existe("docs/mapa_en_vivo.png") ? 2.875 : 3.27;
+const png = fs.readFileSync(img(mapa));  // ancho y alto del PNG (cabecera IHDR) para no deformarlo
+const altoMapa = 4.6 * png.readUInt32BE(20) / png.readUInt32BE(16);
 s.addImage({ objectName: "mapa_vivo", path: img(mapa), x: 8.0, y: 1.6, w: 4.6, h: altoMapa,
-  altText: "Mapa en vivo con zombies, sobrevivientes, rutas y refugios" });
-texto(s, "mapa_pie", "Mapa en vivo: zombies por tipo, rutas planificadas, camionetas, cupos de refugios y puntaje en vivo. WebSocket con respaldo de polling.",
-  { x: 8.15, y: 1.6 + altoMapa + 0.2, w: 4.3, h: 1.5, fontSize: 15, color: C.background2, valign: "top" });
+  altText: "Mapa en vivo durante la ronda 3: zombies por tipo, zonas de horda, rutas, camionetas y refugios con su ocupación" });
+texto(s, "mapa_pie", "Captura real del mapa en vivo (ronda 3): zombies, hordas, rutas, camionetas y cupos de refugios.",
+  { x: 8.15, y: 1.6 + altoMapa + 0.15, w: 4.3, h: 6.5 - (1.6 + altoMapa + 0.15), fontSize: 14, color: C.background2, valign: "top" });
 s.addNotes("Cada turno: primero se mueven los zombies; el planner recalcula UNA sola vez, no por petición: un Dijkstra inverso por refugio. Después los 200 sobrevivientes preguntan POST /paso y cada respuesta es solo una consulta a esas tablas. Al final el simulador valida, cuenta mordidas y llegadas, y el mapa se actualiza en vivo.");
 
 // ---------- 4. como decide ----------
@@ -165,20 +166,20 @@ s.addNotes("Reglas duras: nunca pisa un zombie, ni la horda ni sus vecinos, ni u
 pres.addSection({ title: "Resultados" });
 s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Resultados" });
 s.addText("Resultados medidos, no prometidos", { placeholder: "title" });
-cifra(s, "puntaje", "9.56", "de 10 en la rúbrica: 3 rondas en un contenedor de 0.5 vCPU (CI)", 0.6, 1.5, 2.85, C.accent1);
-cifra(s, "p95", "20 ms", "p95 de POST /paso en la ronda 3, 200 a la vez (umbral 150 ms)", 3.6, 1.5, 2.85, C.accent3);
+cifra(s, "puntaje", "9.61", "de 10 en la rúbrica: 3 rondas en un contenedor ARM64 de 0.5 vCPU (CI)", 0.6, 1.5, 2.85, C.accent1);
+cifra(s, "p95", "14 ms", "p95 de POST /paso en la ronda 3, 200 a la vez (umbral 150 ms)", 3.6, 1.5, 2.85, C.accent3);
 cifra(s, "errores", "0 %", "errores o respuestas de más de 500 ms", 0.6, 3.5, 2.85, C.accent3);
-cifra(s, "supervivencia", "98 %", "supervivencia en la ronda 3: 200 a la vez, todos los zombies", 3.6, 3.5, 2.85, C.accent5);
+cifra(s, "supervivencia", "98 %", "supervivencia en la ronda 3 de 150 turnos: 200 a la vez, todos los zombies", 3.6, 3.5, 2.85, C.accent5);
 texto(s, "resultados_pie", "Rondas de 150 turnos, grafo de Manta, 6 semillas: supervivencia+eficiencia 6.54 de 7 (tools/ab_planner.py).",
   { x: 0.6, y: 5.6, w: 5.85, h: 0.8, fontSize: 14, color: C.background2, valign: "top" });
 s.addChart(pres.charts.BAR, [{
   name: "Supervivencia + eficiencia (de 7)",
-  labels: ["Base (sin PRO)", "Sin costo por intersección", "Sin flota", "Sin predicción", "Producción"],
-  values: [6.282, 6.339, 6.478, 6.502, 6.539],
+  labels: ["Sin PRO ni costo por cruce", "Sin costo por cruce", "Sin los 3 PRO", "Sin flota", "Sin predicción", "Producción"],
+  values: [6.282, 6.339, 6.473, 6.478, 6.502, 6.539],
 }], {
   objectName: "grafico_ab", x: 6.75, y: 1.45, w: 5.95, h: 5.0, barDir: "bar",
-  chartColors: ["8B5CF6", "8B5CF6", "8B5CF6", "8B5CF6", "F6AD55"],
-  showTitle: true, title: "A/B del planner: supervivencia + eficiencia (de 7)", titleFontSize: 14, titleColor: "FFFFFF",
+  chartColors: ["8B5CF6", "8B5CF6", "8B5CF6", "8B5CF6", "8B5CF6", "F6AD55"],
+  showTitle: true, title: "A/B: producción menos una pieza (de 7)", titleFontSize: 14, titleColor: "FFFFFF",
   titleFontFace: "+mn-lt",
   showValue: true, dataLabelPosition: "outEnd", dataLabelColor: "FFFFFF", dataLabelFontSize: 12, dataLabelFontFace: "+mn-lt",
   dataLabelFormatCode: "0.00",
@@ -188,7 +189,7 @@ s.addChart(pres.charts.BAR, [{
   showLegend: false, plotArea: { fill: { color: "1E1A3A" } }, chartArea: { fill: { color: "1E1A3A" }, roundedCorners: false },
   barGapWidthPct: 60,
 });
-s.addNotes("Todo esto está medido. En la CI de GitHub levantamos el contenedor con la misma CPU que Fargate, 0.5 vCPU, y jugamos las 3 rondas por HTTP: 9.56 de 10, p95 de 20 ms con 200 a la vez y cero errores. A la derecha, el A/B: cada pieza del diseño suma, y la versión final es la mejor.");
+s.addNotes("Todo esto está medido. En la CI de GitHub levantamos el contenedor en ARM64, como Graviton en Fargate, con 0.5 vCPU, y jugamos las 3 rondas por HTTP: 9.61 de 10, p95 de 14 ms con 200 a la vez y cero errores. A la derecha, el A/B: a la versión final le quitamos una pieza a la vez y siempre empeora; lo que más pesa es el costo por cruce, y los tres PRO juntos suman 0.07.");
 
 // ---------- 6. PRO ----------
 s = pres.addSlide({ masterName: "CONTENIDO", sectionTitle: "Resultados" });
@@ -197,7 +198,7 @@ const pro = [
   ["🏃", "Predicción de corredores", "Replica su persecución (2 calles por turno hacia el más cercano a ≤ 3) y evita las trampas.",
     "R2: −19 % mordidas, eficiencia 0.80 → 0.82", C.accent4],
   ["🏥", "Capacidad de refugios", "Cada refugio tiene cupo y evacúa por turno; el planner reparte según el cupo a la hora de llegada.",
-    "−82 % llegadas a refugios llenos (R2+R3)", C.accent3],
+    "−84 % llegadas a refugios llenos (R2+R3)", C.accent3],
   ["🚐", "Flota de rescate", "5 camionetas, 2 calles por turno, 4 plazas: el servidor decide a quién recoger y en qué orden.",
     "R3: ≈ 450 rescates por ronda, eficiencia 0.70 → 0.74", C.accent1],
 ];
@@ -209,7 +210,7 @@ pro.forEach(([e, t, d, dato, col], i) => {
   texto(s, `pro_${i}_texto`, d, { x: x + 0.35, y: 3.7, w: 3.2, h: 1.6, fontSize: 15, color: C.background2, valign: "top" });
   texto(s, `pro_${i}_dato`, dato, { x: x + 0.35, y: 5.05, w: 3.2, h: 0.85, fontSize: 16, bold: true, color: col, valign: "top" });
 });
-s.addNotes("Hicimos los tres extras y medimos cada uno en el mapa real. Predicción: replicamos la persecución del corredor y evitamos solo las trampas, no cualquier cercanía, porque alejarse de todo alarga las rutas y termina mordiendo más. Capacidad: repartimos según el cupo que tendrá cada refugio cuando llegues. Flota: cinco camionetas que el servidor despacha cada turno.");
+s.addNotes("Hicimos los tres extras y medimos cada uno en el mapa real. Predicción: replicamos la persecución del corredor y evitamos solo las trampas, no cualquier cercanía, porque alejarse de todo alarga las rutas y termina mordiendo más. Capacidad: repartimos según el cupo que tendrá cada refugio cuando llegues. Tiene un costo que medimos: desviar a alguien a un refugio más lejano lo expone más y en la ronda 3 suben las mordidas; lo dejamos activo porque en una evacuación real un refugio lleno no es seguro. Flota: cinco camionetas que el servidor despacha cada turno.");
 
 // ---------- 7. arquitectura ----------
 pres.addSection({ title: "AWS" });
