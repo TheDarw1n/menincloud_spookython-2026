@@ -477,5 +477,5 @@ class Simulador:
     async def _consulta_http(self, sid, nodo, turno):
         if self._cliente is None:
             self._cliente = ClientePaso(os.environ.get("SIM_URL", "http://127.0.0.1:8000"),
-                                        os.environ.get("API_KEY", ""))
+                                        os.environ.get("API_KEY", ""), origen=os.environ.get("ORIGIN_SECRET", ""))
         return await self._cliente.paso(sid, nodo, turno)
