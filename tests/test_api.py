@@ -127,6 +127,26 @@ def test_websocket_cierra_si_el_cliente_envia_datos():
     assert cierre.value.code == 1008
 
 
+def test_arranque_avisa_de_configuracion_invalida(monkeypatch, capsys):
+    import asyncio
+
+    import src.api.main as api
+
+    iniciados = []
+    monkeypatch.setattr(api, "autoarranque", lambda modo: iniciados.append(modo) or asyncio.sleep(0))
+    monkeypatch.setenv("SIM_AUTOSTART", "4")
+    monkeypatch.delenv("ADMIN_API_KEY", raising=False)
+
+    async def arrancar():
+        async with api.lifespan(app):
+            pass
+
+    asyncio.run(arrancar())
+    salida = capsys.readouterr().out
+    assert iniciados == [] and '"config_invalida"' in salida and '"SIM_AUTOSTART"' in salida
+    assert "ADMIN_API_KEY no definida" in salida
+
+
 def test_autoarranque_espera_a_que_el_puerto_acepte_conexiones(monkeypatch):
     import asyncio
 

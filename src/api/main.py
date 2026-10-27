@@ -9,7 +9,7 @@ from fastapi import Depends, FastAPI, HTTPException, Response, WebSocket, WebSoc
 
 from ..persistence import Snapshots
 from ..routing.planner import Planner
-from ..simulator.engine import Simulador
+from ..simulator.engine import Simulador, log_json
 from ..world.graph import Grafo
 from ..world.mundo import Mundo
 from .auth import key_valida, lectura_estado, verificar_admin_key
@@ -50,9 +50,18 @@ async def autoarranque(modo, intentos=300):
     SIM.iniciar(modo)
 
 
+MODOS_AUTOSTART = ("none", "1", "2", "3", "ciclo")
+
+
 @asynccontextmanager
 async def lifespan(app):
     modo = os.environ.get("SIM_AUTOSTART", "none")
+    if modo not in MODOS_AUTOSTART:  # antes el ValueError se perdia dentro de la tarea, sin rastro
+        log_json("config_invalida", variable="SIM_AUTOSTART", valor=modo, validos=list(MODOS_AUTOSTART))
+        modo = "none"  # /paso sigue sirviendo; la ronda se inicia desde el panel del operador
+    if os.environ.get("API_KEY") and not os.environ.get("ADMIN_API_KEY"):
+        log_json("aviso", texto="ADMIN_API_KEY no definida: /ws/sim/* acepta la API_KEY de /paso "
+                                "(solo para desarrollo local)")
     tarea = asyncio.create_task(autoarranque(modo)) if modo != "none" else None
     yield
     if tarea:
