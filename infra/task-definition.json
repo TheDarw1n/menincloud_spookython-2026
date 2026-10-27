@@ -23,7 +23,8 @@
         {"name": "TURNO_S", "value": "2.0"}
       ],
       "secrets": [
-        {"name": "API_KEY", "valueFrom": "arn:aws:ssm:us-east-1:<ACCOUNT_ID>:parameter/manta/api-key"}
+        {"name": "API_KEY", "valueFrom": "arn:aws:ssm:us-east-1:<ACCOUNT_ID>:parameter/manta/api-key"},
+        {"name": "ADMIN_API_KEY", "valueFrom": "arn:aws:ssm:us-east-1:<ACCOUNT_ID>:parameter/manta/admin-key"}
       ],
       "logConfiguration": {
         "logDriver": "awslogs",

@@ -73,3 +73,13 @@ def test_estado_se_serializa_una_vez_por_publicacion():
     assert c.get("/estado").json()["metricas"] == {"salvados": 7}
     MUNDO.publicar(metricas={"salvados": 8})
     assert MUNDO.json_estado() is not primero and '"salvados":8' in MUNDO.json_estado()
+
+
+def test_control_del_simulador_exige_la_key_de_operador(monkeypatch):
+    monkeypatch.setenv("ADMIN_API_KEY", "operador")
+    assert c.get("/ws/sim/resultados", headers=H).status_code == 401          # la key de /paso no sirve
+    assert c.post("/ws/sim/detener", headers=H).status_code == 401
+    assert c.get("/ws/sim/resultados", headers={"x-api-key": "operador"}).status_code == 200
+    assert c.post("/paso", headers={"x-api-key": "operador"}, json=P).status_code == 401  # y viceversa
+    monkeypatch.delenv("ADMIN_API_KEY")
+    assert c.get("/ws/sim/resultados", headers=H).status_code == 200          # local: la misma API_KEY

@@ -12,7 +12,7 @@ from ..routing.planner import Planner
 from ..simulator.engine import Simulador
 from ..world.graph import Grafo
 from ..world.mundo import Mundo
-from .auth import key_valida, lectura_estado, verificar_api_key
+from .auth import key_valida, lectura_estado, verificar_admin_key, verificar_api_key
 
 GRAFO = Grafo.desde_archivo(os.environ.get("GRAPH_PATH", "data/manta_graph.json"))
 PRO_CAPACIDAD = os.environ.get("PRO_CAPACIDAD", "1") != "0"
@@ -159,8 +159,8 @@ async def ws(websocket: WebSocket):
 
 
 # Control del simulador. Van bajo /ws/ porque el plan Free de CloudFront permite solo 5
-# behaviors y /ws* ya enruta al ALB. Todos exigen API key.
-@app.post("/ws/sim/iniciar", dependencies=[Depends(verificar_api_key)])
+# behaviors y /ws* ya enruta al ALB. Exigen la key de operador (ADMIN_API_KEY), no la de /paso.
+@app.post("/ws/sim/iniciar", dependencies=[Depends(verificar_admin_key)])
 async def sim_iniciar(ronda: str = "ciclo"):
     try:
         SIM.iniciar(ronda)
@@ -171,13 +171,13 @@ async def sim_iniciar(ronda: str = "ciclo"):
     return {"iniciado": ronda}
 
 
-@app.post("/ws/sim/detener", dependencies=[Depends(verificar_api_key)])
+@app.post("/ws/sim/detener", dependencies=[Depends(verificar_admin_key)])
 async def sim_detener():
     await SIM.detener()
     return {"detenido": True}
 
 
-@app.post("/ws/sim/reanudar", dependencies=[Depends(verificar_api_key)])
+@app.post("/ws/sim/reanudar", dependencies=[Depends(verificar_admin_key)])
 async def sim_reanudar():
     snap = await asyncio.to_thread(SNAPSHOTS.ultimo)
     if not snap:
@@ -189,7 +189,7 @@ async def sim_reanudar():
     return {"reanudado": True, "ronda": snap["ronda"], "turno": snap["turno"]}
 
 
-@app.get("/ws/sim/resultados", dependencies=[Depends(verificar_api_key)])
+@app.get("/ws/sim/resultados", dependencies=[Depends(verificar_admin_key)])
 def sim_resultados():
     return {"corriendo": SIM.corriendo, "resultados": SIM.resultados, "puntaje": SIM.puntaje()}
 
