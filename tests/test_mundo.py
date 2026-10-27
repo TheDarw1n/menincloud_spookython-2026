@@ -1,4 +1,5 @@
 import asyncio
+import os
 import random
 
 from src.routing.planner import Planner
@@ -7,7 +8,7 @@ from src.world import bites, zombies as zm
 from src.world.graph import Grafo
 from src.world.mundo import Mundo
 
-G = Grafo.desde_archivo("data/manta_graph.json")
+G = Grafo.desde_archivo(os.environ["GRAPH_PATH"])  # grafo de prueba (tests/conftest.py)
 
 
 def z(id, tipo, nodo, previo=None, pasos=(), visible=True):

@@ -1,0 +1,334 @@
+{
+ "_nota": "Grafo fijo para los tests: cuadricula de 4 filas x 5 columnas (N-0001..N-0020), calles de 120 m y 2 refugios. No es Manta.",
+ "nodos": [
+  {
+   "id": "N-0001",
+   "lat": -0.95,
+   "lng": -80.71
+  },
+  {
+   "id": "N-0002",
+   "lat": -0.95,
+   "lng": -80.708
+  },
+  {
+   "id": "N-0003",
+   "lat": -0.95,
+   "lng": -80.706
+  },
+  {
+   "id": "N-0004",
+   "lat": -0.95,
+   "lng": -80.704
+  },
+  {
+   "id": "N-0005",
+   "lat": -0.95,
+   "lng": -80.702
+  },
+  {
+   "id": "N-0006",
+   "lat": -0.948,
+   "lng": -80.71
+  },
+  {
+   "id": "N-0007",
+   "lat": -0.948,
+   "lng": -80.708
+  },
+  {
+   "id": "N-0008",
+   "lat": -0.948,
+   "lng": -80.706
+  },
+  {
+   "id": "N-0009",
+   "lat": -0.948,
+   "lng": -80.704
+  },
+  {
+   "id": "N-0010",
+   "lat": -0.948,
+   "lng": -80.702
+  },
+  {
+   "id": "N-0011",
+   "lat": -0.946,
+   "lng": -80.71
+  },
+  {
+   "id": "N-0012",
+   "lat": -0.946,
+   "lng": -80.708
+  },
+  {
+   "id": "N-0013",
+   "lat": -0.946,
+   "lng": -80.706
+  },
+  {
+   "id": "N-0014",
+   "lat": -0.946,
+   "lng": -80.704
+  },
+  {
+   "id": "N-0015",
+   "lat": -0.946,
+   "lng": -80.702
+  },
+  {
+   "id": "N-0016",
+   "lat": -0.944,
+   "lng": -80.71
+  },
+  {
+   "id": "N-0017",
+   "lat": -0.944,
+   "lng": -80.708
+  },
+  {
+   "id": "N-0018",
+   "lat": -0.944,
+   "lng": -80.706
+  },
+  {
+   "id": "N-0019",
+   "lat": -0.944,
+   "lng": -80.704
+  },
+  {
+   "id": "N-0020",
+   "lat": -0.944,
+   "lng": -80.702
+  }
+ ],
+ "calles": [
+  {
+   "id": "E-0001",
+   "de": "N-0001",
+   "a": "N-0002",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0002",
+   "de": "N-0001",
+   "a": "N-0006",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0003",
+   "de": "N-0002",
+   "a": "N-0003",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0004",
+   "de": "N-0002",
+   "a": "N-0007",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0005",
+   "de": "N-0003",
+   "a": "N-0004",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0006",
+   "de": "N-0003",
+   "a": "N-0008",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0007",
+   "de": "N-0004",
+   "a": "N-0005",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0008",
+   "de": "N-0004",
+   "a": "N-0009",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0009",
+   "de": "N-0005",
+   "a": "N-0010",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0010",
+   "de": "N-0006",
+   "a": "N-0007",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0011",
+   "de": "N-0006",
+   "a": "N-0011",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0012",
+   "de": "N-0007",
+   "a": "N-0008",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0013",
+   "de": "N-0007",
+   "a": "N-0012",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0014",
+   "de": "N-0008",
+   "a": "N-0009",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0015",
+   "de": "N-0008",
+   "a": "N-0013",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0016",
+   "de": "N-0009",
+   "a": "N-0010",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0017",
+   "de": "N-0009",
+   "a": "N-0014",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0018",
+   "de": "N-0010",
+   "a": "N-0015",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0019",
+   "de": "N-0011",
+   "a": "N-0012",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0020",
+   "de": "N-0011",
+   "a": "N-0016",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0021",
+   "de": "N-0012",
+   "a": "N-0013",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0022",
+   "de": "N-0012",
+   "a": "N-0017",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0023",
+   "de": "N-0013",
+   "a": "N-0014",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0024",
+   "de": "N-0013",
+   "a": "N-0018",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0025",
+   "de": "N-0014",
+   "a": "N-0015",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0026",
+   "de": "N-0014",
+   "a": "N-0019",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0027",
+   "de": "N-0015",
+   "a": "N-0020",
+   "distancia_m": 120,
+   "tipo": "puente"
+  },
+  {
+   "id": "E-0028",
+   "de": "N-0016",
+   "a": "N-0017",
+   "distancia_m": 120,
+   "tipo": "avenida"
+  },
+  {
+   "id": "E-0029",
+   "de": "N-0017",
+   "a": "N-0018",
+   "distancia_m": 120,
+   "tipo": "calle"
+  },
+  {
+   "id": "E-0030",
+   "de": "N-0018",
+   "a": "N-0019",
+   "distancia_m": 120,
+   "tipo": "callejon"
+  },
+  {
+   "id": "E-0031",
+   "de": "N-0019",
+   "a": "N-0020",
+   "distancia_m": 120,
+   "tipo": "puente"
+  }
+ ],
+ "refugios": [
+  {
+   "id": "R-1",
+   "nodo": "N-0020"
+  },
+  {
+   "id": "R-2",
+   "nodo": "N-0016"
+  }
+ ]
+}
