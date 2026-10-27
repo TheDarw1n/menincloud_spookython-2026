@@ -434,10 +434,15 @@ class Simulador:
         s, st = self.s, self.s["stats"]
         lat = sorted(self.lat)
         pct = lambda p: round(puntaje.percentil(lat, p), 2) if lat else None
+        en_juego = len(s["sobrevivientes"]) + self._a_bordo()
         res = {"ronda": s["ronda"], "nombre": RONDAS[s["ronda"]]["nombre"], "turnos": s["turno"],
                "salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
                "rescatados_en_camioneta": st["en_camioneta"],
                "supervivencia": self._supervivencia(),
+               # mas estricta: quienes siguen en la calle o en camioneta al terminar cuentan como no salvados
+               "supervivencia_cohorte": round(st["salvados"] / (st["salvados"] + st["mordidos"] + en_juego), 3)
+               if st["salvados"] + st["mordidos"] + en_juego else None,
+               "en_juego_al_final": en_juego,
                "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                "turnos_promedio_por_rescate": round(st["turnos_salvado"] / st["salvados"], 2) if st["salvados"] else None,
                "consultas": self.consultas, "errores_o_timeout": self.errores,
@@ -451,7 +456,8 @@ class Simulador:
         resumen = [{"ronda": r["ronda"], "nombre": r["nombre"], "turnos": r["turnos"],
                     "salvados": r["salvados"], "mordidos": r["mordidos"], "rechazados": r["rechazados"],
                     "rescatadosEnCamioneta": r["rescatados_en_camioneta"],
-                    "supervivencia": r["supervivencia"], "eficiencia": r["eficiencia"],
+                    "supervivencia": r["supervivencia"], "supervivenciaCohorte": r["supervivencia_cohorte"],
+                    "eficiencia": r["eficiencia"],
                     "latenciaP95": r["latencia_ms"]["p95"], "pctErrores": r["pct_errores"]}
                    for r in (self.ultimos[k] for k in sorted(self.ultimos))]
         self.mundo.publicar(corriendo=False, resultados=resumen, puntaje=nota, metricas=self._metricas())

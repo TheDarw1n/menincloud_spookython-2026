@@ -55,6 +55,7 @@ def test_poblacion_fija_no_repone_y_termina_cuando_no_queda_nadie():
     r = sim.resultados[-1]
     assert r["turnos"] < 150 and not mundo.estado["sobrevivientes"]
     assert r["salvados"] + r["mordidos"] == 20 and r["supervivencia"] == round(r["salvados"] / 20, 3)
+    assert r["en_juego_al_final"] == 0 and r["supervivencia_cohorte"] == r["supervivencia"]
 
 
 def test_ciclo_completo_da_puntaje_con_las_tres_rondas():
@@ -63,6 +64,8 @@ def test_ciclo_completo_da_puntaje_con_las_tres_rondas():
     nota = mundo.estado["puntaje"]
     assert nota["completo"] and 0 <= nota["total"] <= 10 and nota["latencia"] == 10
     assert [r["ronda"] for r in mundo.estado["resultados"]] == [1, 2, 3]
+    r3 = sim.resultados[-1]  # continua: N siguen en juego al final y la cohorte los cuenta como no salvados
+    assert r3["en_juego_al_final"] == 200 and r3["supervivencia_cohorte"] < r3["supervivencia"]
 
 
 def test_eficiencia_se_mide_contra_el_minimo_de_calles():
