@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Uso: ./infra/deploy.sh [backend|frontend|all]   (por defecto: all)
+# Uso: ./infra/deploy.sh [backend|frontend|prueba|all]   (por defecto: all)
 # Requiere credenciales de CLI de TU usuario IAM (ver README > Despliegue). Nunca las subas al repo.
 # Variables opcionales: PLATFORM=linux/amd64 (si cambias la task definition a X86_64), BUCKET, DIST_ID
 set -euo pipefail
@@ -38,9 +38,20 @@ frontend() {
   echo "Frontend publicado en S3 + invalidacion de CloudFront enviada"
 }
 
+prueba() {
+  # Humo + latencia contra la URL publica (CloudFront -> ALB -> tarea). Desde CloudShell en
+  # us-east-1 mide el servidor sin la red de Ecuador. Requiere API_KEY (la del jurado, no la de operador).
+  URL=${URL:-https://d160b5kavxovby.cloudfront.net}
+  curl -sf "$URL/salud" >/dev/null && echo "salud OK" || { echo "FALLA: $URL/salud"; exit 1; }
+  curl -sf "$URL/manta_graph.json" -o /dev/null && echo "grafo OK" || echo "FALLA: grafo en S3"
+  curl -sf -X POST "$URL/paso" -H "x-api-key: ${API_KEY:?exporta API_KEY}" -H "content-type: application/json"     -d '{"sobrevivienteId":"S-0001","nodoActual":"N-0001","turno":1}' && echo
+  python3 -m src.simulator.latency "$URL" "$API_KEY" --niveles 20,80,200 --turnos 5 --intervalo 2
+}
+
 case "$QUE" in
   backend)  backend ;;
   frontend) frontend ;;
+  prueba)   prueba ;;
   all)      backend; frontend ;;
-  *) echo "Uso: $0 [backend|frontend|all]"; exit 1 ;;
+  *) echo "Uso: $0 [backend|frontend|prueba|all]"; exit 1 ;;
 esac

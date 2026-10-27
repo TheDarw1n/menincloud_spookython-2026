@@ -20,7 +20,13 @@
         {"name": "PUBLIC_STATE", "value": "true"},
         {"name": "SIM_AUTOSTART", "value": "none"},
         {"name": "SIM_MODO", "value": "http"},
-        {"name": "TURNO_S", "value": "2.0"}
+        {"name": "SIM_POBLACION", "value": "continua"},
+        {"name": "TURNO_S", "value": "2.0"},
+        {"name": "PRO_PREDICCION", "value": "1"},
+        {"name": "PRO_CAPACIDAD", "value": "1"},
+        {"name": "PRO_FLOTA", "value": "1"},
+        {"name": "REFUGIOS_FORTIFICADOS", "value": "1"},
+        {"name": "MAX_WS", "value": "100"}
       ],
       "secrets": [
         {"name": "API_KEY", "valueFrom": "arn:aws:ssm:us-east-1:<ACCOUNT_ID>:parameter/manta/api-key"},
