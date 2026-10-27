@@ -170,9 +170,10 @@ class Simulador:
         momento (BFS desde los 4 refugios). El planner minimiza tiempo real, asi que sin zombies
         su eficiencia contra esta base queda apenas bajo 1."""
         g, bloq = self.grafo, frozenset(self.s["bloqueadas"])
-        self.optimo = dict.fromkeys(g.nodos_refugio, 0)
+        origenes = sorted(g.nodos_refugio)  # orden fijo: los desempates no dependen de PYTHONHASHSEED
+        self.optimo = dict.fromkeys(origenes, 0)
         self.cercano = dict(g.refugio_de_nodo)  # nodo -> refugio con menos calles
-        cola = deque(g.nodos_refugio)
+        cola = deque(origenes)
         while cola:
             u = cola.popleft()
             for v, c, _ in g.vecinos[u]:
