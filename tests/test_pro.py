@@ -132,6 +132,7 @@ def test_flota_en_una_ronda_rescata_sin_pasar_por_zombies_ni_perder_gente():
     asyncio.run(jugar())
     cam = mundo.estado["camionetas"]
     assert len(cam) == 5 and all({"id", "nodo", "pasajeros", "capacidad", "estado", "ruta"} <= set(c) for c in cam)
+    assert all(c["pasajeros"] or c["estado"] != "entregando" for c in cam)  # nadie "entrega" vacia
     assert sim.s["stats"]["en_camioneta"] > 0
 
 

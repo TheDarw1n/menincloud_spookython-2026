@@ -350,6 +350,9 @@ class Simulador:
                 for sv in aqui[:c["capacidad"] - len(c["pasajeros"])]:
                     c["pasajeros"].append(sv)
                     subieron.add(sv["id"])
+            if c["nodo"] == c["destino"]:  # objetivo cumplido: el proximo turno el servidor decide otro
+                c["destino"] = None
+                c["estado"] = "entregando" if c["pasajeros"] else "libre"
         return [sv for sv in quedan if sv["id"] not in subieron]
 
     def _admitir(self, rid):
