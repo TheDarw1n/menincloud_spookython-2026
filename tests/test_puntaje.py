@@ -109,3 +109,40 @@ def test_los_sobrevivientes_nacen_en_los_barrios_del_enunciado():
     sim._preparar(3)
     barrios = {g.nodos[sv["nodo"]]["barrio"] for sv in sim.s["sobrevivientes"]}
     assert barrios <= {"tarqui", "los-esteros", "barbasquillo", "jocay"} and len(barrios) == 4
+
+
+def test_ninguna_mordida_era_evitable_en_rondas_completas(monkeypatch):
+    """Para cada mordido se revisa, con las reglas reales del simulador, si habia una jugada
+    segura (quedarse o ir a un vecino por calle abierta sin zombie, sin zona de horda y sin
+    cruzarse). Si la habia, el planner fallo."""
+    from src.simulator import engine as eng
+    from src.world import bites as mordidas
+
+    g = Grafo.desde_archivo("data/manta_graph.json")
+    evitables, total = [], [0]
+    original = mordidas.mordidos
+
+    for ronda in (2, 3):
+        mundo = Mundo(g, Planner(g))
+
+        async def directa(sid, nodo, turno, mundo=mundo):
+            return mundo.planner.siguiente_nodo(nodo, sid)
+
+        sim = Simulador(mundo, consulta=directa, turno_s=0, turnos_ronda=60, seed=ronda, **CALLADO)
+
+        def espia(mov, zombies, zonas=frozenset(), sim=sim):
+            muertos = original(mov, zombies, zonas)
+            letal = {z["nodo"] for z in zombies} | set(zonas)
+            pasos = {(a, b) for z in zombies for a, b in z.get("pasos", [])}
+            bloq = set(sim.s["bloqueadas"])
+            for sid in muertos:
+                prev, _ = mov[sid]
+                opciones = [prev] + [v for v, c, _ in g.vecinos[prev] if c not in bloq]
+                if any(v not in letal and not (v != prev and (v, prev) in pasos) for v in opciones):
+                    evitables.append((ronda, sid, prev))
+            total[0] += len(muertos)
+            return muertos
+
+        monkeypatch.setattr(eng.bites, "mordidos", espia)
+        asyncio.run(sim.correr(ronda))
+    assert total[0] > 0 and evitables == []
