@@ -73,3 +73,30 @@ def test_eficiencia_se_mide_contra_el_minimo_de_calles():
     sim.s["bloqueadas"].append("E-0002")
     sim._calcular_optimo()
     assert sim.optimo["N-0001"] == 5
+
+
+def test_dynamodb_lento_no_frena_el_turno():
+    import time
+
+    class Lento:
+        habilitado = True
+        llamadas = 0
+
+        def guardar(self, turno, texto):
+            Lento.llamadas += 1
+            time.sleep(0.4)
+
+        def guardar_resultado(self, ronda, texto):
+            pass
+
+    _, sim = _sim(turnos_ronda=12, snapshots=Lento(), snapshot_cada=2)
+
+    async def jugar():
+        sim._preparar(1)
+        t0 = time.perf_counter()
+        for _ in range(6):
+            await sim.turno()
+        return time.perf_counter() - t0
+
+    assert asyncio.run(jugar()) < 0.4   # 6 turnos (3 snapshots) sin esperar a DynamoDB
+    assert Lento.llamadas >= 1          # se intento guardar; los que encontraron uno en curso se omiten

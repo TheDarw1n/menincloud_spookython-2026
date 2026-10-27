@@ -61,6 +61,7 @@ class Simulador:
         self._nodos_spawn = list(self.grafo.nodos)
         self._tarea = None
         self._cliente = None
+        self._guardando = None  # guardado en DynamoDB en curso (en segundo plano)
 
     # ---------- control ----------
     @property
@@ -305,10 +306,7 @@ class Simulador:
         if t % 10 == 0:
             self.log("turno", ronda=s["ronda"], turno=t, **metricas)
         if self.snapshots and self.snapshots.habilitado and t % self.snapshot_cada == 0:
-            try:
-                await asyncio.to_thread(self.snapshots.guardar, t, self.exportar())
-            except Exception as e:  # un fallo de DynamoDB no debe romper el juego
-                print("snapshot fallo:", e)
+            self._guardar_en_fondo(self.snapshots.guardar, t, json.dumps(self.exportar()))
 
     def _a_bordo(self):
         return sum(len(c["pasajeros"]) for c in self.s["camionetas"])
@@ -362,6 +360,21 @@ class Simulador:
         if r["ocupacion"] >= r["capacidad"]:
             return False
         r["ocupacion"] += 1
+        return True
+
+    def _guardar_en_fondo(self, fn, *args, forzar=False):
+        """Guarda en DynamoDB sin frenar el turno (el estado ya va serializado: el hilo no toca
+        datos vivos). Si el guardado anterior sigue en curso se omite este, salvo `forzar`."""
+        if not forzar and self._guardando is not None and not self._guardando.done():
+            return False
+
+        async def guardar():
+            try:
+                await asyncio.wait_for(asyncio.to_thread(fn, *args), 3.0)
+            except Exception as e:  # un DynamoDB lento o caido no debe romper ni frenar el juego
+                print("guardado en DynamoDB fallo:", repr(e), flush=True)
+
+        self._guardando = asyncio.create_task(guardar())
         return True
 
     def _salvar(self, sv, t):
@@ -442,10 +455,7 @@ class Simulador:
         if nota:
             self.log("puntaje", **nota)
         if self.snapshots and self.snapshots.habilitado:
-            try:
-                await asyncio.to_thread(self.snapshots.guardar_resultado, s["ronda"], res)
-            except Exception as e:
-                print("resultado no guardado:", e)
+            self._guardar_en_fondo(self.snapshots.guardar_resultado, s["ronda"], json.dumps(res), forzar=True)
 
     def puntaje(self):
         return puntaje.calcular(self.ultimos, self.lat_rondas)
