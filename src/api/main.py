@@ -27,8 +27,9 @@ async def _consulta_directa(sid, nodo, turno):
     return PLANNER.siguiente_nodo(nodo, sid)
 
 
-SIM = Simulador(MUNDO, consulta=_consulta_directa if os.environ.get("SIM_MODO", "http") == "directo" else None, turno_s=float(os.environ.get("TURNO_S", "2.0")),
-                turnos_ronda=int(os.environ.get("TURNOS_RONDA", "150")), snapshots=SNAPSHOTS)
+SIM = Simulador(MUNDO, consulta=_consulta_directa if os.environ.get("SIM_MODO", "http") == "directo" else None,
+                turno_s=float(os.environ.get("TURNO_S", "2.0")), turnos_ronda=int(os.environ.get("TURNOS_RONDA", "150")),
+                snapshots=SNAPSHOTS, reponer=os.environ.get("SIM_POBLACION", "continua") != "fija")
 
 
 @asynccontextmanager
@@ -186,4 +187,4 @@ async def sim_reanudar():
 
 @app.get("/ws/sim/resultados", dependencies=[Depends(verificar_api_key)])
 def sim_resultados():
-    return {"corriendo": SIM.corriendo, "resultados": SIM.resultados}
+    return {"corriendo": SIM.corriendo, "resultados": SIM.resultados, "puntaje": SIM.puntaje()}

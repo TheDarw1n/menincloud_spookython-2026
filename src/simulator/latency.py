@@ -9,15 +9,9 @@ import time
 
 import httpx
 
+from .puntaje import nota_disponibilidad as puntaje_disponibilidad, nota_latencia as puntaje_latencia
+
 LIMITE_MS = 500
-
-
-def puntaje_latencia(p95):
-    return 10 if p95 <= 150 else 7 if p95 <= 300 else 4 if p95 <= 500 else 0
-
-
-def puntaje_disponibilidad(pct):
-    return 10 if pct < 0.5 else 6 if pct < 2 else 3 if pct < 5 else 0
 
 
 async def un_turno(cli, nodos, n, turno):

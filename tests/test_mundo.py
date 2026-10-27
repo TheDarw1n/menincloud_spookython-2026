@@ -54,12 +54,14 @@ def test_rondas_completas_sin_romper():
         async def consulta(sid, nodo, turno, mundo=mundo):
             return mundo.planner.siguiente_nodo(nodo, sid)
 
-        sim = Simulador(mundo, consulta=consulta, turno_s=0, turnos_ronda=45, seed=ronda)
+        sim = Simulador(mundo, consulta=consulta, turno_s=0, turnos_ronda=45, seed=ronda, log=lambda *a, **k: None)
         asyncio.run(sim.correr(ronda))
         r = sim.resultados[-1]
         assert r["turnos"] == 45 and r["errores_o_timeout"] == 0
         assert len(mundo.estado["sobrevivientes"]) == {1: 20, 2: 80, 3: 200}[ronda]
         assert r["salvados"] + r["mordidos"] > 0
+        assert 0 < r["eficiencia"] <= 1 and mundo.estado["corriendo"] is False
+        assert mundo.estado["resultados"][-1]["ronda"] == ronda and mundo.estado["puntaje"]["rondas"] == [ronda]
 
 
 def test_penalizacion_prefiere_ruta_con_margen():
