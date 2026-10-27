@@ -5,14 +5,13 @@ import secrets
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Response, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel
 
 from ..persistence import Snapshots
 from ..routing.planner import Planner
 from ..simulator.engine import Simulador
 from ..world.graph import Grafo
 from ..world.mundo import Mundo
-from .auth import key_valida, lectura_estado, verificar_admin_key, verificar_api_key
+from .auth import key_valida, lectura_estado, verificar_admin_key
 
 GRAFO = Grafo.desde_archivo(os.environ.get("GRAPH_PATH", "data/manta_graph.json"))
 PRO_CAPACIDAD = os.environ.get("PRO_CAPACIDAD", "1") != "0"
@@ -70,9 +69,37 @@ class OrigenSecreto:
         await self.app(scope, receive, send)
 
 
+MAX_CUERPO = 4096  # bytes: una consulta valida pesa ~80
+
+
+def _entero(x):
+    """turno: entero (acepta 142, 142.0 o "142"); rechaza bool, infinitos y decimales."""
+    if isinstance(x, bool):
+        raise ValueError
+    if isinstance(x, int):
+        return x
+    if isinstance(x, float) and x.is_integer():
+        return int(x)
+    if isinstance(x, str) and x.strip().lstrip("-").isdigit():
+        return int(x)
+    raise ValueError
+
+
+def leer_paso(cuerpo):
+    """(nodo, sobreviviente) de un cuerpo de POST /paso; ValueError si no cumple el contrato."""
+    d = json.loads(cuerpo)
+    nodo, sid = d["nodoActual"], d["sobrevivienteId"]
+    _entero(d["turno"])
+    if isinstance(sid, int) and not isinstance(sid, bool):
+        sid = str(sid)
+    if not (isinstance(nodo, str) and isinstance(sid, str) and len(nodo) <= 64 and len(sid) <= 64):
+        raise ValueError
+    return nodo, sid
+
+
 class PasoRapido:
     """Ruta caliente: POST /paso atendido directo en ASGI (sin pydantic ni DI de FastAPI) para
-    bajar la CPU por peticion. Mismo contrato y misma autenticacion que la ruta de FastAPI."""
+    bajar la CPU por peticion. No recalcula nada: lee las tablas del planner del turno."""
 
     def __init__(self, app):
         self.app = app
@@ -94,14 +121,13 @@ class PasoRapido:
         while True:
             msg = await receive()
             cuerpo += msg.get("body", b"")
+            if len(cuerpo) > MAX_CUERPO:
+                return await self._responder(send, 413, {"detail": "cuerpo demasiado grande"})
             if not msg.get("more_body"):
                 break
         try:
-            d = json.loads(cuerpo)
-            nodo, sid, _ = d["nodoActual"], str(d["sobrevivienteId"]), int(d["turno"])
-            if not isinstance(nodo, str):
-                raise ValueError
-        except (ValueError, KeyError, TypeError):
+            nodo, sid = leer_paso(cuerpo)
+        except Exception:  # JSON invalido, campos faltantes o de otro tipo, turno infinito...
             return await self._responder(send, 422, {"detail": "cuerpo invalido"})
         MUNDO.asegurar_planner()
         await self._responder(send, 200, {"siguienteNodo": PLANNER.siguiente_nodo(nodo, sid)})
@@ -110,11 +136,6 @@ class PasoRapido:
 app.add_middleware(PasoRapido)
 app.add_middleware(OrigenSecreto)  # el ultimo agregado es el mas externo: valida origen primero
 
-
-class PasoIn(BaseModel):
-    sobrevivienteId: str
-    nodoActual: str
-    turno: int
 
 
 @app.get("/salud")
@@ -125,14 +146,6 @@ def salud():
 @app.get("/estado", dependencies=[Depends(lectura_estado)])
 async def estado():
     return Response(content=MUNDO.json_estado(), media_type="application/json")
-
-
-@app.post("/paso", dependencies=[Depends(verificar_api_key)])
-async def paso(p: PasoIn):
-    # async: el calculo es trivial (lookup en tablas precalculadas), asi se evita el
-    # cambio de hilo del threadpool. No recalcula por peticion: usa el planner del turno.
-    MUNDO.asegurar_planner()
-    return {"siguienteNodo": PLANNER.siguiente_nodo(p.nodoActual, p.sobrevivienteId)}
 
 
 @app.websocket("/ws")

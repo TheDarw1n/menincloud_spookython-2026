@@ -83,3 +83,13 @@ def test_control_del_simulador_exige_la_key_de_operador(monkeypatch):
     assert c.post("/paso", headers={"x-api-key": "operador"}, json=P).status_code == 401  # y viceversa
     monkeypatch.delenv("ADMIN_API_KEY")
     assert c.get("/ws/sim/resultados", headers=H).status_code == 200          # local: la misma API_KEY
+
+
+def test_paso_valida_tipos_y_tamano():
+    malos = [{**P, "turno": 1e400}, {**P, "turno": True}, {**P, "turno": 1.5}, {**P, "sobrevivienteId": {"x": [1]}},
+             {**P, "nodoActual": 7}, {**P, "nodoActual": "N" * 100}]
+    for cuerpo in malos:
+        assert c.post("/paso", headers=H, json=cuerpo).status_code == 422, cuerpo
+    assert c.post("/paso", headers=H, content=b'{"turno": Infinity, "nodoActual": "N-0001", "sobrevivienteId": "S"}').status_code == 422
+    assert c.post("/paso", headers=H, content=b"x" * 5000).status_code == 413
+    assert c.post("/paso", headers=H, json={**P, "turno": "142", "sobrevivienteId": 89}).status_code == 200
