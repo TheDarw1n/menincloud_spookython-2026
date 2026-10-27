@@ -24,10 +24,11 @@ jobs:
         run: python tools/validar_grafo.py data/manta_graph.json
 
   carga:
-    # Emula la tarea de Fargate: 1 contenedor con 0.5 vCPU y 1 GB, el simulador interno llamando
-    # POST /paso por HTTP (SIM_MODO=http, 200 a la vez en la ronda 3) y luego carga externa.
+    # Emula la tarea de Fargate: 1 contenedor ARM64 (la tarea corre en Graviton) con 0.5 vCPU y 1 GB,
+    # el simulador interno llamando POST /paso por HTTP (SIM_MODO=http, 200 a la vez en la ronda 3)
+    # y luego carga externa. El runner ARM de GitHub es gratis en repositorios publicos.
     needs: tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
@@ -51,16 +52,16 @@ jobs:
             [ "$corriendo" = "False" ] && break
           done
           curl -sf localhost:8000/ws/sim/resultados -H "x-api-key: ci" > resultados.json
-          echo "## Prueba de fuego en contenedor de 0.5 vCPU (30 turnos por ronda)" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Prueba de fuego en contenedor ARM64 de 0.5 vCPU (30 turnos por ronda)" >> "$GITHUB_STEP_SUMMARY"
           python tools/resumen_resultados.py < resultados.json | tee -a "$GITHUB_STEP_SUMMARY"
-          python tools/resumen_resultados.py --linea < resultados.json | while read -r l; do echo "::notice title=Prueba de fuego en 0.5 vCPU::$l"; done
+          python tools/resumen_resultados.py --linea < resultados.json | while read -r l; do echo "::notice title=Prueba de fuego en ARM64 0.5 vCPU::$l"; done
       - name: Carga externa con latency.py (20, 80 y 200 a la vez, un turno cada 2 s)
         run: |
           echo '## Carga externa (latency.py)' >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           python -m src.simulator.latency http://127.0.0.1:8000 ci --niveles 20,80,200 --turnos 10 --intervalo 2 | tee latencia.txt | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          while read -r l; do echo "::notice title=latency.py contra 0.5 vCPU::$l"; done < latencia.txt
+          while read -r l; do echo "::notice title=latency.py contra ARM64 0.5 vCPU::$l"; done < latencia.txt
       - name: Logs del contenedor
         if: always()
         run: docker logs manta 2>&1 | tail -40
