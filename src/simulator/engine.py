@@ -9,11 +9,10 @@ import os
 import random
 import time
 
-import httpx
-
 from ..routing.flota import PLAZAS
 from ..world import bites, events, zombies as zm
 from . import puntaje
+from .cliente import ClientePaso
 
 # Fracciones de zombies respecto al numero de nodos; eventos = (turno, tipo de calle)
 RONDAS = {
@@ -92,7 +91,7 @@ class Simulador:
             await asyncio.gather(self._tarea, return_exceptions=True)
             self.mundo.publicar(corriendo=False)
         if self._cliente:
-            await self._cliente.aclose()
+            await self._cliente.cerrar()
             self._cliente = None
 
     async def _ciclo(self):
@@ -450,10 +449,6 @@ class Simulador:
 
     async def _consulta_http(self, sid, nodo, turno):
         if self._cliente is None:
-            self._cliente = httpx.AsyncClient(
-                base_url=os.environ.get("SIM_URL", "http://127.0.0.1:8000"),
-                headers={"x-api-key": os.environ.get("API_KEY", "")},
-                timeout=LIMITE_S, limits=httpx.Limits(max_connections=250))
-        r = await self._cliente.post("/paso", json={"sobrevivienteId": sid, "nodoActual": nodo, "turno": turno})
-        r.raise_for_status()
-        return r.json()["siguienteNodo"]
+            self._cliente = ClientePaso(os.environ.get("SIM_URL", "http://127.0.0.1:8000"),
+                                        os.environ.get("API_KEY", ""))
+        return await self._cliente.paso(sid, nodo, turno)
