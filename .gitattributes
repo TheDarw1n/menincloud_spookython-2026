@@ -1,0 +1,7 @@
+# Saltos de linea: en Windows (core.autocrlf=true) Git convierte a CRLF y bash falla con "$'\r': command not found".
+* text=auto
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.png binary
+*.pptx binary
+*.pdf binary
