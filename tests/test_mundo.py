@@ -67,3 +67,36 @@ def test_penalizacion_prefiere_ruta_con_margen():
     m.publicar_zombies(1, [z("Z", "caminante", "N-0008")], [])
     assert m.penalizados([z("Z", "caminante", "N-0008")], frozenset())["N-0007"] == 30.0
     assert m.planner.siguiente_nodo("N-0006") == "N-0011"
+
+
+def test_horda_muerde_en_su_nodo_y_en_todos_sus_vecinos():
+    hordas = [z("H", "horda", "N-0007")]
+    zonas = zm.zonas_horda(G, hordas)
+    assert zonas == {"N-0007", "N-0002", "N-0006", "N-0008", "N-0012"}
+    assert bites.mordidos({"A": ("N-0003", "N-0008")}, hordas, zonas) == {"A"}   # vecino de la horda
+    assert bites.mordidos({"A": ("N-0003", "N-0004")}, hordas, zonas) == set()
+
+
+def test_cruce_con_cualquiera_de_los_dos_pasos_del_corredor():
+    zs = [z("Z", "corredor", "N-0003", previo="N-0001", pasos=[("N-0001", "N-0002"), ("N-0002", "N-0003")])]
+    assert bites.mordidos({"A": ("N-0002", "N-0001")}, zs) == {"A"}   # cruza el primer paso
+    assert bites.mordidos({"A": ("N-0003", "N-0002")}, zs) == {"A"}   # cruza el segundo paso
+    assert bites.mordidos({"A": ("N-0007", "N-0007")}, zs) == set()   # quieto lejos: a salvo
+
+
+def test_zombies_nunca_entran_a_un_refugio():
+    rng = random.Random(7)
+    zs = [z(f"Z{i}", "caminante", n) for i, n in enumerate(("N-0015", "N-0019", "N-0011", "N-0017"))]
+    zs += [z("C", "corredor", "N-0018")]
+    for t in range(1, 200):
+        zm.mover_todos(G, zs, frozenset(), {"N-0014"}, t, rng, G.nodos_refugio)
+        assert not {x["nodo"] for x in zs} & G.nodos_refugio
+
+
+def test_evento_no_aisla_barrios_de_los_refugios():
+    from src.world import events
+    # N-0020 (refugio) solo tiene 2 calles: E-0027 y E-0031; cerrar ambas lo aislaria aunque sea la mas usada
+    bloqueadas = ["E-0027"]
+    ev = [(1, "puente")]
+    ocurridos = events.aplicar(G, ev, 1, bloqueadas, random.Random(1), uso={"E-0031": 99})
+    assert ocurridos and ocurridos[0]["arista"] != "E-0031" and "E-0031" not in bloqueadas

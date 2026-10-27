@@ -88,7 +88,7 @@ class Simulador:
 
     def _nuevo(self):
         s = self.s
-        ocupados = {z["nodo"] for z in s["zombies"]} | self.refugio_nodos
+        ocupados = {z["nodo"] for z in s["zombies"]} | self.refugio_nodos | zm.zonas_horda(self.grafo, s["zombies"])
         libres = [n for n in self.grafo.nodos if n not in ocupados] or list(self.grafo.nodos)
         s["seq"] += 1
         return {"id": f"S-{s['seq']:04d}", "nodo": self.rng.choice(libres), "turno_inicio": s["turno"]}
@@ -124,7 +124,7 @@ class Simulador:
         events.aplicar(self.grafo, s["eventos"], t, s["bloqueadas"], self.rng)
         bloq = frozenset(s["bloqueadas"])
         zm_mover = {sv["nodo"] for sv in s["sobrevivientes"]}
-        zm.mover_todos(self.grafo, s["zombies"], bloq, zm_mover, t, self.rng)
+        zm.mover_todos(self.grafo, s["zombies"], bloq, zm_mover, t, self.rng, self.grafo.nodos_refugio)
         self.mundo.publicar_zombies(t, s["zombies"], s["bloqueadas"])
 
         vivos = s["sobrevivientes"]
@@ -132,7 +132,7 @@ class Simulador:
         mov = {}
         for sv, nuevo in zip(vivos, resp):
             mov[sv["id"]] = (sv["nodo"], nuevo if self._valido(sv["nodo"], nuevo, bloq) else sv["nodo"])
-        muertos = bites.mordidos(mov, s["zombies"])
+        muertos = bites.mordidos(mov, s["zombies"], zm.zonas_horda(self.grafo, s["zombies"]))
 
         siguientes, st = [], s["stats"]
         for sv in vivos:
