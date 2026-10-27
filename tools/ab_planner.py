@@ -1,13 +1,16 @@
 """A/B del planner: corre rondas completas SIN HTTP (consulta directa al planner) con distintas
-variantes y semillas, e imprime supervivencia, eficiencia, mordidas, rescates en camioneta,
-rechazos y la parte de supervivencia + eficiencia del puntaje (maximo 7 de 10, ponderada como la
-rubrica). Todas las decisiones de diseno del README salen de aqui.
+variantes y semillas, e imprime por ronda los PROMEDIOS por semilla de supervivencia, eficiencia,
+mordidas, rescates en camioneta y llegadas a un refugio lleno (rech), y la parte de supervivencia +
+eficiencia del puntaje (maximo 7 de 10, ponderada como la rubrica). Todas las decisiones de diseno
+del README salen de aqui.
 
   python tools/ab_planner.py --rondas 2,3 --semillas 6 \\
       "todo:" "sin_prediccion:pred=0" "sin_capacidad:cap=0" "sin_flota:flota=0" "sin_cruce:cruce=0"
 
 Claves de cada variante (por defecto todo activo, como en produccion): pred, cap, flota (0/1),
-cruce (segundos por interseccion), evac y cuello (cupos de refugios), fort (refugios fortificados)."""
+cruce (segundos por interseccion), evac y cuello (cupos de refugios), fort (refugios fortificados).
+cap=0 quita los cupos del mundo Y el reparto del planner; asig=0 deja los cupos y apaga solo el
+reparto (todos van al refugio mas barato): asi se mide cuanto evita el reparto llegar a uno lleno."""
 import argparse
 import asyncio
 import os
@@ -30,9 +33,9 @@ def correr(ruta_grafo, ronda, seed, cfg):
     engine.EVAC_FACTOR = float(cfg.get("evac", BASE["evac"]))
     engine.CUELLO = float(cfg.get("cuello", BASE["cuello"]))
     zombies.FORTIFICADOS = cfg.get("fort", "1") != "0"
-    pred, cap, flota = (cfg.get(k, "1") != "0" for k in ("pred", "cap", "flota"))
+    pred, cap, flota, asig = (cfg.get(k, "1") != "0" for k in ("pred", "cap", "flota", "asig"))
     g = graph.Grafo.desde_archivo(ruta_grafo)
-    mundo = Mundo(g, Planner(g, prediccion=pred, capacidad=cap, flota=flota))
+    mundo = Mundo(g, Planner(g, prediccion=pred, capacidad=cap and asig, flota=flota))
 
     async def consulta(sid, nodo, turno):
         return mundo.planner.siguiente_nodo(nodo, sid)
@@ -59,8 +62,9 @@ def main():
             res = [correr(a.grafo, ronda, s, cfg) for s in range(a.semillas)]
             sup = statistics.mean(r["supervivencia"] for r in res)
             ef = statistics.mean(r["eficiencia"] for r in res)
-            partes.append(f"R{ronda} sup={sup:.4f} ef={ef:.3f} mord={sum(r['mordidos'] for r in res)} "
-                          f"cam={sum(r['rescatados_en_camioneta'] for r in res)} rech={sum(r['rechazados'] for r in res)}")
+            media = lambda k: statistics.mean(r[k] for r in res)  # noqa: E731
+            partes.append(f"R{ronda} sup={sup:.4f} ef={ef:.3f} mord={media('mordidos'):.1f} "
+                          f"cam={media('rescatados_en_camioneta'):.1f} rech={media('rechazados'):.1f}")
             nota += puntaje.PESO_RONDA[ronda] * (0.5 * 10 * sup + 0.2 * 10 * ef)
         nota /= sum(puntaje.PESO_RONDA[r] for r in rondas)
         print(f"{nombre:16} | " + " | ".join(partes) + f" | sup+ef={nota:.3f}/7", flush=True)
