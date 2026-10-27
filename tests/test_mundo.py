@@ -213,6 +213,25 @@ def test_eventos_se_escalan_a_la_duracion_de_la_ronda():
     assert eventos(3, 30, reponer=False) == [[4, "avenida"], [9, "avenida"]]  # poblacion fija: sin escalar
 
 
+def test_los_puentes_coinciden_con_el_chequeo_por_fuerza_bruta():
+    from src.world import events
+
+    # triangulo A-B-C, C-D unica y D-E doble (dos calles paralelas no son puente)
+    g = _grafo([("A", "B", 1), ("B", "C", 1), ("C", "A", 1), ("C", "D", 1), ("D", "E", 1), ("D", "E", 2)], ["A"])
+    assert events._puentes(g, set()) == {"E3"}
+    assert events._puentes(g, {"E0"}) == {"E1", "E2", "E3"}  # sin A-B el triangulo ya no es un ciclo
+    # Manta no tiene puentes; al cerrar calles aparecen y se comparan con un DFS por cada calle
+    g = Grafo.desde_archivo("data/manta_graph.json")
+    rng, bloq, vistos = random.Random(3), set(), 0
+    for _ in range(8):
+        puentes = events._puentes(g, bloq)
+        bruta = {c for c in g.calles if c not in bloq and not events._sin_partir(g, bloq | {c})}
+        assert puentes == bruta
+        vistos += len(puentes)
+        bloq |= set(rng.sample(sorted(set(g.calles) - bloq - puentes), 8))
+    assert vistos > 0
+
+
 def test_texto_de_eventos_con_y_sin_nombre_de_calle():
     from src.world import events
     g = _grafo([("A", "B", 100), ("B", "C", 100), ("A", "C", 100)], ["C"])
