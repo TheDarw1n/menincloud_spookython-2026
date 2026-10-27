@@ -147,12 +147,13 @@ class Simulador:
             else:
                 siguientes.append(sv)
         s["sobrevivientes"] = siguientes
-        self.mundo.publicar_sobrevivientes(
-            [{"id": sv["id"], "nodo": sv["nodo"], "ruta": self.mundo.planner.ruta(sv["nodo"], self.ruta_max)}
-             for sv in siguientes],
-            s["ronda"],
-            {"salvados": st["salvados"], "mordidos": st["mordidos"],
-             "turnosRestantes": s["turnos_restantes"] - 1})
+        self.mundo.publicar(
+            sobrevivientes=[{"id": sv["id"], "nodo": sv["nodo"],
+                             "ruta": self.mundo.planner.ruta(sv["nodo"], sv["id"], self.ruta_max)}
+                            for sv in siguientes],
+            ronda=s["ronda"],
+            metricas={"salvados": st["salvados"], "mordidos": st["mordidos"],
+                      "turnosRestantes": s["turnos_restantes"] - 1})
         if self.snapshots and self.snapshots.habilitado and t % self.snapshot_cada == 0:
             try:
                 await asyncio.to_thread(self.snapshots.guardar, t, self.exportar())

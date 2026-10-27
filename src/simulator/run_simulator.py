@@ -17,7 +17,7 @@ async def main(ronda):
     mundo = Mundo(g, Planner(g))
 
     async def consulta(sid, nodo, turno):
-        return mundo.planner.siguiente_nodo(nodo)
+        return mundo.planner.siguiente_nodo(nodo, sid)
 
     sim = Simulador(mundo, consulta=consulta, turno_s=float(os.environ.get("TURNO_S", "0")),
                     turnos_ronda=int(os.environ.get("TURNOS_RONDA", "150")))

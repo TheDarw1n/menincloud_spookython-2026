@@ -24,7 +24,7 @@ async def _consulta_directa(sid, nodo, turno):
     """SIM_MODO=directo: el simulador llama al planner sin pasar por HTTP (sin overhead de
     cliente en el mismo proceso). SIM_MODO=http (default) usa POST /paso por localhost."""
     MUNDO.asegurar_planner()
-    return PLANNER.siguiente_nodo(nodo) if nodo in GRAFO.nodos else nodo
+    return PLANNER.siguiente_nodo(nodo, sid)
 
 
 SIM = Simulador(MUNDO, consulta=_consulta_directa if os.environ.get("SIM_MODO", "http") == "directo" else None, turno_s=float(os.environ.get("TURNO_S", "2.0")),
@@ -93,14 +93,13 @@ class PasoRapido:
                 break
         try:
             d = json.loads(cuerpo)
-            nodo, _, _ = d["nodoActual"], d["sobrevivienteId"], int(d["turno"])
+            nodo, sid, _ = d["nodoActual"], str(d["sobrevivienteId"]), int(d["turno"])
             if not isinstance(nodo, str):
                 raise ValueError
         except (ValueError, KeyError, TypeError):
             return await self._responder(send, 422, {"detail": "cuerpo invalido"})
         MUNDO.asegurar_planner()
-        sig = PLANNER.siguiente_nodo(nodo) if nodo in GRAFO.nodos else nodo
-        await self._responder(send, 200, {"siguienteNodo": sig})
+        await self._responder(send, 200, {"siguienteNodo": PLANNER.siguiente_nodo(nodo, sid)})
 
 
 app.add_middleware(PasoRapido)
@@ -128,9 +127,7 @@ async def paso(p: PasoIn):
     # async: el calculo es trivial (lookup en tablas precalculadas), asi se evita el
     # cambio de hilo del threadpool. No recalcula por peticion: usa el planner del turno.
     MUNDO.asegurar_planner()
-    if p.nodoActual not in GRAFO.nodos:
-        return {"siguienteNodo": p.nodoActual}
-    return {"siguienteNodo": PLANNER.siguiente_nodo(p.nodoActual)}
+    return {"siguienteNodo": PLANNER.siguiente_nodo(p.nodoActual, p.sobrevivienteId)}
 
 
 @app.websocket("/ws")

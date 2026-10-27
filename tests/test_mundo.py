@@ -2,6 +2,7 @@ import asyncio
 import os
 import random
 
+from src.routing import riesgo
 from src.routing.planner import Planner
 from src.simulator.engine import Simulador
 from src.world import bites, zombies as zm
@@ -51,7 +52,7 @@ def test_rondas_completas_sin_romper():
         mundo = Mundo(G, Planner(G))
 
         async def consulta(sid, nodo, turno, mundo=mundo):
-            return mundo.planner.siguiente_nodo(nodo)
+            return mundo.planner.siguiente_nodo(nodo, sid)
 
         sim = Simulador(mundo, consulta=consulta, turno_s=0, turnos_ronda=45, seed=ronda)
         asyncio.run(sim.correr(ronda))
@@ -65,8 +66,50 @@ def test_penalizacion_prefiere_ruta_con_margen():
     # Zombie en N-0008; ir por N-0007 (vecino) cuesta +30 s, asi que desde N-0006 conviene bajar por N-0011
     m = Mundo(G, Planner(G))
     m.publicar_zombies(1, [z("Z", "caminante", "N-0008")], [])
-    assert m.penalizados([z("Z", "caminante", "N-0008")], frozenset())["N-0007"] == 30.0
+    assert riesgo.penalizacion(G, [z("Z", "caminante", "N-0008")], frozenset({"N-0008"}), frozenset())["N-0007"] == 30.0
     assert m.planner.siguiente_nodo("N-0006") == "N-0011"
+
+
+def _grafo(calles, refugios):
+    ids = sorted({a for a, _, _ in calles} | {b for _, b, _ in calles})
+    return Grafo({"nodos": [{"id": n, "lat": 0, "lng": 0} for n in ids],
+                  "calles": [{"id": f"E{i}", "de": a, "a": b, "distancia_m": d, "tipo": "calle"}
+                             for i, (a, b, d) in enumerate(calles)],
+                  "refugios": [{"id": f"R{i}", "nodo": n} for i, n in enumerate(refugios)]})
+
+
+def test_primer_paso_suma_la_calle_aunque_el_vecino_este_mas_cerca():
+    # A-B mide 1000 m aunque B esta junto al refugio; A-C-R suma 900 m: conviene C
+    g = _grafo([("A", "B", 1000), ("B", "R", 50), ("A", "C", 100), ("C", "R", 800)], ["R"])
+    p = Planner(g)
+    p.actualizar({"turno": 1})
+    assert p.siguiente_nodo("A") == "C"
+
+
+def test_primer_paso_suma_la_penalizacion_del_vecino():
+    # B esta mas cerca del refugio pero junto a un zombie en X (+30 s); por C se llega antes y lejos de el
+    g = _grafo([("A", "B", 100), ("A", "C", 100), ("B", "R", 100), ("C", "R", 200), ("B", "X", 100)], ["R"])
+    p = Planner(g)
+    p.actualizar({"turno": 1, "zombies": [z("Z", "caminante", "X")]})
+    assert p.siguiente_nodo("A") == "C"
+
+
+def test_no_se_cruza_con_el_zombie_que_llego_por_esa_calle():
+    # El zombie bajo de N-0006 a N-0001, donde esta el sobreviviente. Volver por N-0006 seria la
+    # ruta mas barata, pero es cruzarse con el por la misma calle: debe huir por N-0002.
+    m = Mundo(G, Planner(G))
+    m.publicar_zombies(1, [z("Z", "caminante", "N-0001", previo="N-0006", pasos=[("N-0006", "N-0001")])], [])
+    assert m.planner.siguiente_nodo("N-0001") == "N-0002"
+
+
+def test_estado_publica_pasos_y_zonas_de_horda_y_no_cruza_otro_refugio():
+    m = Mundo(G, Planner(G))
+    corredor = z("C", "corredor", "N-0003", previo="N-0001", pasos=[("N-0001", "N-0002"), ("N-0002", "N-0003")])
+    m.publicar_zombies(3, [z("H", "horda", "N-0007"), corredor], [])
+    assert m.estado["zonasHorda"] == ["N-0002", "N-0006", "N-0007", "N-0008", "N-0012"]
+    assert m.estado["zombies"][1]["pasos"] == [["N-0001", "N-0002"], ["N-0002", "N-0003"]]
+    assert "N-0016" not in m.planner._snap.tablas["R-1"]  # hacia R-1 no se pasa por R-2
+    assert m.planner.ruta("N-0014")[-1] in G.nodos_refugio
 
 
 def test_horda_muerde_en_su_nodo_y_en_todos_sus_vecinos():
