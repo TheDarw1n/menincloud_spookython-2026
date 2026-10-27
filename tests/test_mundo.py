@@ -66,9 +66,10 @@ def test_rondas_completas_sin_romper():
 
 def test_penalizacion_prefiere_ruta_con_margen():
     # Zombie en N-0008; ir por N-0007 (vecino) cuesta +30 s, asi que desde N-0006 conviene bajar por N-0011
-    m = Mundo(G, Planner(G))
+    m = Mundo(G, Planner(G, prediccion=False))
     m.publicar_zombies(1, [z("Z", "caminante", "N-0008")], [])
-    assert riesgo.penalizacion(G, [z("Z", "caminante", "N-0008")], frozenset({"N-0008"}), frozenset())["N-0007"] == 30.0
+    pen = riesgo.penalizacion(G, [z("Z", "caminante", "N-0008")], frozenset({"N-0008"}), frozenset(), prediccion=False)
+    assert pen["N-0007"] == riesgo.P_VECINO
     assert m.planner.siguiente_nodo("N-0006") == "N-0011"
 
 
@@ -91,7 +92,7 @@ def test_primer_paso_suma_la_calle_aunque_el_vecino_este_mas_cerca():
 def test_primer_paso_suma_la_penalizacion_del_vecino():
     # B esta mas cerca del refugio pero junto a un zombie en X (+30 s); por C se llega antes y lejos de el
     g = _grafo([("A", "B", 100), ("A", "C", 100), ("B", "R", 100), ("C", "R", 200), ("B", "X", 100)], ["R"])
-    p = Planner(g)
+    p = Planner(g, prediccion=False)
     p.actualizar({"turno": 1, "zombies": [z("Z", "caminante", "X")]})
     assert p.siguiente_nodo("A") == "C"
 
@@ -145,3 +146,29 @@ def test_evento_no_aisla_barrios_de_los_refugios():
     ev = [(1, "puente")]
     ocurridos = events.aplicar(G, ev, 1, bloqueadas, random.Random(1), uso={"E-0031": 99})
     assert ocurridos and ocurridos[0]["arista"] != "E-0031" and "E-0031" not in bloqueadas
+
+
+def test_prediccion_anticipa_la_persecucion_del_corredor():
+    # corredor en N-0001 y sobreviviente en N-0004 (a 3 calles): el proximo turno pisara N-0002 y N-0003
+    assert riesgo.predecir_corredor(G, "N-0001", {"N-0004"}, frozenset()) == ["N-0002", "N-0003"]
+    assert riesgo.predecir_corredor(G, "N-0001", {"N-0020"}, frozenset()) == []  # nadie a <= 3: no persigue
+    entra = riesgo.llegadas(G, [z("C", "corredor", "N-0001")], frozenset())
+    assert entra["N-0002"] == {"N-0001"} and entra["N-0003"] == {"N-0002"} and "N-0004" not in entra
+
+
+def test_trampa_donde_cae_un_corredor_y_no_queda_salida():
+    # N-0005 (esquina) solo sale a N-0004 y N-0010. El corredor en N-0003 entra por N-0004 y un
+    # caminante ocupa N-0010: si un sobreviviente queda en N-0005, el proximo turno no tiene salida.
+    zs = [z("C", "corredor", "N-0003"), z("W", "caminante", "N-0010", previo="N-0015")]
+    prohibidos = frozenset({"N-0003", "N-0010"})
+    pen = riesgo.penalizacion(G, zs, prohibidos, frozenset())
+    assert pen["N-0005"] == riesgo.P_TRAMPA[0]
+    assert pen.get("N-0008", 0) == 0  # el corredor puede caer ahi pero quedan 2+ salidas libres
+
+
+def test_caminante_que_acaba_de_moverse_no_amenaza_el_proximo_turno():
+    assert riesgo.llegadas(G, [z("Z", "caminante", "N-0008", previo="N-0003")], frozenset()) == {}
+    assert set(riesgo.llegadas(G, [z("Z", "caminante", "N-0008")], frozenset())) == {"N-0003", "N-0007", "N-0009", "N-0013"}
+    sin_pred = riesgo.penalizacion(G, [z("Z", "caminante", "N-0008", previo="N-0003")], frozenset(), frozenset(),
+                                   prediccion=False)
+    assert sin_pred["N-0007"] == riesgo.P_VECINO

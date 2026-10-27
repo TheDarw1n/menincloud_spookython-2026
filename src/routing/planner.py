@@ -23,8 +23,9 @@ class Planner:
     turno) a partir del estado publicado. Los snapshots son inmutables y se reemplazan de forma
     atomica, asi que /paso los lee desde muchos hilos sin lock: cada consulta es O(grado)."""
 
-    def __init__(self, grafo):
+    def __init__(self, grafo, prediccion=True):
         self.grafo = grafo
+        self.prediccion = prediccion  # PRO: anticipar a corredores, caminantes y hordas
         self._snap = Snapshot(-1)
 
     @property
@@ -38,7 +39,8 @@ class Planner:
         prohibidos = frozenset(z["nodo"] for z in visibles) | frozenset(zonas_horda(g, visibles))
         # un zombie que recorrio a->b este turno muerde a quien vaya de b a a por esa calle
         cruces = frozenset((b, a) for z in visibles for a, b in z.get("pasos", ()))
-        penal = riesgo.penalizacion(g, visibles, prohibidos, bloqueadas)
+        penal = riesgo.penalizacion(g, visibles, prohibidos, bloqueadas,
+                                    est.get("sobrevivientes", ()), self.prediccion)
         tablas, saltos = {}, {}
         for rid, nodo in g.refugios.items():
             # no se planifica a traves de OTRO refugio: pisarlo ya es llegar a ese refugio

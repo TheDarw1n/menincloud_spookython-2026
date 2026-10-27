@@ -15,7 +15,7 @@ from ..world.mundo import Mundo
 from .auth import key_valida, lectura_estado, verificar_api_key
 
 GRAFO = Grafo.desde_archivo(os.environ.get("GRAPH_PATH", "data/manta_graph.json"))
-PLANNER = Planner(GRAFO)
+PLANNER = Planner(GRAFO, prediccion=os.environ.get("PRO_PREDICCION", "1") != "0")
 MUNDO = Mundo(GRAFO, PLANNER)
 SNAPSHOTS = Snapshots()
 
