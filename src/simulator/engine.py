@@ -397,6 +397,7 @@ class Simulador:
         p95 = puntaje.percentil(sorted(self.lat), 0.95)
         return {"salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
                 "rescatadosEnCamioneta": st["en_camioneta"], "aBordo": self._a_bordo(),
+                "dormidosOcultos": sum(1 for z in s["zombies"] if not z["visible"]),
                 "supervivencia": self._supervivencia(),
                 "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                 "latenciaP95": round(p95, 2) if p95 is not None else None,

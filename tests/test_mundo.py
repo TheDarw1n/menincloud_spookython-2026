@@ -183,3 +183,10 @@ def test_costo_por_interseccion_prefiere_menos_calles_si_el_tiempo_es_parecido()
     p = Planner(g, prediccion=False)
     p.actualizar({"turno": 1})
     assert CRUCE_S > 0 and p.siguiente_nodo("A") == "R"
+
+
+def test_los_dormidos_no_se_publican_hasta_despertar():
+    m = Mundo(G, Planner(G))
+    m.publicar_zombies(1, [z("D", "dormido", "N-0009", visible=False), z("C", "caminante", "N-0001")], [])
+    assert [x["id"] for x in m.estado["zombies"]] == ["C"]
+    assert "N-0009" not in m.planner._snap.prohibidos

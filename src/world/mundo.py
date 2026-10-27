@@ -23,10 +23,11 @@ class Mundo:
         }
 
     def publicar_zombies(self, turno, zombies, bloqueadas, **extra):
-        """Inicio de turno: zombies ya movidos. Publica y recalcula el planner (una vez)."""
+        """Inicio de turno: zombies ya movidos. Publica y recalcula el planner (una vez). Los
+        dormidos son invisibles hasta despertar: no se publican (ni el planner ni el publico los ven)."""
         publicos = [{"id": z["id"], "tipo": z["tipo"], "nodo": z["nodo"], "previo": z["previo"],
-                     "visible": z["visible"], "pasos": [list(p) for p in z.get("pasos", ())]}
-                    for z in zombies]
+                     "visible": True, "pasos": [list(p) for p in z.get("pasos", ())]}
+                    for z in zombies if z.get("visible", True)]
         with self._lock:
             self.estado = dict(self.estado, turno=turno, zombies=publicos,
                                aristasBloqueadas=sorted(bloqueadas),
