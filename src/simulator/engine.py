@@ -14,14 +14,17 @@ from ..world import bites, events, zombies as zm
 from . import puntaje
 from .cliente import ClientePaso
 
-# Fracciones de zombies respecto al numero de nodos; eventos = (turno, tipo de calle)
+# Fracciones de zombies respecto al numero de nodos; eventos = (turno, tipo de calle). Con
+# poblacion fija la ronda dura lo que tarda la ultima persona (~15-30 turnos en Manta), asi que
+# sus eventos van antes (eventos_fija) para que el puente colapse mientras todavia hay gente.
 RONDAS = {
-    1: dict(nombre="Anochecer", sobrevivientes=20, zombies={"caminante": 0.05}, eventos=[]),
+    1: dict(nombre="Anochecer", sobrevivientes=20, zombies={"caminante": 0.05}, eventos=[], eventos_fija=[]),
     2: dict(nombre="Medianoche", sobrevivientes=80,
-            zombies={"caminante": 0.06, "corredor": 0.03, "horda": 0.015}, eventos=[(40, "puente")]),
+            zombies={"caminante": 0.06, "corredor": 0.03, "horda": 0.015},
+            eventos=[(40, "puente")], eventos_fija=[(6, "puente")]),
     3: dict(nombre="Apocalipsis", sobrevivientes=200,
             zombies={"caminante": 0.06, "corredor": 0.04, "horda": 0.02, "dormido": 0.05},
-            eventos=[(30, "avenida"), (75, "avenida")]),
+            eventos=[(30, "avenida"), (75, "avenida")], eventos_fija=[(4, "avenida"), (9, "avenida")]),
 }
 LIMITE_S = 0.5  # /paso debe responder en < 500 ms; si no, el sobreviviente se queda quieto
 MAX_MUESTRAS = 100_000
@@ -116,7 +119,8 @@ class Simulador:
         self.s = {"ronda": ronda, "turno": 0, "turnos_restantes": self.turnos_ronda,
                   "poblacion": cfg["sobrevivientes"],
                   "zombies": zm.crear(self.grafo, cfg["zombies"], self.rng, excluir=self.grafo.nodos_refugio),
-                  "bloqueadas": [], "eventos": [list(e) for e in cfg["eventos"]], "log_eventos": [],
+                  "bloqueadas": [], "log_eventos": [],
+                  "eventos": [list(e) for e in cfg["eventos" if self.reponer else "eventos_fija"]],
                   "seq": 0, "sobrevivientes": [], "refugios": {}, "camionetas": self._camionetas(),
                   "stats": {"salvados": 0, "mordidos": 0, "rechazados": 0, "en_camioneta": 0,
                             "turnos_salvado": 0, "ef_suma": 0.0, "ef_n": 0}}

@@ -149,3 +149,18 @@ def test_ninguna_mordida_era_evitable_en_rondas_completas(monkeypatch):
         monkeypatch.setattr(eng.bites, "mordidos", espia)
         asyncio.run(sim.correr(ronda))
     assert total[0] > 0 and evitables == []
+
+
+def test_los_eventos_ocurren_en_ambos_modos_de_poblacion():
+    g = Grafo.desde_archivo("data/manta_graph.json")
+    for reponer in (True, False):
+        for ronda, esperados in ((2, ["puente"]), (3, ["avenida", "avenida"])):
+            mundo = Mundo(g, Planner(g))
+
+            async def directa(sid, nodo, turno, mundo=mundo):
+                return mundo.planner.siguiente_nodo(nodo, sid)
+
+            sim = Simulador(mundo, consulta=directa, turno_s=0, seed=ronda, reponer=reponer, **CALLADO)
+            asyncio.run(sim.correr(ronda))
+            assert [e["tipo"] for e in sim.s["log_eventos"]] == esperados, (reponer, ronda)
+            assert len(sim.s["bloqueadas"]) == len(esperados)
