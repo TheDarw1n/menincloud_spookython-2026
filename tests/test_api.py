@@ -112,3 +112,32 @@ def test_websocket_limita_visores(monkeypatch):
                 dos.receive_json()
     with c.websocket_connect("/ws") as otra:  # al cerrarse el primero se libera el cupo
         assert "turno" in otra.receive_json()
+
+
+def test_autoarranque_espera_a_que_el_puerto_acepte_conexiones(monkeypatch):
+    import asyncio
+
+    import src.api.main as api
+
+    class SimFalso:
+        iniciado = None
+
+        def iniciar(self, modo):
+            SimFalso.iniciado = modo
+
+    async def correr():
+        srv = await asyncio.start_server(lambda r, w: w.close(), "127.0.0.1", 0)
+        puerto = srv.sockets[0].getsockname()[1]
+        srv.close()
+        await srv.wait_closed()
+        monkeypatch.setenv("SIM_URL", f"http://127.0.0.1:{puerto}")
+        monkeypatch.setattr(api, "SIM", SimFalso())
+        tarea = asyncio.create_task(api.autoarranque("3"))
+        await asyncio.sleep(0.3)
+        antes = SimFalso.iniciado                      # puerto cerrado: todavia no arranca
+        srv2 = await asyncio.start_server(lambda r, w: w.close(), "127.0.0.1", puerto)
+        await asyncio.wait_for(tarea, 3)
+        srv2.close()
+        return antes, SimFalso.iniciado
+
+    assert asyncio.run(correr()) == (None, "3")

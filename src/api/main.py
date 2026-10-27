@@ -3,6 +3,7 @@ import json
 import os
 import secrets
 from contextlib import asynccontextmanager
+from urllib.parse import urlsplit
 
 from fastapi import Depends, FastAPI, HTTPException, Response, WebSocket, WebSocketDisconnect
 
@@ -35,12 +36,27 @@ SIM = Simulador(MUNDO, consulta=_consulta_directa if os.environ.get("SIM_MODO", 
                 capacidad=PRO_CAPACIDAD, flota=PRO_FLOTA)
 
 
+async def autoarranque(modo, intentos=300):
+    """SIM_AUTOSTART: uvicorn corre el lifespan ANTES de abrir el socket, asi que con SIM_MODO=http
+    el turno 1 perdia todas sus consultas. Se espera a que el puerto acepte conexiones (max ~30 s)."""
+    u = urlsplit(os.environ.get("SIM_URL", "http://127.0.0.1:8000"))
+    for _ in range(intentos):
+        try:
+            _, w = await asyncio.open_connection(u.hostname, u.port or 80)
+            w.close()
+            break
+        except OSError:
+            await asyncio.sleep(0.1)
+    SIM.iniciar(modo)
+
+
 @asynccontextmanager
 async def lifespan(app):
     modo = os.environ.get("SIM_AUTOSTART", "none")
-    if modo != "none":
-        SIM.iniciar(modo)
+    tarea = asyncio.create_task(autoarranque(modo)) if modo != "none" else None
     yield
+    if tarea:
+        tarea.cancel()
     await SIM.detener()
 
 
