@@ -1,0 +1,866 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1140" viewBox="0 0 1600 1140" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<circle cx="196.6" cy="294.9" r="160.6" fill="#f0efec" fill-opacity="0.65" stroke="#c3c2b7" stroke-width="1"><title>Barbasquillo: radio 1000 m</title></circle>
+<circle cx="867.3" cy="325.8" r="144.6" fill="#f0efec" fill-opacity="0.65" stroke="#c3c2b7" stroke-width="1"><title>Tarqui: radio 900 m</title></circle>
+<circle cx="851.1" cy="443.9" r="144.6" fill="#f0efec" fill-opacity="0.65" stroke="#c3c2b7" stroke-width="1"><title>Jocay: radio 900 m</title></circle>
+<circle cx="1277.3" cy="484.7" r="176.7" fill="#f0efec" fill-opacity="0.65" stroke="#c3c2b7" stroke-width="1"><title>Los Esteros: radio 1100 m</title></circle>
+<line x1="124.9" y1="406.5" x2="166.5" y2="454.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0005 · sin nombre · calle · 410 m</title></line>
+<line x1="164.0" y1="464.0" x2="166.5" y2="454.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0010 · sin nombre · calle · 69 m</title></line>
+<line x1="175.3" y1="299.8" x2="203.5" y2="310.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0014 · sin nombre · calle · 194 m</title></line>
+<line x1="198.1" y1="398.1" x2="204.3" y2="370.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0017 · Avenida 51 · calle · 175 m</title></line>
+<line x1="203.5" y1="310.3" x2="204.3" y2="370.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0019 · Calle Principal Barbasquillo · calle · 472 m</title></line>
+<line x1="203.5" y1="310.3" x2="209.6" y2="197.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0020 · Calle Principal Barbasquillo · calle · 703 m</title></line>
+<line x1="203.5" y1="310.3" x2="255.5" y2="292.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0021 · sin nombre · calle · 357 m</title></line>
+<line x1="204.3" y1="370.7" x2="215.5" y2="372.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0022 · Calle 4 · calle · 70 m</title></line>
+<line x1="213.3" y1="399.1" x2="215.5" y2="372.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0024 · Calle 4 · calle · 168 m</title></line>
+<line x1="215.5" y1="372.2" x2="252.4" y2="306.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0026 · sin nombre · calle · 503 m</title></line>
+<line x1="252.4" y1="306.6" x2="255.5" y2="292.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0027 · sin nombre · calle · 90 m</title></line>
+<line x1="252.4" y1="306.6" x2="283.5" y2="330.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0028 · Avenida Jamie Hodges El Luchador · calle · 251 m</title></line>
+<line x1="255.5" y1="292.5" x2="257.9" y2="201.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0029 · sin nombre · calle · 568 m</title></line>
+<line x1="255.5" y1="292.5" x2="293.8" y2="314.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0030 · sin nombre · calle · 288 m</title></line>
+<line x1="261.4" y1="373.5" x2="267.5" y2="382.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0032 · Calle S-8 · calle · 67 m</title></line>
+<line x1="261.4" y1="373.5" x2="288.7" y2="342.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0033 · Calle S-7 · calle · 308 m</title></line>
+<line x1="261.4" y1="373.5" x2="294.8" y2="351.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0034 · Calle S-5 · calle · 250 m</title></line>
+<line x1="267.5" y1="382.4" x2="279.6" y2="404.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0035 · Calle S-8 · calle · 164 m</title></line>
+<line x1="267.5" y1="382.4" x2="294.8" y2="351.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0036 · Calle S-3 · calle · 323 m</title></line>
+<line x1="283.5" y1="330.2" x2="288.7" y2="342.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0041 · Avenida Jamie Hodges El Luchador · calle · 82 m</title></line>
+<line x1="283.5" y1="330.2" x2="293.8" y2="314.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0042 · Calle Universitaria 8 · calle · 118 m</title></line>
+<line x1="288.7" y1="342.2" x2="294.8" y2="351.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0046 · Calle S-2 · calle · 68 m</title></line>
+<line x1="293.8" y1="314.5" x2="300.9" y2="293.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0048 · Calle Universitaria 9 · calle · 136 m</title></line>
+<line x1="293.8" y1="314.5" x2="309.8" y2="296.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0049 · Calle Universitaria 8 · calle · 154 m</title></line>
+<line x1="300.9" y1="293.8" x2="305.4" y2="260.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0051 · Calle Universitaria 9 · calle · 207 m</title></line>
+<line x1="300.9" y1="293.8" x2="309.8" y2="296.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0052 · Avenida Universitaria 8 · calle · 62 m</title></line>
+<line x1="305.4" y1="260.9" x2="308.2" y2="242.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0053 · Calle Universitaria 9 · calle · 116 m</title></line>
+<line x1="305.4" y1="260.9" x2="316.1" y2="262.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0054 · Avenida Universitaria 5 · calle · 67 m</title></line>
+<line x1="305.8" y1="207.8" x2="313.1" y2="209.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0055 · Avenida Universitaria 2 · calle · 47 m</title></line>
+<line x1="308.2" y1="242.5" x2="313.1" y2="209.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0058 · Calle Universitaria 9 · calle · 206 m</title></line>
+<line x1="308.2" y1="242.5" x2="318.7" y2="244.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0059 · Avenida Universitaria 4 · calle · 66 m</title></line>
+<line x1="309.8" y1="296.5" x2="316.1" y2="262.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0060 · Calle Universitaria 8 · calle · 217 m</title></line>
+<line x1="313.1" y1="209.7" x2="323.4" y2="211.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0061 · Avenida Universitaria 2 · calle · 65 m</title></line>
+<line x1="316.1" y1="262.2" x2="318.7" y2="244.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0062 · Calle Universitaria 8 · calle · 114 m</title></line>
+<line x1="316.1" y1="262.2" x2="326.6" y2="263.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0063 · Avenida Universitaria 5 · calle · 66 m</title></line>
+<line x1="318.7" y1="244.2" x2="323.4" y2="211.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0064 · Calle Universitaria 8 · calle · 207 m</title></line>
+<line x1="318.7" y1="244.2" x2="329.3" y2="245.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0065 · Avenida Universitaria 4 · calle · 69 m</title></line>
+<line x1="323.4" y1="211.2" x2="324.9" y2="201.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0066 · Calle Universitaria 8 · calle · 65 m</title></line>
+<line x1="323.4" y1="211.2" x2="334.2" y2="212.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0067 · Avenida Universitaria 2 · calle · 68 m</title></line>
+<line x1="326.6" y1="263.8" x2="329.3" y2="245.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0070 · Calle Universitaria 7 · calle · 115 m</title></line>
+<line x1="326.6" y1="263.8" x2="336.7" y2="265.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0071 · Avenida Universitaria 5 · calle · 63 m</title></line>
+<line x1="329.3" y1="245.6" x2="334.2" y2="212.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0072 · Calle Universitaria 7 · calle · 205 m</title></line>
+<line x1="329.3" y1="245.6" x2="339.4" y2="247.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0073 · Avenida Universitaria 4 · calle · 65 m</title></line>
+<line x1="334.2" y1="212.9" x2="336.4" y2="197.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0074 · Calle Universitaria 7 · calle · 98 m</title></line>
+<line x1="334.2" y1="212.9" x2="344.1" y2="214.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0075 · Avenida Universitaria 2 · calle · 62 m</title></line>
+<line x1="336.7" y1="265.3" x2="339.4" y2="247.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0077 · Calle Universitaria 6 · calle · 114 m</title></line>
+<line x1="336.7" y1="265.3" x2="349.4" y2="248.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0078 · Calle Universitaria 5 · calle · 172 m</title></line>
+<line x1="339.4" y1="247.1" x2="344.1" y2="214.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0079 · Calle Universitaria 6 · calle · 205 m</title></line>
+<line x1="339.4" y1="247.1" x2="349.4" y2="248.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0080 · Avenida Universitaria 4 · calle · 65 m</title></line>
+<line x1="344.1" y1="214.4" x2="347.2" y2="193.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0081 · Calle Universitaria 6 · calle · 133 m</title></line>
+<line x1="344.1" y1="214.4" x2="349.4" y2="248.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0082 · Calle Universitaria 5 · calle · 264 m</title></line>
+<line x1="349.4" y1="248.6" x2="369.8" y2="251.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0087 · Avenida Universitaria 4 · calle · 130 m</title></line>
+<line x1="369.8" y1="251.3" x2="391.0" y2="270.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0089 · Avenida 38 · calle · 179 m</title></line>
+<line x1="369.8" y1="251.3" x2="400.3" y2="261.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0090 · Calle Universitaria 3 · calle · 248 m</title></line>
+<line x1="408.6" y1="359.6" x2="449.7" y2="469.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0097 · sin nombre · calle · 799 m</title></line>
+<line x1="435.8" y1="226.9" x2="483.1" y2="331.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0107 · Avenida 35 · calle · 714 m</title></line>
+<line x1="483.1" y1="331.6" x2="488.6" y2="343.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0111 · Avenida 35 · calle · 84 m</title></line>
+<line x1="483.1" y1="331.6" x2="517.4" y2="304.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0112 · Calle 15 · calle · 273 m</title></line>
+<line x1="488.6" y1="343.9" x2="494.4" y2="357.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0113 · Avenida 35 · calle · 92 m</title></line>
+<line x1="488.6" y1="343.9" x2="525.1" y2="315.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0114 · Calle 14 · calle · 287 m</title></line>
+<line x1="517.4" y1="304.2" x2="525.1" y2="315.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0123 · Avenida 30 · calle · 86 m</title></line>
+<line x1="517.4" y1="304.2" x2="577.7" y2="255.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0124 · Calle 15 · calle · 482 m</title></line>
+<line x1="525.1" y1="315.7" x2="536.5" y2="333.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0130 · Avenida 30 · calle · 133 m</title></line>
+<line x1="525.1" y1="315.7" x2="586.3" y2="266.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0131 · Calle 14 · calle · 487 m</title></line>
+<line x1="535.5" y1="172.7" x2="644.4" y2="198.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0135 · Avenida Flavio Reyes · calle · 723 m</title></line>
+<line x1="539.6" y1="545.6" x2="596.4" y2="523.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0138 · Vía San Juan · calle · 466 m</title></line>
+<line x1="550.4" y1="328.2" x2="578.0" y2="432.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0141 · sin nombre · calle · 681 m</title></line>
+<line x1="577.7" y1="255.6" x2="644.4" y2="198.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0144 · Calle 15 · calle · 545 m</title></line>
+<line x1="586.3" y1="266.8" x2="656.2" y2="212.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0147 · Calle 14 · calle · 550 m</title></line>
+<line x1="596.4" y1="523.7" x2="665.0" y2="494.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0152 · Vía San Juan · calle · 466 m</title></line>
+<line x1="644.4" y1="198.7" x2="656.2" y2="212.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0168 · Avenida 13 · calle · 114 m</title></line>
+<line x1="644.4" y1="198.7" x2="658.6" y2="186.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0169 · Calle 15 · calle · 117 m</title></line>
+<line x1="656.2" y1="212.8" x2="671.6" y2="200.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0174 · Calle 14 · calle · 122 m</title></line>
+<line x1="658.6" y1="186.3" x2="665.0" y2="180.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0175 · Calle 15 · calle · 52 m</title></line>
+<line x1="658.6" y1="186.3" x2="671.6" y2="200.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0176 · Avenida 10 · calle · 120 m</title></line>
+<line x1="665.0" y1="180.8" x2="679.2" y2="194.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0178 · Avenida 8 · calle · 124 m</title></line>
+<line x1="665.0" y1="180.8" x2="699.2" y2="149.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0179 · Calle 15 · calle · 288 m</title></line>
+<line x1="671.6" y1="200.6" x2="679.2" y2="194.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0181 · Calle 14 · calle · 60 m</title></line>
+<line x1="679.2" y1="194.7" x2="717.5" y2="161.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0182 · Calle 14 · calle · 318 m</title></line>
+<line x1="679.2" y1="194.7" x2="749.7" y2="261.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0183 · Avenida 8 · calle · 608 m</title></line>
+<line x1="705.5" y1="334.7" x2="742.9" y2="299.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0188 · Avenida 8 · calle · 338 m</title></line>
+<line x1="720.3" y1="728.3" x2="801.1" y2="653.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0193 · Calle 297 · calle · 709 m</title></line>
+<line x1="742.9" y1="299.7" x2="749.7" y2="261.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0195 · Calle 7 · calle · 250 m</title></line>
+<line x1="742.9" y1="299.7" x2="753.0" y2="306.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0196 · Avenida 24 de Mayo · calle · 77 m</title></line>
+<line x1="749.7" y1="261.8" x2="761.2" y2="253.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0197 · Calle 7 · calle · 90 m</title></line>
+<line x1="753.0" y1="306.9" x2="798.7" y2="324.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0199 · Avenida 24 de Mayo · calle · 304 m</title></line>
+<line x1="755.3" y1="603.8" x2="821.4" y2="530.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0201 · Calle J16 · calle · 616 m</title></line>
+<line x1="767.1" y1="277.7" x2="785.1" y2="287.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0211 · sin nombre · calle · 135 m</title></line>
+<line x1="776.6" y1="807.2" x2="847.2" y2="743.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0214 · Calle 307 · calle · 593 m</title></line>
+<line x1="778.7" y1="624.0" x2="821.4" y2="530.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0218 · Calle 295 · calle · 646 m</title></line>
+<line x1="785.1" y1="287.6" x2="801.9" y2="303.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0221 · sin nombre · calle · 149 m</title></line>
+<line x1="795.8" y1="814.8" x2="864.7" y2="758.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0229 · Calle 309 · calle · 552 m</title></line>
+<line x1="795.8" y1="814.8" x2="879.0" y2="800.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0230 · Calle 311 · calle · 615 m</title></line>
+<line x1="798.7" y1="324.0" x2="801.9" y2="303.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0231 · Calle 2 · calle · 144 m</title></line>
+<line x1="801.1" y1="653.6" x2="879.9" y2="573.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0233 · Calle 297 · calle · 709 m</title></line>
+<line x1="821.4" y1="530.1" x2="855.3" y2="487.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0235 · Calle J14 · calle · 341 m</title></line>
+<line x1="824.4" y1="327.2" x2="825.6" y2="334.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0236 · Calle 101 · calle · 47 m</title></line>
+<line x1="824.4" y1="327.2" x2="830.4" y2="323.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0237 · Calle 101 · calle · 45 m</title></line>
+<line x1="825.6" y1="334.6" x2="830.4" y2="323.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0238 · Calle 101 · calle · 73 m</title></line>
+<line x1="825.6" y1="334.6" x2="858.7" y2="399.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0240 · Calle J1 · calle · 467 m</title></line>
+<line x1="826.4" y1="595.6" x2="866.2" y2="503.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0241 · Calle J16 · calle · 657 m</title></line>
+<line x1="830.4" y1="323.8" x2="837.5" y2="302.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0243 · Calle 101 · calle · 143 m</title></line>
+<line x1="830.4" y1="323.8" x2="964.3" y2="339.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0244 · Avenida 108 · calle · 841 m</title></line>
+<line x1="833.6" y1="416.5" x2="834.5" y2="455.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0245 · Calle J11 · calle · 335 m</title></line>
+<line x1="833.6" y1="416.5" x2="842.4" y2="410.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0246 · Calle J6 · calle · 66 m</title></line>
+<line x1="833.6" y1="416.5" x2="851.8" y2="444.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0247 · Calle J7 · calle · 206 m</title></line>
+<line x1="834.5" y1="455.7" x2="851.8" y2="444.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0248 · Calle J10 · calle · 129 m</title></line>
+<line x1="834.5" y1="455.7" x2="855.3" y2="487.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0249 · Calle J11 · calle · 236 m</title></line>
+<line x1="837.5" y1="302.1" x2="943.8" y2="290.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0250 · sin nombre · calle · 675 m</title></line>
+<line x1="837.5" y1="302.1" x2="962.6" y2="332.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0251 · Avenida 105 · calle · 800 m</title></line>
+<line x1="842.4" y1="410.7" x2="850.5" y2="405.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0252 · Calle J6 · calle · 61 m</title></line>
+<line x1="847.2" y1="743.4" x2="918.6" y2="680.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0255 · Calle 307 · calle · 593 m</title></line>
+<line x1="850.5" y1="405.2" x2="858.7" y2="399.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0256 · Calle J6 · calle · 61 m</title></line>
+<line x1="851.8" y1="444.2" x2="860.6" y2="438.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0258 · Calle J10 · calle · 65 m</title></line>
+<line x1="851.8" y1="444.2" x2="883.2" y2="492.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0259 · Calle J7 · calle · 358 m</title></line>
+<line x1="855.3" y1="487.5" x2="866.2" y2="503.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0262 · Calle J11 · calle · 121 m</title></line>
+<line x1="857.7" y1="362.0" x2="877.8" y2="386.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0264 · Avenida 114 · calle · 198 m</title></line>
+<line x1="858.7" y1="399.7" x2="877.1" y2="427.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0267 · Calle J1 · calle · 207 m</title></line>
+<line x1="860.6" y1="438.5" x2="868.8" y2="433.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0268 · Calle J10 · calle · 62 m</title></line>
+<line x1="860.6" y1="438.5" x2="891.9" y2="486.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0269 · Calle J5 · calle · 356 m</title></line>
+<line x1="864.7" y1="758.8" x2="933.7" y2="703.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0270 · Calle 309 · calle · 552 m</title></line>
+<line x1="867.6" y1="393.9" x2="877.8" y2="386.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0273 · Calle J6 · calle · 77 m</title></line>
+<line x1="868.8" y1="433.0" x2="877.1" y2="427.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0275 · Calle J10 · calle · 62 m</title></line>
+<line x1="868.8" y1="433.0" x2="900.1" y2="481.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0276 · Calle J3 · calle · 356 m</title></line>
+<line x1="871.6" y1="609.5" x2="879.9" y2="573.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0278 · sin nombre · calle · 265 m</title></line>
+<line x1="877.1" y1="427.5" x2="886.7" y2="421.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0280 · Calle J10 · calle · 71 m</title></line>
+<line x1="877.1" y1="427.5" x2="908.5" y2="475.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0281 · Calle J1 · calle · 357 m</title></line>
+<line x1="877.8" y1="386.7" x2="890.4" y2="403.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0282 · Avenida 114 · calle · 129 m</title></line>
+<line x1="879.0" y1="800.4" x2="958.4" y2="741.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0283 · Calle 311 · calle · 615 m</title></line>
+<line x1="879.9" y1="573.1" x2="903.0" y2="542.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0284 · Calle 297 · calle · 238 m</title></line>
+<line x1="883.2" y1="492.4" x2="891.9" y2="486.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0285 · Calle J16 · calle · 65 m</title></line>
+<line x1="886.7" y1="421.2" x2="890.4" y2="403.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0286 · Calle J10 · calle · 122 m</title></line>
+<line x1="890.4" y1="403.2" x2="950.5" y2="470.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0288 · Avenida 114 · calle · 565 m</title></line>
+<line x1="891.9" y1="486.5" x2="900.1" y2="481.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0289 · Calle J16 · calle · 62 m</title></line>
+<line x1="891.9" y1="486.5" x2="921.7" y2="518.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0290 · Calle J5 · calle · 278 m</title></line>
+<line x1="900.1" y1="481.0" x2="908.5" y2="475.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0291 · Calle J16 · calle · 62 m</title></line>
+<line x1="900.1" y1="481.0" x2="927.1" y2="512.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0292 · Calle J3 · calle · 260 m</title></line>
+<line x1="903.0" y1="542.7" x2="917.5" y2="553.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0293 · Avenida 207 · calle · 114 m</title></line>
+<line x1="908.5" y1="475.6" x2="927.6" y2="462.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0295 · Calle J16 · calle · 146 m</title></line>
+<line x1="908.5" y1="475.6" x2="934.3" y2="502.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0296 · Calle J1 · calle · 236 m</title></line>
+<line x1="917.5" y1="553.8" x2="966.4" y2="638.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0298 · Avenida 209 · calle · 691 m</title></line>
+<line x1="917.5" y1="553.8" x2="980.5" y2="626.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0299 · Avenida 207 · calle · 603 m</title></line>
+<line x1="918.6" y1="680.5" x2="966.4" y2="638.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0301 · Calle 307 · calle · 396 m</title></line>
+<line x1="921.7" y1="518.9" x2="927.1" y2="512.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0302 · Calle 297 · calle · 55 m</title></line>
+<line x1="927.1" y1="512.0" x2="934.3" y2="502.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0303 · Calle 297 · calle · 73 m</title></line>
+<line x1="927.1" y1="512.0" x2="942.5" y2="522.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0304 · Calle J3 · calle · 115 m</title></line>
+<line x1="933.7" y1="703.2" x2="984.7" y2="662.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0307 · Calle 309 · calle · 407 m</title></line>
+<line x1="934.3" y1="502.7" x2="945.5" y2="488.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0308 · Calle 297 · calle · 115 m</title></line>
+<line x1="942.5" y1="522.2" x2="959.9" y2="501.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0311 · Calle 299 · calle · 170 m</title></line>
+<line x1="942.5" y1="522.2" x2="972.3" y2="513.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0312 · Calle 301 · calle · 298 m</title></line>
+<line x1="943.8" y1="290.0" x2="952.6" y2="283.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0313 · sin nombre · calle · 67 m</title></line>
+<line x1="943.8" y1="290.0" x2="953.7" y2="289.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0314 · sin nombre · calle · 62 m</title></line>
+<line x1="945.5" y1="488.1" x2="955.1" y2="475.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0315 · Calle 297 · calle · 98 m</title></line>
+<line x1="945.5" y1="488.1" x2="959.9" y2="501.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0316 · Avenida 200 · calle · 120 m</title></line>
+<line x1="952.6" y1="283.9" x2="953.7" y2="289.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0318 · Calle 110 · calle · 34 m</title></line>
+<line x1="953.7" y1="289.2" x2="958.0" y2="308.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0321 · Calle 110 · calle · 124 m</title></line>
+<line x1="954.8" y1="445.5" x2="980.7" y2="417.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0323 · Calle 114 · calle · 239 m</title></line>
+<line x1="955.1" y1="475.8" x2="969.6" y2="457.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0325 · Calle 297 · calle · 146 m</title></line>
+<line x1="958.0" y1="308.7" x2="962.6" y2="332.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0326 · Calle 110 · calle · 148 m</title></line>
+<line x1="958.0" y1="308.7" x2="979.8" y2="306.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0327 · Avenida 103 · calle · 137 m</title></line>
+<line x1="958.4" y1="741.6" x2="1011.6" y2="696.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0329 · Calle 311 · calle · 433 m</title></line>
+<line x1="959.9" y1="501.1" x2="967.9" y2="491.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0330 · Calle 299 · calle · 77 m</title></line>
+<line x1="959.9" y1="501.1" x2="972.3" y2="513.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0331 · Avenida 200 · calle · 109 m</title></line>
+<line x1="962.6" y1="332.1" x2="964.3" y2="339.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0332 · Calle 110 · calle · 49 m</title></line>
+<line x1="962.6" y1="332.1" x2="980.5" y2="336.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0333 · Avenida 105 · calle · 115 m</title></line>
+<line x1="964.3" y1="339.8" x2="980.5" y2="345.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0334 · Avenida 108 · calle · 107 m</title></line>
+<line x1="964.3" y1="339.8" x2="980.7" y2="417.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0335 · Calle 110 · calle · 491 m</title></line>
+<line x1="966.4" y1="638.5" x2="980.5" y2="626.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0336 · Calle 307 · calle · 113 m</title></line>
+<line x1="966.4" y1="638.5" x2="984.7" y2="662.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0337 · Avenida 209 · calle · 187 m</title></line>
+<line x1="967.9" y1="491.8" x2="985.7" y2="470.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0339 · Calle 299 · calle · 174 m</title></line>
+<line x1="972.3" y1="513.5" x2="978.6" y2="505.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0341 · Calle 301 · calle · 63 m</title></line>
+<line x1="972.3" y1="513.5" x2="1026.0" y2="583.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0342 · Avenida 200 · calle · 547 m</title></line>
+<line x1="974.2" y1="767.5" x2="1004.0" y2="809.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0343 · Avenida 215 · calle · 325 m</title></line>
+<line x1="978.8" y1="280.0" x2="979.8" y2="306.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0345 · Calle 112 · calle · 163 m</title></line>
+<line x1="979.8" y1="306.3" x2="980.5" y2="336.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0347 · Calle 112 · calle · 188 m</title></line>
+<line x1="979.8" y1="306.3" x2="1016.1" y2="344.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0348 · Calle 114 · calle · 490 m</title></line>
+<line x1="980.5" y1="345.9" x2="980.5" y2="336.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0349 · Calle 112 · calle · 58 m</title></line>
+<line x1="980.5" y1="345.9" x2="992.9" y2="402.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0350 · Calle 112 · calle · 388 m</title></line>
+<line x1="980.5" y1="345.9" x2="1012.7" y2="357.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0351 · Avenida 108 · calle · 214 m</title></line>
+<line x1="980.5" y1="626.9" x2="999.0" y2="651.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0352 · Avenida 207 · calle · 189 m</title></line>
+<line x1="980.5" y1="336.5" x2="1016.1" y2="344.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0354 · Avenida 105 · calle · 227 m</title></line>
+<line x1="980.7" y1="417.1" x2="992.9" y2="402.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0355 · Calle 114 · calle · 121 m</title></line>
+<line x1="984.7" y1="662.3" x2="999.0" y2="651.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0356 · Calle 309 · calle · 113 m</title></line>
+<line x1="984.7" y1="662.3" x2="1011.6" y2="696.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0357 · Avenida 209 · calle · 271 m</title></line>
+<line x1="988.8" y1="941.8" x2="1026.2" y2="842.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0360 · Calle 319 · calle · 663 m</title></line>
+<line x1="992.9" y1="402.0" x2="1012.7" y2="357.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0361 · Calle 114 · calle · 303 m</title></line>
+<line x1="999.0" y1="651.0" x2="1025.5" y2="684.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0362 · Avenida 207 · calle · 266 m</title></line>
+<line x1="999.2" y1="947.8" x2="1034.9" y2="847.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0364 · Calle 319A · calle · 662 m</title></line>
+<line x1="1004.0" y1="809.9" x2="1026.2" y2="842.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0366 · Avenida 215A · calle · 243 m</title></line>
+<line x1="1004.0" y1="809.9" x2="1033.1" y2="825.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0367 · Avenida 215 · calle · 206 m</title></line>
+<line x1="1011.6" y1="696.5" x2="1025.5" y2="684.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0368 · Calle 311 · calle · 114 m</title></line>
+<line x1="1012.7" y1="357.6" x2="1016.1" y2="344.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0369 · Calle 114 · calle · 83 m</title></line>
+<line x1="1012.7" y1="357.6" x2="1145.8" y2="385.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0370 · Avenida 108 · calle · 865 m</title></line>
+<line x1="1026.0" y1="583.0" x2="1050.1" y2="613.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0372 · Avenida 200 · calle · 241 m</title></line>
+<line x1="1026.2" y1="842.0" x2="1033.1" y2="825.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0373 · Calle 319 · calle · 111 m</title></line>
+<line x1="1033.1" y1="825.6" x2="1034.9" y2="847.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0374 · Calle 319A · calle · 662 m</title></line>
+<line x1="1050.1" y1="613.4" x2="1058.8" y2="607.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0377 · Calle 309 · calle · 67 m</title></line>
+<line x1="1063.8" y1="613.0" x2="1090.4" y2="587.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0380 · Olima Miranda · calle · 232 m</title></line>
+<line x1="1082.4" y1="637.0" x2="1111.6" y2="613.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0384 · Calle 311 · calle · 235 m</title></line>
+<line x1="1090.4" y1="587.2" x2="1128.6" y2="553.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0387 · Olivia Miranda · calle · 324 m</title></line>
+<line x1="1091.0" y1="455.8" x2="1113.0" y2="474.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0389 · Avenida 110 · calle · 181 m</title></line>
+<line x1="1106.6" y1="435.2" x2="1155.0" y2="477.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0391 · sin nombre · calle · 399 m</title></line>
+<line x1="1112.7" y1="533.8" x2="1128.6" y2="553.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0393 · sin nombre · calle · 159 m</title></line>
+<line x1="1112.7" y1="533.8" x2="1129.7" y2="509.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0394 · José Mendoza · calle · 257 m</title></line>
+<line x1="1112.7" y1="533.8" x2="1133.0" y2="518.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0395 · Alberto Cantos · calle · 159 m</title></line>
+<line x1="1113.0" y1="474.9" x2="1129.7" y2="509.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0396 · José Mendoza · calle · 242 m</title></line>
+<line x1="1113.0" y1="474.9" x2="1151.4" y2="497.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0397 · sin nombre · calle · 293 m</title></line>
+<line x1="1116.4" y1="864.4" x2="1151.4" y2="948.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0398 · Avenida 215 · calle · 569 m</title></line>
+<line x1="1116.4" y1="864.4" x2="1200.7" y2="829.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0399 · sin nombre · calle · 569 m</title></line>
+<line x1="1128.6" y1="553.8" x2="1143.7" y2="541.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0400 · Olivia Miranda · calle · 119 m</title></line>
+<line x1="1129.7" y1="509.6" x2="1133.0" y2="518.2" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0401 · sin nombre · calle · 58 m</title></line>
+<line x1="1133.0" y1="518.2" x2="1140.1" y2="533.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0402 · sin nombre · calle · 107 m</title></line>
+<line x1="1133.0" y1="518.2" x2="1150.4" y2="504.5" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0403 · Alberto Cantos · calle · 137 m</title></line>
+<line x1="1140.1" y1="533.8" x2="1143.7" y2="541.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0404 · sin nombre · calle · 55 m</title></line>
+<line x1="1140.1" y1="533.8" x2="1184.2" y2="500.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0405 · Alva Castro · calle · 345 m</title></line>
+<line x1="1143.7" y1="541.9" x2="1190.1" y2="506.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0406 · Olivia Miranda · calle · 362 m</title></line>
+<line x1="1143.7" y1="541.9" x2="1204.5" y2="520.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0407 · O. de Genna · calle · 555 m</title></line>
+<line x1="1145.8" y1="385.5" x2="1192.6" y2="369.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0411 · Avenida 108 · calle · 310 m</title></line>
+<line x1="1150.4" y1="504.5" x2="1151.4" y2="497.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0412 · sin nombre · calle · 43 m</title></line>
+<line x1="1150.4" y1="504.5" x2="1171.2" y2="488.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0413 · Alberto Cantos · calle · 166 m</title></line>
+<line x1="1151.4" y1="497.8" x2="1155.0" y2="477.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0415 · sin nombre · calle · 130 m</title></line>
+<line x1="1155.0" y1="477.3" x2="1171.2" y2="488.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0417 · sin nombre · calle · 121 m</title></line>
+<line x1="1169.3" y1="751.7" x2="1218.4" y2="762.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0419 · Calle 9 · calle · 378 m</title></line>
+<line x1="1171.2" y1="488.0" x2="1184.2" y2="500.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0420 · sin nombre · calle · 111 m</title></line>
+<line x1="1171.2" y1="488.0" x2="1205.2" y2="423.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0421 · Alberto Cantos · calle · 453 m</title></line>
+<line x1="1176.2" y1="405.5" x2="1192.6" y2="369.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0422 · sin nombre · calle · 251 m</title></line>
+<line x1="1179.2" y1="775.4" x2="1218.4" y2="762.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0425 · Calle 34 · calle · 256 m</title></line>
+<line x1="1184.2" y1="500.0" x2="1190.1" y2="506.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0427 · sin nombre · calle · 56 m</title></line>
+<line x1="1184.2" y1="500.0" x2="1221.1" y2="432.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0428 · Alva Castro · calle · 479 m</title></line>
+<line x1="1190.1" y1="506.8" x2="1204.5" y2="520.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0429 · sin nombre · calle · 122 m</title></line>
+<line x1="1190.1" y1="506.8" x2="1237.4" y2="439.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0430 · Olivia Miranda · calle · 513 m</title></line>
+<line x1="1192.6" y1="369.3" x2="1244.3" y2="367.7" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0431 · Avenida 108 · calle · 322 m</title></line>
+<line x1="1192.6" y1="369.3" x2="1246.5" y2="329.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0432 · Ave 104 · calle · 504 m</title></line>
+<line x1="1204.5" y1="560.1" x2="1204.5" y2="520.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0435 · sin nombre · calle · 305 m</title></line>
+<line x1="1204.5" y1="560.1" x2="1215.7" y2="520.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0436 · Los Pinos · calle · 306 m</title></line>
+<line x1="1204.5" y1="520.0" x2="1215.7" y2="520.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0438 · sin nombre · calle · 69 m</title></line>
+<line x1="1218.4" y1="762.8" x2="1256.7" y2="630.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0442 · Calle 34 · calle · 892 m</title></line>
+<line x1="1218.4" y1="762.8" x2="1281.9" y2="815.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0443 · Calle 9 · calle · 515 m</title></line>
+<line x1="1228.1" y1="565.1" x2="1232.6" y2="588.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0445 · Calle 36 · calle · 149 m</title></line>
+<line x1="1228.1" y1="565.1" x2="1299.0" y2="552.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0446 · sin nombre · calle · 489 m</title></line>
+<line x1="1232.6" y1="588.6" x2="1243.5" y2="588.9" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0447 · Las Acacias · calle · 68 m</title></line>
+<line x1="1232.6" y1="588.6" x2="1256.7" y2="630.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0448 · Calle 36 · calle · 369 m</title></line>
+<line x1="1243.5" y1="588.9" x2="1256.7" y2="630.4" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0452 · Calle 34 · calle · 271 m</title></line>
+<line x1="1243.5" y1="588.9" x2="1269.5" y2="597.1" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0453 · Las Acacias · calle · 172 m</title></line>
+<line x1="1244.3" y1="367.7" x2="1251.3" y2="364.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0454 · Avenida 108 · calle · 47 m</title></line>
+<line x1="1256.7" y1="630.4" x2="1284.6" y2="610.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0461 · sin nombre · calle · 216 m</title></line>
+<line x1="1269.5" y1="597.1" x2="1278.2" y2="587.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0462 · Calle 1 · calle · 80 m</title></line>
+<line x1="1269.5" y1="597.1" x2="1284.6" y2="610.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0463 · Las Acacias · calle · 127 m</title></line>
+<line x1="1278.2" y1="587.6" x2="1284.6" y2="610.8" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0464 · Avenida 18 · calle · 201 m</title></line>
+<line x1="1278.2" y1="587.6" x2="1299.0" y2="552.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0465 · Calle 1 · calle · 260 m</title></line>
+<line x1="1281.9" y1="815.8" x2="1345.1" y2="869.0" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0466 · Calle 9 · calle · 515 m</title></line>
+<line x1="1299.0" y1="552.3" x2="1304.2" y2="538.3" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0467 · Calle 1 · calle · 92 m</title></line>
+<line x1="1304.2" y1="538.3" x2="1310.3" y2="468.6" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"><title>E-0468 · Calle 1 · calle · 444 m</title></line>
+<line x1="95.2" y1="428.2" x2="124.9" y2="406.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0001 · Vía a San Mateo · avenida · 241 m</title></line>
+<line x1="95.2" y1="428.2" x2="153.8" y2="460.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0002 · Ruta del Spóndylus · avenida · 421 m</title></line>
+<line x1="95.2" y1="428.2" x2="164.0" y2="464.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0003 · Ruta del Spóndylus · avenida · 498 m</title></line>
+<line x1="124.9" y1="406.5" x2="147.9" y2="396.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0004 · Vía a San Mateo · avenida · 158 m</title></line>
+<line x1="147.9" y1="396.0" x2="175.3" y2="299.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0006 · Via a Barbasquillo · avenida · 668 m</title></line>
+<line x1="147.9" y1="396.0" x2="198.1" y2="398.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0007 · Vía a San Mateo · avenida · 313 m</title></line>
+<line x1="153.8" y1="460.0" x2="164.0" y2="464.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0008 · Ruta del Spóndylus · avenida · 69 m</title></line>
+<line x1="153.8" y1="460.0" x2="166.5" y2="454.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0009 · sin nombre · avenida · 106 m</title></line>
+<line x1="164.0" y1="464.0" x2="175.3" y2="464.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0011 · Ruta del Spóndylus · avenida · 70 m</title></line>
+<line x1="164.0" y1="464.0" x2="307.4" y2="464.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0012 · Ruta del Spóndylus · avenida · 893 m</title></line>
+<line x1="166.5" y1="454.0" x2="175.3" y2="464.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0013 · sin nombre · avenida · 87 m</title></line>
+<line x1="175.3" y1="299.8" x2="209.6" y2="197.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0015 · Via a Barbasquillo · avenida · 739 m</title></line>
+<line x1="175.3" y1="464.3" x2="298.0" y2="462.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0016 · Ruta del Spóndylus · avenida · 763 m</title></line>
+<line x1="198.1" y1="398.1" x2="213.3" y2="399.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0018 · Vía a San Mateo · avenida · 95 m</title></line>
+<line x1="209.6" y1="197.7" x2="257.9" y2="201.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0023 · Avenida Flavio Reyes · avenida · 301 m</title></line>
+<line x1="213.3" y1="399.1" x2="279.6" y2="404.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0025 · Vía a San Mateo · avenida · 414 m</title></line>
+<line x1="257.9" y1="201.3" x2="276.9" y2="203.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0031 · Avenida Flavio Reyes · avenida · 119 m</title></line>
+<line x1="276.9" y1="203.2" x2="305.8" y2="207.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0037 · Avenida Universitaria 1 · avenida · 183 m</title></line>
+<line x1="276.9" y1="203.2" x2="324.9" y2="201.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0038 · Avenida Flavio Reyes · avenida · 306 m</title></line>
+<line x1="279.6" y1="404.8" x2="285.6" y2="410.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0039 · Redondel Los Eléctricos · avenida · 55 m</title></line>
+<line x1="279.6" y1="404.8" x2="292.3" y2="403.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0040 · Redondel Los Eléctricos · avenida · 89 m</title></line>
+<line x1="285.6" y1="410.5" x2="292.3" y2="403.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0043 · Redondel Los Eléctricos · avenida · 72 m</title></line>
+<line x1="285.6" y1="410.5" x2="348.4" y2="442.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0044 · sin nombre · avenida · 477 m</title></line>
+<line x1="285.6" y1="410.5" x2="363.9" y2="442.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0045 · sin nombre · avenida · 573 m</title></line>
+<line x1="292.3" y1="403.4" x2="349.4" y2="366.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0047 · Calle 12 · avenida · 426 m</title></line>
+<line x1="298.0" y1="462.6" x2="420.6" y2="466.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0050 · Ruta del Spóndylus · avenida · 763 m</title></line>
+<line x1="305.8" y1="207.8" x2="324.9" y2="201.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0056 · Avenida Universitaria 1 · avenida · 128 m</title></line>
+<line x1="307.4" y1="464.5" x2="449.7" y2="469.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0057 · Ruta del Spóndylus · avenida · 893 m</title></line>
+<line x1="324.9" y1="201.0" x2="336.4" y2="197.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0068 · Avenida Universitaria 1 · avenida · 75 m</title></line>
+<line x1="324.9" y1="201.0" x2="379.1" y2="179.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0069 · Avenida Flavio Reyes · avenida · 362 m</title></line>
+<line x1="336.4" y1="197.3" x2="347.2" y2="193.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0076 · Avenida Universitaria 1 · avenida · 71 m</title></line>
+<line x1="347.2" y1="193.3" x2="383.6" y2="189.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0083 · Avenida Universitaria 1 · avenida · 246 m</title></line>
+<line x1="348.4" y1="442.8" x2="423.9" y2="454.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0084 · sin nombre · avenida · 477 m</title></line>
+<line x1="349.4" y1="366.1" x2="391.0" y2="270.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0085 · Vía Circunvalación Tramo 1 Ascario Paz Bonilla · avenida · 657 m</title></line>
+<line x1="349.4" y1="366.1" x2="408.6" y2="359.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0086 · Calle 12 · avenida · 372 m</title></line>
+<line x1="363.9" y1="442.9" x2="449.7" y2="469.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0088 · sin nombre · avenida · 573 m</title></line>
+<line x1="379.1" y1="179.9" x2="383.6" y2="189.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0091 · sin nombre · avenida · 66 m</title></line>
+<line x1="379.1" y1="179.9" x2="415.9" y2="236.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0092 · sin nombre · avenida · 421 m</title></line>
+<line x1="379.1" y1="179.9" x2="474.9" y2="180.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0093 · Avenida Flavio Reyes · avenida · 630 m</title></line>
+<line x1="383.6" y1="189.5" x2="419.4" y2="244.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0094 · sin nombre · avenida · 410 m</title></line>
+<line x1="391.0" y1="270.0" x2="400.3" y2="261.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0095 · Vía Circunvalación Tramo 1 Ascario Paz Bonilla · avenida · 77 m</title></line>
+<line x1="400.3" y1="261.7" x2="419.4" y2="244.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0096 · Vía Circunvalación Tramo 1 Ascario Paz Bonilla · avenida · 161 m</title></line>
+<line x1="408.6" y1="359.6" x2="494.4" y2="357.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0098 · Calle 12 · avenida · 548 m</title></line>
+<line x1="415.9" y1="236.5" x2="419.4" y2="244.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0099 · sin nombre · avenida · 64 m</title></line>
+<line x1="415.9" y1="236.5" x2="426.9" y2="237.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0100 · sin nombre · avenida · 71 m</title></line>
+<line x1="419.4" y1="244.4" x2="426.9" y2="237.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0101 · Vía Circunvalación Tramo 1 Ascario Paz Bonilla · avenida · 65 m</title></line>
+<line x1="420.6" y1="466.1" x2="423.9" y2="454.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0102 · sin nombre · avenida · 133 m</title></line>
+<line x1="420.6" y1="466.1" x2="449.7" y2="469.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0103 · Ruta del Spóndylus · avenida · 183 m</title></line>
+<line x1="423.9" y1="454.5" x2="449.7" y2="469.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0104 · sin nombre · avenida · 186 m</title></line>
+<line x1="426.9" y1="237.2" x2="435.8" y2="226.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0105 · Vía Circunvalación Tramo 1 Ascario Paz Bonilla · avenida · 85 m</title></line>
+<line x1="435.8" y1="226.9" x2="474.9" y2="180.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0106 · Vía Circunvalación Tramo 1 Ascario Paz Bonilla · avenida · 379 m</title></line>
+<line x1="449.7" y1="469.4" x2="494.9" y2="506.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0108 · Ruta del Spóndylus · avenida · 365 m</title></line>
+<line x1="449.7" y1="469.4" x2="507.3" y2="516.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0109 · Ruta del Spóndylus · avenida · 511 m</title></line>
+<line x1="474.9" y1="180.4" x2="519.5" y2="174.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0110 · Avenida Flavio Reyes · avenida · 280 m</title></line>
+<line x1="494.4" y1="357.4" x2="536.5" y2="333.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0115 · Calle 12 · avenida · 301 m</title></line>
+<line x1="494.9" y1="506.9" x2="507.3" y2="516.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0116 · Ruta del Spóndylus · avenida · 98 m</title></line>
+<line x1="494.9" y1="506.9" x2="516.1" y2="504.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0117 · sin nombre · avenida · 142 m</title></line>
+<line x1="507.3" y1="516.6" x2="516.1" y2="504.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0118 · Avenida de la Cultura · avenida · 99 m</title></line>
+<line x1="507.3" y1="516.6" x2="519.9" y2="526.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0119 · Avenida Circunvalación · avenida · 101 m</title></line>
+<line x1="507.3" y1="516.6" x2="520.3" y2="503.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0120 · Avenida de la Cultura · avenida · 119 m</title></line>
+<line x1="507.3" y1="516.6" x2="539.6" y2="545.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0121 · Avenida Circunvalación · avenida · 284 m</title></line>
+<line x1="519.5" y1="174.1" x2="529.9" y2="174.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0125 · Avenida Flavio Reyes · avenida · 65 m</title></line>
+<line x1="519.5" y1="174.1" x2="577.7" y2="255.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0126 · Avenida 24 · avenida · 624 m</title></line>
+<line x1="519.9" y1="526.7" x2="520.3" y2="503.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0127 · sin nombre · avenida · 160 m</title></line>
+<line x1="519.9" y1="526.7" x2="539.6" y2="545.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0128 · Avenida Circunvalación · avenida · 170 m</title></line>
+<line x1="529.9" y1="174.0" x2="535.5" y2="172.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0132 · Avenida Flavio Reyes · avenida · 36 m</title></line>
+<line x1="529.9" y1="174.0" x2="544.7" y2="122.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0133 · Calle 23 · avenida · 347 m</title></line>
+<line x1="535.5" y1="172.7" x2="544.7" y2="122.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0134 · Calle 23 · avenida · 320 m</title></line>
+<line x1="536.5" y1="333.7" x2="550.4" y2="328.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0136 · Calle 12 · avenida · 93 m</title></line>
+<line x1="539.6" y1="545.6" x2="547.4" y2="639.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0137 · Avenida Circunvalación · avenida · 611 m</title></line>
+<line x1="544.7" y1="122.2" x2="646.6" y2="114.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0139 · Avenida Circunvalación · avenida · 659 m</title></line>
+<line x1="547.4" y1="639.8" x2="632.1" y2="685.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0140 · Avenida Circunvalación · avenida · 611 m</title></line>
+<line x1="550.4" y1="328.2" x2="610.7" y2="298.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0142 · Calle 12 · avenida · 450 m</title></line>
+<line x1="577.7" y1="255.6" x2="586.3" y2="266.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0143 · Avenida 24 · avenida · 87 m</title></line>
+<line x1="578.0" y1="432.3" x2="587.5" y2="423.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0145 · Avenida de la Cultura · avenida · 81 m</title></line>
+<line x1="586.3" y1="266.8" x2="610.7" y2="298.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0146 · Avenida 24 · avenida · 251 m</title></line>
+<line x1="587.5" y1="423.5" x2="619.7" y2="395.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0148 · Avenida de la Cultura · avenida · 274 m</title></line>
+<line x1="590.1" y1="426.1" x2="611.6" y2="403.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0150 · Avenida de la Cultura · avenida · 193 m</title></line>
+<line x1="610.7" y1="298.9" x2="652.2" y2="353.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0153 · Avenida 24 · avenida · 427 m</title></line>
+<line x1="611.6" y1="403.7" x2="619.7" y2="395.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0154 · Avenida de la Cultura · avenida · 77 m</title></line>
+<line x1="611.6" y1="403.7" x2="624.1" y2="403.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0155 · sin nombre · avenida · 85 m</title></line>
+<line x1="619.7" y1="395.1" x2="624.1" y2="403.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0156 · Vía Interbarrial · avenida · 61 m</title></line>
+<line x1="619.7" y1="395.1" x2="624.9" y2="402.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0157 · Vía Interbarrial · avenida · 57 m</title></line>
+<line x1="619.7" y1="395.1" x2="628.4" y2="390.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0158 · Avenida de la Cultura · avenida · 65 m</title></line>
+<line x1="619.7" y1="395.1" x2="629.4" y2="383.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0159 · Avenida de la Cultura · avenida · 93 m</title></line>
+<line x1="624.1" y1="403.7" x2="628.8" y2="410.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0160 · Vía Interbarrial · avenida · 53 m</title></line>
+<line x1="624.9" y1="402.5" x2="628.4" y2="390.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0161 · sin nombre · avenida · 80 m</title></line>
+<line x1="624.9" y1="402.5" x2="628.8" y2="410.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0162 · Vía Interbarrial · avenida · 57 m</title></line>
+<line x1="628.4" y1="390.6" x2="658.9" y2="367.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0163 · Avenida de la Cultura · avenida · 239 m</title></line>
+<line x1="629.4" y1="383.8" x2="652.2" y2="353.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0165 · Avenida 24 · avenida · 249 m</title></line>
+<line x1="629.4" y1="383.8" x2="653.6" y2="367.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0166 · Avenida de la Cultura · avenida · 182 m</title></line>
+<line x1="632.1" y1="685.5" x2="720.3" y2="728.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0167 · Avenida Circunvalación · avenida · 611 m</title></line>
+<line x1="646.6" y1="114.0" x2="699.2" y2="149.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0170 · Avenida Malecón · avenida · 400 m</title></line>
+<line x1="646.6" y1="114.0" x2="724.9" y2="163.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0171 · Avenida Malecón · avenida · 584 m</title></line>
+<line x1="652.2" y1="353.6" x2="681.8" y2="347.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0172 · Avenida 24 · avenida · 198 m</title></line>
+<line x1="653.6" y1="367.4" x2="681.8" y2="347.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0173 · Avenida de la Cultura · avenida · 214 m</title></line>
+<line x1="658.9" y1="367.3" x2="718.6" y2="332.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0177 · Avenida de la Cultura · avenida · 432 m</title></line>
+<line x1="665.0" y1="494.4" x2="714.4" y2="547.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0180 · Vía Interbarrial · avenida · 468 m</title></line>
+<line x1="681.8" y1="347.7" x2="705.5" y2="334.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0184 · Avenida de la Cultura · avenida · 168 m</title></line>
+<line x1="699.2" y1="149.5" x2="717.5" y2="161.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0185 · Avenida Malecón · avenida · 135 m</title></line>
+<line x1="699.2" y1="149.5" x2="724.9" y2="163.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0186 · sin nombre · avenida · 187 m</title></line>
+<line x1="705.5" y1="334.7" x2="718.6" y2="332.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0187 · Avenida de la Cultura · avenida · 83 m</title></line>
+<line x1="714.4" y1="547.2" x2="755.3" y2="603.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0189 · Vía Interbarrial · avenida · 468 m</title></line>
+<line x1="717.5" y1="161.1" x2="760.8" y2="233.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0190 · Avenida Malecón · avenida · 536 m</title></line>
+<line x1="718.6" y1="332.4" x2="753.0" y2="306.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0191 · Avenida de la Cultura · avenida · 279 m</title></line>
+<line x1="720.3" y1="728.3" x2="776.6" y2="807.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0192 · Avenida Circunvalación · avenida · 627 m</title></line>
+<line x1="724.9" y1="163.7" x2="763.7" y2="236.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0194 · Avenida Malecón · avenida · 526 m</title></line>
+<line x1="753.0" y1="306.9" x2="767.1" y2="277.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0198 · Avenida de la Cultura · avenida · 212 m</title></line>
+<line x1="755.3" y1="603.8" x2="778.7" y2="624.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0200 · Vía Interbarrial · avenida · 193 m</title></line>
+<line x1="760.8" y1="233.5" x2="761.2" y2="253.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0202 · Avenida Malecón · avenida · 122 m</title></line>
+<line x1="761.2" y1="253.1" x2="765.3" y2="263.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0204 · Avenida Malecón · avenida · 78 m</title></line>
+<line x1="763.7" y1="236.8" x2="765.3" y2="263.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0205 · Avenida Malecón · avenida · 171 m</title></line>
+<line x1="765.3" y1="263.4" x2="767.1" y2="277.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0207 · Avenida Malecón · avenida · 97 m</title></line>
+<line x1="765.3" y1="263.4" x2="773.8" y2="273.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0208 · Avenida Malecón · avenida · 81 m</title></line>
+<line x1="767.1" y1="277.7" x2="773.8" y2="273.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0209 · Redondel de INEPACA · avenida · 56 m</title></line>
+<line x1="767.1" y1="277.7" x2="777.2" y2="276.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0210 · Redondel de INEPACA · avenida · 103 m</title></line>
+<line x1="773.8" y1="273.0" x2="777.2" y2="276.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0212 · Redondel de INEPACA · avenida · 33 m</title></line>
+<line x1="776.6" y1="807.2" x2="795.8" y2="814.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0213 · Avenida Circunvalación · avenida · 129 m</title></line>
+<line x1="777.2" y1="276.6" x2="785.1" y2="287.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0215 · sin nombre · avenida · 85 m</title></line>
+<line x1="777.2" y1="276.6" x2="786.9" y2="277.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0216 · Via Puerto - Aeropuerto · avenida · 63 m</title></line>
+<line x1="778.7" y1="624.0" x2="826.4" y2="595.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0219 · Vía Interbarrial · avenida · 358 m</title></line>
+<line x1="785.1" y1="287.6" x2="786.9" y2="277.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0220 · sin nombre · avenida · 81 m</title></line>
+<line x1="785.1" y1="287.6" x2="803.5" y2="298.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0222 · sin nombre · avenida · 137 m</title></line>
+<line x1="825.6" y1="334.6" x2="844.4" y2="359.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0239 · sin nombre · avenida · 197 m</title></line>
+<line x1="844.4" y1="359.9" x2="852.1" y2="365.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0254 · Avenida 4 de Noviembre · avenida · 68 m</title></line>
+<line x1="852.1" y1="365.8" x2="855.6" y2="376.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0260 · Avenida 4 de Noviembre · avenida · 78 m</title></line>
+<line x1="852.1" y1="365.8" x2="857.7" y2="362.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0261 · Venezuela · avenida · 43 m</title></line>
+<line x1="855.6" y1="376.8" x2="867.6" y2="393.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0263 · Avenida 4 de Noviembre · avenida · 130 m</title></line>
+<line x1="857.7" y1="362.0" x2="954.8" y2="445.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0265 · Avenida 113 · avenida · 838 m</title></line>
+<line x1="864.9" y1="279.2" x2="952.6" y2="283.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0271 · Via Puerto - Aeropuerto · avenida · 551 m</title></line>
+<line x1="867.6" y1="393.9" x2="886.7" y2="421.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0274 · Avenida 4 de Noviembre · avenida · 207 m</title></line>
+<line x1="869.7" y1="281.1" x2="952.6" y2="283.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0277 · Via Puerto - Aeropuerto · avenida · 516 m</title></line>
+<line x1="871.6" y1="609.5" x2="918.6" y2="680.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0279 · Vía Interbarrial · avenida · 530 m</title></line>
+<line x1="886.7" y1="421.2" x2="927.6" y2="462.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0287 · Avenida 4 de Noviembre · avenida · 374 m</title></line>
+<line x1="918.6" y1="680.5" x2="933.7" y2="703.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0300 · Vía Interbarrial · avenida · 169 m</title></line>
+<line x1="927.6" y1="462.1" x2="950.5" y2="470.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0305 · Avenida 4 de Noviembre · avenida · 153 m</title></line>
+<line x1="933.7" y1="703.2" x2="958.4" y2="741.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0306 · Vía Interbarrial · avenida · 284 m</title></line>
+<line x1="941.4" y1="860.0" x2="974.2" y2="767.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0309 · Vía Interbarrial · avenida · 633 m</title></line>
+<line x1="941.4" y1="860.0" x2="988.8" y2="941.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0310 · Vía Interbarrial · avenida · 633 m</title></line>
+<line x1="950.5" y1="470.5" x2="955.1" y2="475.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0317 · Avenida 4 de Noviembre · avenida · 44 m</title></line>
+<line x1="952.6" y1="283.9" x2="978.8" y2="280.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0319 · Via Puerto - Aeropuerto · avenida · 165 m</title></line>
+<line x1="952.6" y1="283.9" x2="1076.1" y2="254.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0320 · Via Puerto - Aeropuerto · avenida · 794 m</title></line>
+<line x1="954.8" y1="445.5" x2="969.6" y2="457.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0322 · Avenida 113 · avenida · 117 m</title></line>
+<line x1="955.1" y1="475.8" x2="967.9" y2="491.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0324 · Avenida 4 de Noviembre · avenida · 128 m</title></line>
+<line x1="958.4" y1="741.6" x2="974.2" y2="767.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0328 · Vía Interbarrial · avenida · 191 m</title></line>
+<line x1="967.9" y1="491.8" x2="978.6" y2="505.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0338 · Avenida 4 de Noviembre · avenida · 109 m</title></line>
+<line x1="969.6" y1="457.2" x2="985.7" y2="470.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0340 · Avenida 113 · avenida · 129 m</title></line>
+<line x1="978.6" y1="505.6" x2="1058.8" y2="607.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0344 · Avenida 4 de Noviembre · avenida · 804 m</title></line>
+<line x1="978.8" y1="280.0" x2="1081.2" y2="255.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0346 · Via Puerto - Aeropuerto · avenida · 658 m</title></line>
+<line x1="985.7" y1="470.2" x2="1038.9" y2="524.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0358 · Avenida 113 · avenida · 475 m</title></line>
+<line x1="988.8" y1="941.8" x2="999.2" y2="947.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0359 · Vía Interbarrial · avenida · 74 m</title></line>
+<line x1="999.2" y1="947.8" x2="1075.1" y2="985.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0365 · Vía Interbarrial · avenida · 535 m</title></line>
+<line x1="1038.9" y1="524.7" x2="1090.4" y2="587.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0375 · Avenida 113 · avenida · 504 m</title></line>
+<line x1="1038.9" y1="524.7" x2="1091.0" y2="455.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0376 · Avenida Maria Auxiliadora · avenida · 537 m</title></line>
+<line x1="1058.8" y1="607.1" x2="1063.8" y2="613.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0378 · Avenida 4 de Noviembre · avenida · 49 m</title></line>
+<line x1="1063.8" y1="613.0" x2="1082.4" y2="637.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0379 · Avenida 4 de Noviembre · avenida · 188 m</title></line>
+<line x1="1075.1" y1="985.9" x2="1151.4" y2="948.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0381 · Vía Interbarrial · avenida · 535 m</title></line>
+<line x1="1076.1" y1="254.6" x2="1196.1" y2="258.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0382 · Via Puerto - Aeropuerto · avenida · 794 m</title></line>
+<line x1="1081.2" y1="255.0" x2="1182.3" y2="250.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0383 · Via Puerto - Aeropuerto · avenida · 658 m</title></line>
+<line x1="1082.4" y1="637.0" x2="1154.1" y2="721.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0385 · Avenida 4 de Noviembre · avenida · 693 m</title></line>
+<line x1="1090.4" y1="587.2" x2="1111.6" y2="613.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0386 · Avenida 113 · avenida · 207 m</title></line>
+<line x1="1091.0" y1="455.8" x2="1106.6" y2="435.2" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0388 · Avenida Maria Auxiliadora · avenida · 161 m</title></line>
+<line x1="1106.6" y1="435.2" x2="1143.7" y2="389.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0390 · Avenida Maria Auxiliadora · avenida · 370 m</title></line>
+<line x1="1111.6" y1="613.0" x2="1154.1" y2="721.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0392 · Avenida 113 · avenida · 739 m</title></line>
+<line x1="1143.7" y1="389.4" x2="1145.8" y2="385.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0408 · Redondel del Paraíso · avenida · 28 m</title></line>
+<line x1="1143.7" y1="389.4" x2="1205.2" y2="423.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0409 · Vía al Palmar · avenida · 438 m</title></line>
+<line x1="1145.8" y1="385.5" x2="1176.2" y2="405.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0410 · Vía al Palmar · avenida · 228 m</title></line>
+<line x1="1151.4" y1="948.0" x2="1233.6" y2="913.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0414 · Vía Interbarrial · avenida · 556 m</title></line>
+<line x1="1154.1" y1="721.8" x2="1169.3" y2="751.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0416 · Avenida 113 · avenida · 213 m</title></line>
+<line x1="1169.3" y1="751.7" x2="1179.2" y2="775.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0418 · Vía Manta - Montecristi · avenida · 160 m</title></line>
+<line x1="1176.2" y1="405.5" x2="1237.4" y2="439.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0423 · Vía al Palmar · avenida · 437 m</title></line>
+<line x1="1179.2" y1="775.4" x2="1200.7" y2="829.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0424 · Vía Manta - Montecristi · avenida · 360 m</title></line>
+<line x1="1182.3" y1="250.6" x2="1246.5" y2="329.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0426 · Via Puerto - Aeropuerto · avenida · 658 m</title></line>
+<line x1="1196.1" y1="258.3" x2="1251.3" y2="364.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0433 · Via Puerto - Aeropuerto · avenida · 794 m</title></line>
+<line x1="1200.7" y1="829.1" x2="1233.6" y2="913.5" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0434 · Vía Manta - Montecristi · avenida · 564 m</title></line>
+<line x1="1205.2" y1="423.6" x2="1221.1" y2="432.4" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0440 · Vía al Palmar · avenida · 113 m</title></line>
+<line x1="1221.1" y1="432.4" x2="1237.4" y2="439.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0444 · Vía al Palmar · avenida · 111 m</title></line>
+<line x1="1233.6" y1="913.5" x2="1345.1" y2="869.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0449 · Vía Interbarrial · avenida · 749 m</title></line>
+<line x1="1237.4" y1="439.6" x2="1251.3" y2="448.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0450 · Vía al Palmar · avenida · 104 m</title></line>
+<line x1="1237.4" y1="439.6" x2="1310.3" y2="468.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0451 · Vía al Palmar · avenida · 491 m</title></line>
+<line x1="1244.3" y1="367.7" x2="1255.3" y2="373.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0455 · sin nombre · avenida · 78 m</title></line>
+<line x1="1246.5" y1="329.1" x2="1251.3" y2="364.8" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0456 · Via Puerto - Aeropuerto · avenida · 225 m</title></line>
+<line x1="1251.3" y1="448.6" x2="1310.3" y2="468.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0457 · Vía al Palmar · avenida · 393 m</title></line>
+<line x1="1251.3" y1="364.8" x2="1255.3" y2="373.3" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0458 · Via Puerto - Aeropuerto · avenida · 58 m</title></line>
+<line x1="1251.3" y1="364.8" x2="1340.7" y2="417.9" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0459 · Via Puerto - Aeropuerto · avenida · 678 m</title></line>
+<line x1="1255.3" y1="373.3" x2="1343.6" y2="420.1" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0460 · Via Puerto - Aeropuerto · avenida · 650 m</title></line>
+<line x1="1345.1" y1="869.0" x2="1427.8" y2="793.7" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0472 · Vía Interbarrial · avenida · 827 m</title></line>
+<line x1="1445.2" y1="443.9" x2="1564.0" y2="477.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0474 · Redondel La Barca · avenida · 827 m</title></line>
+<line x1="1488.9" y1="676.6" x2="1562.2" y2="565.6" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0475 · Vía Interbarrial · avenida · 827 m</title></line>
+<line x1="1562.2" y1="565.6" x2="1564.0" y2="477.0" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"><title>E-0476 · Vía Interbarrial · avenida · 827 m</title></line>
+<line x1="516.1" y1="504.5" x2="578.0" y2="432.3" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="516.1" y1="504.5" x2="578.0" y2="432.3" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0122 · Avenida de la Cultura · puente · 591 m</title></line>
+<line x1="520.3" y1="503.1" x2="590.1" y2="426.1" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="520.3" y1="503.1" x2="590.1" y2="426.1" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0129 · Avenida de la Cultura · puente · 647 m</title></line>
+<line x1="587.5" y1="423.5" x2="653.6" y2="367.4" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="587.5" y1="423.5" x2="653.6" y2="367.4" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0149 · Avenida de la Cultura · puente · 542 m</title></line>
+<line x1="590.1" y1="426.1" x2="658.9" y2="367.3" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="590.1" y1="426.1" x2="658.9" y2="367.3" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0151 · Avenida de la Cultura · puente · 568 m</title></line>
+<line x1="628.8" y1="410.8" x2="665.0" y2="494.4" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="628.8" y1="410.8" x2="665.0" y2="494.4" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0164 · Vía Interbarrial · puente · 576 m</title></line>
+<line x1="760.8" y1="233.5" x2="789.3" y2="292.5" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="760.8" y1="233.5" x2="789.3" y2="292.5" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0203 · Avenida Malecón · puente · 432 m</title></line>
+<line x1="763.7" y1="236.8" x2="789.8" y2="290.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="763.7" y1="236.8" x2="789.8" y2="290.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0206 · Avenida Malecón · puente · 397 m</title></line>
+<line x1="777.2" y1="276.6" x2="864.9" y2="279.2" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="777.2" y1="276.6" x2="864.9" y2="279.2" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0217 · Via Puerto - Aeropuerto · puente · 551 m</title></line>
+<line x1="785.1" y1="287.6" x2="837.5" y2="302.1" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="785.1" y1="287.6" x2="837.5" y2="302.1" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0223 · sin nombre · puente · 342 m</title></line>
+<line x1="786.9" y1="277.1" x2="869.7" y2="281.1" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="786.9" y1="277.1" x2="869.7" y2="281.1" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0224 · Via Puerto - Aeropuerto · puente · 516 m</title></line>
+<line x1="789.3" y1="292.5" x2="801.9" y2="303.1" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="789.3" y1="292.5" x2="801.9" y2="303.1" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0225 · sin nombre · puente · 103 m</title></line>
+<line x1="789.3" y1="292.5" x2="855.6" y2="376.8" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="789.3" y1="292.5" x2="855.6" y2="376.8" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0226 · Avenida Malecón · puente · 676 m</title></line>
+<line x1="789.8" y1="290.9" x2="803.5" y2="298.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="789.8" y1="290.9" x2="803.5" y2="298.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0227 · sin nombre · puente · 99 m</title></line>
+<line x1="789.8" y1="290.9" x2="844.4" y2="359.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="789.8" y1="290.9" x2="844.4" y2="359.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0228 · Avenida Malecón · puente · 555 m</title></line>
+<line x1="798.7" y1="324.0" x2="825.6" y2="334.6" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="798.7" y1="324.0" x2="825.6" y2="334.6" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0232 · Avenida 24 de Mayo · puente · 180 m</title></line>
+<line x1="803.5" y1="298.9" x2="824.4" y2="327.2" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="803.5" y1="298.9" x2="824.4" y2="327.2" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0234 · sin nombre · puente · 221 m</title></line>
+<line x1="826.4" y1="595.6" x2="871.6" y2="609.5" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="826.4" y1="595.6" x2="871.6" y2="609.5" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0242 · Vía Interbarrial · puente · 381 m</title></line>
+<line x1="842.4" y1="410.7" x2="860.6" y2="438.5" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="842.4" y1="410.7" x2="860.6" y2="438.5" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0253 · Calle J5 · puente · 207 m</title></line>
+<line x1="850.5" y1="405.2" x2="868.8" y2="433.0" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="850.5" y1="405.2" x2="868.8" y2="433.0" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0257 · Calle J3 · puente · 207 m</title></line>
+<line x1="858.7" y1="399.7" x2="867.6" y2="393.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="858.7" y1="399.7" x2="867.6" y2="393.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0266 · Calle J6 · puente · 66 m</title></line>
+<line x1="866.2" y1="503.7" x2="883.2" y2="492.4" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="866.2" y1="503.7" x2="883.2" y2="492.4" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0272 · Calle J16 · puente · 127 m</title></line>
+<line x1="903.0" y1="542.7" x2="921.7" y2="518.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="903.0" y1="542.7" x2="921.7" y2="518.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0294 · Calle 297 · puente · 188 m</title></line>
+<line x1="917.5" y1="553.8" x2="942.5" y2="522.2" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="917.5" y1="553.8" x2="942.5" y2="522.2" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0297 · Calle 299 · puente · 250 m</title></line>
+<line x1="980.5" y1="626.9" x2="1026.0" y2="583.0" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="980.5" y1="626.9" x2="1026.0" y2="583.0" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0353 · Calle 307 · puente · 395 m</title></line>
+<line x1="999.0" y1="651.0" x2="1050.1" y2="613.4" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="999.0" y1="651.0" x2="1050.1" y2="613.4" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0363 · Calle 309 · puente · 395 m</title></line>
+<line x1="1025.5" y1="684.6" x2="1082.4" y2="637.0" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1025.5" y1="684.6" x2="1082.4" y2="637.0" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0371 · Calle 311 · puente · 462 m</title></line>
+<line x1="1204.5" y1="560.1" x2="1228.1" y2="565.1" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1204.5" y1="560.1" x2="1228.1" y2="565.1" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0437 · sin nombre · puente · 160 m</title></line>
+<line x1="1204.5" y1="520.0" x2="1251.3" y2="448.6" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1204.5" y1="520.0" x2="1251.3" y2="448.6" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0439 · O. de Genna · puente · 536 m</title></line>
+<line x1="1215.7" y1="520.0" x2="1304.2" y2="538.3" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1215.7" y1="520.0" x2="1304.2" y2="538.3" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0441 · sin nombre · puente · 567 m</title></line>
+<line x1="1310.3" y1="468.6" x2="1445.2" y2="443.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1310.3" y1="468.6" x2="1445.2" y2="443.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0469 · Vía al Palmar · puente · 859 m</title></line>
+<line x1="1340.7" y1="417.9" x2="1445.2" y2="443.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1340.7" y1="417.9" x2="1445.2" y2="443.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0470 · Via Puerto - Aeropuerto · puente · 678 m</title></line>
+<line x1="1343.6" y1="420.1" x2="1445.2" y2="443.9" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1343.6" y1="420.1" x2="1445.2" y2="443.9" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0471 · Via Puerto - Aeropuerto · puente · 650 m</title></line>
+<line x1="1427.8" y1="793.7" x2="1488.9" y2="676.6" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="1427.8" y1="793.7" x2="1488.9" y2="676.6" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"><title>E-0473 · Vía Interbarrial · puente · 827 m</title></line>
+<circle cx="95.2" cy="428.2" r="2.4" fill="#52514e"><title>N-0001 · barrio otro · grado 3</title></circle>
+<circle cx="124.9" cy="406.5" r="2.4" fill="#52514e"><title>N-0002 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="147.9" cy="396.0" r="2.4" fill="#52514e"><title>N-0003 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="153.8" cy="460.0" r="2.4" fill="#52514e"><title>N-0004 · barrio otro · grado 3</title></circle>
+<circle cx="164.0" cy="464.0" r="2.4" fill="#52514e"><title>N-0005 · barrio otro · grado 5</title></circle>
+<circle cx="166.5" cy="454.0" r="2.4" fill="#52514e"><title>N-0006 · barrio otro · grado 4</title></circle>
+<circle cx="175.3" cy="299.8" r="2.4" fill="#52514e"><title>N-0007 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="175.3" cy="464.3" r="2.4" fill="#52514e"><title>N-0008 · barrio otro · grado 3</title></circle>
+<circle cx="198.1" cy="398.1" r="2.4" fill="#52514e"><title>N-0009 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="203.5" cy="310.3" r="2.4" fill="#52514e"><title>N-0010 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="204.3" cy="370.7" r="2.4" fill="#52514e"><title>N-0011 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="209.6" cy="197.7" r="2.4" fill="#52514e"><title>N-0012 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="213.3" cy="399.1" r="2.4" fill="#52514e"><title>N-0013 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="215.5" cy="372.2" r="2.4" fill="#52514e"><title>N-0014 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="252.4" cy="306.6" r="2.4" fill="#52514e"><title>N-0015 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="255.5" cy="292.5" r="2.4" fill="#52514e"><title>N-0016 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="257.9" cy="201.3" r="2.4" fill="#52514e"><title>N-0017 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="261.4" cy="373.5" r="2.4" fill="#52514e"><title>N-0018 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="267.5" cy="382.4" r="2.4" fill="#52514e"><title>N-0019 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="276.9" cy="203.2" r="2.4" fill="#52514e"><title>N-0020 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="279.6" cy="404.8" r="2.4" fill="#52514e"><title>N-0021 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="283.5" cy="330.2" r="2.4" fill="#52514e"><title>N-0022 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="285.6" cy="410.5" r="2.4" fill="#52514e"><title>N-0023 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="288.7" cy="342.2" r="2.4" fill="#52514e"><title>N-0024 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="292.3" cy="403.4" r="2.4" fill="#52514e"><title>N-0025 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="293.8" cy="314.5" r="2.4" fill="#52514e"><title>N-0026 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="294.8" cy="351.2" r="2.4" fill="#52514e"><title>N-0027 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="298.0" cy="462.6" r="2.4" fill="#52514e"><title>N-0028 · barrio otro · grado 2</title></circle>
+<circle cx="300.9" cy="293.8" r="2.4" fill="#52514e"><title>N-0029 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="305.4" cy="260.9" r="2.4" fill="#52514e"><title>N-0030 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="305.8" cy="207.8" r="2.4" fill="#52514e"><title>N-0031 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="307.4" cy="464.5" r="2.4" fill="#52514e"><title>N-0032 · barrio otro · grado 2</title></circle>
+<circle cx="308.2" cy="242.5" r="2.4" fill="#52514e"><title>N-0033 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="309.8" cy="296.5" r="2.4" fill="#52514e"><title>N-0034 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="313.1" cy="209.7" r="2.4" fill="#52514e"><title>N-0035 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="316.1" cy="262.2" r="2.4" fill="#52514e"><title>N-0036 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="318.7" cy="244.2" r="2.4" fill="#52514e"><title>N-0037 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="323.4" cy="211.2" r="2.4" fill="#52514e"><title>N-0038 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="324.9" cy="201.0" r="2.4" fill="#52514e"><title>N-0039 · barrio barbasquillo · grado 5</title></circle>
+<circle cx="326.6" cy="263.8" r="2.4" fill="#52514e"><title>N-0040 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="329.3" cy="245.6" r="2.4" fill="#52514e"><title>N-0041 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="334.2" cy="212.9" r="2.4" fill="#52514e"><title>N-0042 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="336.4" cy="197.3" r="2.4" fill="#52514e"><title>N-0043 · barrio otro · grado 3</title></circle>
+<circle cx="336.7" cy="265.3" r="2.4" fill="#52514e"><title>N-0044 · barrio barbasquillo · grado 3</title></circle>
+<circle cx="339.4" cy="247.1" r="2.4" fill="#52514e"><title>N-0045 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="344.1" cy="214.4" r="2.4" fill="#52514e"><title>N-0046 · barrio otro · grado 4</title></circle>
+<circle cx="347.2" cy="193.3" r="2.4" fill="#52514e"><title>N-0047 · barrio otro · grado 3</title></circle>
+<circle cx="348.4" cy="442.8" r="2.4" fill="#52514e"><title>N-0048 · barrio otro · grado 2</title></circle>
+<circle cx="349.4" cy="366.1" r="2.4" fill="#52514e"><title>N-0049 · barrio otro · grado 3</title></circle>
+<circle cx="349.4" cy="248.6" r="2.4" fill="#52514e"><title>N-0050 · barrio barbasquillo · grado 4</title></circle>
+<circle cx="363.9" cy="442.9" r="2.4" fill="#52514e"><title>N-0051 · barrio otro · grado 2</title></circle>
+<circle cx="369.8" cy="251.3" r="2.4" fill="#52514e"><title>N-0052 · barrio otro · grado 3</title></circle>
+<circle cx="379.1" cy="179.9" r="2.4" fill="#52514e"><title>N-0053 · barrio otro · grado 4</title></circle>
+<circle cx="383.6" cy="189.5" r="2.4" fill="#52514e"><title>N-0054 · barrio otro · grado 3</title></circle>
+<circle cx="391.0" cy="270.0" r="2.4" fill="#52514e"><title>N-0055 · barrio otro · grado 3</title></circle>
+<circle cx="400.3" cy="261.7" r="2.4" fill="#52514e"><title>N-0056 · barrio otro · grado 3</title></circle>
+<circle cx="408.6" cy="359.6" r="2.4" fill="#52514e"><title>N-0057 · barrio otro · grado 3</title></circle>
+<circle cx="415.9" cy="236.5" r="2.4" fill="#52514e"><title>N-0058 · barrio otro · grado 3</title></circle>
+<circle cx="419.4" cy="244.4" r="2.4" fill="#52514e"><title>N-0059 · barrio otro · grado 4</title></circle>
+<circle cx="420.6" cy="466.1" r="2.4" fill="#52514e"><title>N-0060 · barrio otro · grado 3</title></circle>
+<circle cx="423.9" cy="454.5" r="2.4" fill="#52514e"><title>N-0061 · barrio otro · grado 3</title></circle>
+<circle cx="426.9" cy="237.2" r="2.4" fill="#52514e"><title>N-0062 · barrio otro · grado 3</title></circle>
+<circle cx="435.8" cy="226.9" r="2.4" fill="#52514e"><title>N-0063 · barrio otro · grado 3</title></circle>
+<circle cx="449.7" cy="469.4" r="2.4" fill="#52514e"><title>N-0064 · barrio otro · grado 7</title></circle>
+<circle cx="474.9" cy="180.4" r="2.4" fill="#52514e"><title>N-0065 · barrio otro · grado 3</title></circle>
+<circle cx="483.1" cy="331.6" r="2.4" fill="#52514e"><title>N-0066 · barrio otro · grado 3</title></circle>
+<circle cx="488.6" cy="343.9" r="2.4" fill="#52514e"><title>N-0067 · barrio otro · grado 3</title></circle>
+<circle cx="494.4" cy="357.4" r="2.4" fill="#52514e"><title>N-0068 · barrio otro · grado 3</title></circle>
+<circle cx="494.9" cy="506.9" r="2.4" fill="#52514e"><title>N-0069 · barrio otro · grado 3</title></circle>
+<circle cx="507.3" cy="516.6" r="2.4" fill="#52514e"><title>N-0070 · barrio otro · grado 6</title></circle>
+<circle cx="516.1" cy="504.5" r="2.4" fill="#52514e"><title>N-0071 · barrio otro · grado 3</title></circle>
+<circle cx="517.4" cy="304.2" r="2.4" fill="#52514e"><title>N-0072 · barrio otro · grado 3</title></circle>
+<circle cx="519.5" cy="174.1" r="2.4" fill="#52514e"><title>N-0073 · barrio otro · grado 3</title></circle>
+<circle cx="519.9" cy="526.7" r="2.4" fill="#52514e"><title>N-0074 · barrio otro · grado 3</title></circle>
+<circle cx="520.3" cy="503.1" r="2.4" fill="#52514e"><title>N-0075 · barrio otro · grado 3</title></circle>
+<circle cx="525.1" cy="315.7" r="2.4" fill="#52514e"><title>N-0076 · barrio otro · grado 4</title></circle>
+<circle cx="529.9" cy="174.0" r="2.4" fill="#52514e"><title>N-0077 · barrio otro · grado 3</title></circle>
+<circle cx="535.5" cy="172.7" r="2.4" fill="#52514e"><title>N-0078 · barrio otro · grado 3</title></circle>
+<circle cx="536.5" cy="333.7" r="2.4" fill="#52514e"><title>N-0079 · barrio otro · grado 3</title></circle>
+<circle cx="539.6" cy="545.6" r="2.4" fill="#52514e"><title>N-0080 · barrio otro · grado 4</title></circle>
+<circle cx="544.7" cy="122.2" r="2.4" fill="#52514e"><title>N-0081 · barrio otro · grado 3</title></circle>
+<circle cx="547.4" cy="639.8" r="2.4" fill="#52514e"><title>N-0082 · barrio otro · grado 2</title></circle>
+<circle cx="550.4" cy="328.2" r="2.4" fill="#52514e"><title>N-0083 · barrio otro · grado 3</title></circle>
+<circle cx="577.7" cy="255.6" r="2.4" fill="#52514e"><title>N-0084 · barrio otro · grado 4</title></circle>
+<circle cx="578.0" cy="432.3" r="2.4" fill="#52514e"><title>N-0085 · barrio otro · grado 3</title></circle>
+<circle cx="586.3" cy="266.8" r="2.4" fill="#52514e"><title>N-0086 · barrio otro · grado 4</title></circle>
+<circle cx="587.5" cy="423.5" r="2.4" fill="#52514e"><title>N-0087 · barrio otro · grado 3</title></circle>
+<circle cx="590.1" cy="426.1" r="2.4" fill="#52514e"><title>N-0088 · barrio otro · grado 3</title></circle>
+<circle cx="596.4" cy="523.7" r="2.4" fill="#52514e"><title>N-0089 · barrio otro · grado 2</title></circle>
+<circle cx="610.7" cy="298.9" r="2.4" fill="#52514e"><title>N-0090 · barrio otro · grado 3</title></circle>
+<circle cx="611.6" cy="403.7" r="2.4" fill="#52514e"><title>N-0091 · barrio otro · grado 3</title></circle>
+<circle cx="619.7" cy="395.1" r="2.4" fill="#52514e"><title>N-0092 · barrio otro · grado 6</title></circle>
+<circle cx="624.1" cy="403.7" r="2.4" fill="#52514e"><title>N-0093 · barrio otro · grado 3</title></circle>
+<circle cx="624.9" cy="402.5" r="2.4" fill="#52514e"><title>N-0094 · barrio otro · grado 3</title></circle>
+<circle cx="628.4" cy="390.6" r="2.4" fill="#52514e"><title>N-0095 · barrio otro · grado 3</title></circle>
+<circle cx="628.8" cy="410.8" r="2.4" fill="#52514e"><title>N-0096 · barrio otro · grado 3</title></circle>
+<circle cx="629.4" cy="383.8" r="2.4" fill="#52514e"><title>N-0097 · barrio otro · grado 3</title></circle>
+<circle cx="632.1" cy="685.5" r="2.4" fill="#52514e"><title>N-0098 · barrio otro · grado 2</title></circle>
+<circle cx="644.4" cy="198.7" r="2.4" fill="#52514e"><title>N-0099 · barrio otro · grado 4</title></circle>
+<circle cx="646.6" cy="114.0" r="2.4" fill="#52514e"><title>N-0100 · barrio otro · grado 3</title></circle>
+<circle cx="652.2" cy="353.6" r="2.4" fill="#52514e"><title>N-0101 · barrio otro · grado 3</title></circle>
+<circle cx="653.6" cy="367.4" r="2.4" fill="#52514e"><title>N-0102 · barrio otro · grado 3</title></circle>
+<circle cx="656.2" cy="212.8" r="2.4" fill="#52514e"><title>N-0103 · barrio otro · grado 3</title></circle>
+<circle cx="658.6" cy="186.3" r="2.4" fill="#52514e"><title>N-0104 · barrio otro · grado 3</title></circle>
+<circle cx="658.9" cy="367.3" r="2.4" fill="#52514e"><title>N-0105 · barrio otro · grado 3</title></circle>
+<circle cx="665.0" cy="180.8" r="2.4" fill="#52514e"><title>N-0106 · barrio otro · grado 3</title></circle>
+<circle cx="665.0" cy="494.4" r="2.4" fill="#52514e"><title>N-0107 · barrio otro · grado 3</title></circle>
+<circle cx="671.6" cy="200.6" r="2.4" fill="#52514e"><title>N-0108 · barrio otro · grado 3</title></circle>
+<circle cx="679.2" cy="194.7" r="2.4" fill="#52514e"><title>N-0109 · barrio otro · grado 4</title></circle>
+<circle cx="681.8" cy="347.7" r="2.4" fill="#52514e"><title>N-0110 · barrio otro · grado 3</title></circle>
+<circle cx="699.2" cy="149.5" r="2.4" fill="#52514e"><title>N-0111 · barrio otro · grado 4</title></circle>
+<circle cx="705.5" cy="334.7" r="2.4" fill="#52514e"><title>N-0112 · barrio otro · grado 3</title></circle>
+<circle cx="714.4" cy="547.2" r="2.4" fill="#52514e"><title>N-0113 · barrio otro · grado 2</title></circle>
+<circle cx="717.5" cy="161.1" r="2.4" fill="#52514e"><title>N-0114 · barrio otro · grado 3</title></circle>
+<circle cx="718.6" cy="332.4" r="2.4" fill="#52514e"><title>N-0115 · barrio otro · grado 3</title></circle>
+<circle cx="720.3" cy="728.3" r="2.4" fill="#52514e"><title>N-0116 · barrio otro · grado 3</title></circle>
+<circle cx="724.9" cy="163.7" r="2.4" fill="#52514e"><title>N-0117 · barrio otro · grado 3</title></circle>
+<circle cx="742.9" cy="299.7" r="2.4" fill="#52514e"><title>N-0118 · barrio tarqui · grado 3</title></circle>
+<circle cx="749.7" cy="261.8" r="2.4" fill="#52514e"><title>N-0119 · barrio tarqui · grado 3</title></circle>
+<circle cx="753.0" cy="306.9" r="2.4" fill="#52514e"><title>N-0120 · barrio tarqui · grado 4</title></circle>
+<circle cx="755.3" cy="603.8" r="2.4" fill="#52514e"><title>N-0121 · barrio otro · grado 3</title></circle>
+<circle cx="760.8" cy="233.5" r="2.4" fill="#52514e"><title>N-0122 · barrio tarqui · grado 3</title></circle>
+<circle cx="761.2" cy="253.1" r="2.4" fill="#52514e"><title>N-0123 · barrio tarqui · grado 3</title></circle>
+<circle cx="763.7" cy="236.8" r="2.4" fill="#52514e"><title>N-0124 · barrio tarqui · grado 3</title></circle>
+<circle cx="765.3" cy="263.4" r="2.4" fill="#52514e"><title>N-0125 · barrio tarqui · grado 4</title></circle>
+<circle cx="767.1" cy="277.7" r="2.4" fill="#52514e"><title>N-0126 · barrio tarqui · grado 5</title></circle>
+<circle cx="773.8" cy="273.0" r="2.4" fill="#52514e"><title>N-0127 · barrio tarqui · grado 3</title></circle>
+<circle cx="776.6" cy="807.2" r="2.4" fill="#52514e"><title>N-0128 · barrio otro · grado 3</title></circle>
+<circle cx="777.2" cy="276.6" r="2.4" fill="#52514e"><title>N-0129 · barrio tarqui · grado 5</title></circle>
+<circle cx="778.7" cy="624.0" r="2.4" fill="#52514e"><title>N-0130 · barrio otro · grado 3</title></circle>
+<circle cx="785.1" cy="287.6" r="2.4" fill="#52514e"><title>N-0131 · barrio tarqui · grado 6</title></circle>
+<circle cx="786.9" cy="277.1" r="2.4" fill="#52514e"><title>N-0132 · barrio tarqui · grado 3</title></circle>
+<circle cx="789.3" cy="292.5" r="2.4" fill="#52514e"><title>N-0133 · barrio tarqui · grado 3</title></circle>
+<circle cx="789.8" cy="290.9" r="2.4" fill="#52514e"><title>N-0134 · barrio tarqui · grado 3</title></circle>
+<circle cx="795.8" cy="814.8" r="2.4" fill="#52514e"><title>N-0135 · barrio otro · grado 3</title></circle>
+<circle cx="798.7" cy="324.0" r="2.4" fill="#52514e"><title>N-0136 · barrio tarqui · grado 3</title></circle>
+<circle cx="801.1" cy="653.6" r="2.4" fill="#52514e"><title>N-0137 · barrio otro · grado 2</title></circle>
+<circle cx="801.9" cy="303.1" r="2.4" fill="#52514e"><title>N-0138 · barrio tarqui · grado 3</title></circle>
+<circle cx="803.5" cy="298.9" r="2.4" fill="#52514e"><title>N-0139 · barrio tarqui · grado 3</title></circle>
+<circle cx="821.4" cy="530.1" r="2.4" fill="#52514e"><title>N-0140 · barrio jocay · grado 3</title></circle>
+<circle cx="824.4" cy="327.2" r="2.4" fill="#52514e"><title>N-0141 · barrio tarqui · grado 3</title></circle>
+<circle cx="825.6" cy="334.6" r="2.4" fill="#52514e"><title>N-0142 · barrio tarqui · grado 5</title></circle>
+<circle cx="826.4" cy="595.6" r="2.4" fill="#52514e"><title>N-0143 · barrio otro · grado 3</title></circle>
+<circle cx="830.4" cy="323.8" r="2.4" fill="#52514e"><title>N-0144 · barrio tarqui · grado 4</title></circle>
+<circle cx="833.6" cy="416.5" r="2.4" fill="#52514e"><title>N-0145 · barrio jocay · grado 3</title></circle>
+<circle cx="834.5" cy="455.7" r="2.4" fill="#52514e"><title>N-0146 · barrio jocay · grado 3</title></circle>
+<circle cx="837.5" cy="302.1" r="2.4" fill="#52514e"><title>N-0147 · barrio tarqui · grado 4</title></circle>
+<circle cx="842.4" cy="410.7" r="2.4" fill="#52514e"><title>N-0148 · barrio jocay · grado 3</title></circle>
+<circle cx="844.4" cy="359.9" r="2.4" fill="#52514e"><title>N-0149 · barrio tarqui · grado 3</title></circle>
+<circle cx="847.2" cy="743.4" r="2.4" fill="#52514e"><title>N-0150 · barrio otro · grado 2</title></circle>
+<circle cx="850.5" cy="405.2" r="2.4" fill="#52514e"><title>N-0151 · barrio jocay · grado 3</title></circle>
+<circle cx="851.8" cy="444.2" r="2.4" fill="#52514e"><title>N-0152 · barrio jocay · grado 4</title></circle>
+<circle cx="852.1" cy="365.8" r="2.4" fill="#52514e"><title>N-0153 · barrio tarqui · grado 3</title></circle>
+<circle cx="855.3" cy="487.5" r="2.4" fill="#52514e"><title>N-0154 · barrio jocay · grado 3</title></circle>
+<circle cx="855.6" cy="376.8" r="2.4" fill="#52514e"><title>N-0155 · barrio tarqui · grado 3</title></circle>
+<circle cx="857.7" cy="362.0" r="2.4" fill="#52514e"><title>N-0156 · barrio tarqui · grado 3</title></circle>
+<circle cx="858.7" cy="399.7" r="2.4" fill="#52514e"><title>N-0157 · barrio jocay · grado 4</title></circle>
+<circle cx="860.6" cy="438.5" r="2.4" fill="#52514e"><title>N-0158 · barrio jocay · grado 4</title></circle>
+<circle cx="864.7" cy="758.8" r="2.4" fill="#52514e"><title>N-0159 · barrio otro · grado 2</title></circle>
+<circle cx="864.9" cy="279.2" r="2.4" fill="#52514e"><title>N-0160 · barrio tarqui · grado 2</title></circle>
+<circle cx="866.2" cy="503.7" r="2.4" fill="#52514e"><title>N-0161 · barrio jocay · grado 3</title></circle>
+<circle cx="867.6" cy="393.9" r="2.4" fill="#52514e"><title>N-0162 · barrio jocay · grado 4</title></circle>
+<circle cx="868.8" cy="433.0" r="2.4" fill="#52514e"><title>N-0163 · barrio jocay · grado 4</title></circle>
+<circle cx="869.7" cy="281.1" r="2.4" fill="#52514e"><title>N-0164 · barrio tarqui · grado 2</title></circle>
+<circle cx="871.6" cy="609.5" r="2.4" fill="#52514e"><title>N-0165 · barrio otro · grado 3</title></circle>
+<circle cx="877.1" cy="427.5" r="2.4" fill="#52514e"><title>N-0166 · barrio jocay · grado 4</title></circle>
+<circle cx="877.8" cy="386.7" r="2.4" fill="#52514e"><title>N-0167 · barrio tarqui · grado 3</title></circle>
+<circle cx="879.0" cy="800.4" r="2.4" fill="#52514e"><title>N-0168 · barrio otro · grado 2</title></circle>
+<circle cx="879.9" cy="573.1" r="2.4" fill="#52514e"><title>N-0169 · barrio jocay · grado 3</title></circle>
+<circle cx="883.2" cy="492.4" r="2.4" fill="#52514e"><title>N-0170 · barrio jocay · grado 3</title></circle>
+<circle cx="886.7" cy="421.2" r="2.4" fill="#52514e"><title>N-0171 · barrio jocay · grado 4</title></circle>
+<circle cx="890.4" cy="403.2" r="2.4" fill="#52514e"><title>N-0172 · barrio jocay · grado 3</title></circle>
+<circle cx="891.9" cy="486.5" r="2.4" fill="#52514e"><title>N-0173 · barrio jocay · grado 4</title></circle>
+<circle cx="900.1" cy="481.0" r="2.4" fill="#52514e"><title>N-0174 · barrio jocay · grado 4</title></circle>
+<circle cx="903.0" cy="542.7" r="2.4" fill="#52514e"><title>N-0175 · barrio jocay · grado 3</title></circle>
+<circle cx="908.5" cy="475.6" r="2.4" fill="#52514e"><title>N-0176 · barrio jocay · grado 4</title></circle>
+<circle cx="917.5" cy="553.8" r="2.4" fill="#52514e"><title>N-0177 · barrio jocay · grado 4</title></circle>
+<circle cx="918.6" cy="680.5" r="2.4" fill="#52514e"><title>N-0178 · barrio otro · grado 4</title></circle>
+<circle cx="921.7" cy="518.9" r="2.4" fill="#52514e"><title>N-0179 · barrio jocay · grado 3</title></circle>
+<circle cx="927.1" cy="512.0" r="2.4" fill="#52514e"><title>N-0180 · barrio jocay · grado 4</title></circle>
+<circle cx="927.6" cy="462.1" r="2.4" fill="#52514e"><title>N-0181 · barrio jocay · grado 3</title></circle>
+<circle cx="933.7" cy="703.2" r="2.4" fill="#52514e"><title>N-0182 · barrio otro · grado 4</title></circle>
+<circle cx="934.3" cy="502.7" r="2.4" fill="#52514e"><title>N-0183 · barrio jocay · grado 3</title></circle>
+<circle cx="941.4" cy="860.0" r="2.4" fill="#52514e"><title>N-0184 · barrio otro · grado 2</title></circle>
+<circle cx="942.5" cy="522.2" r="2.4" fill="#52514e"><title>N-0185 · barrio jocay · grado 4</title></circle>
+<circle cx="943.8" cy="290.0" r="2.4" fill="#52514e"><title>N-0186 · barrio tarqui · grado 3</title></circle>
+<circle cx="945.5" cy="488.1" r="2.4" fill="#52514e"><title>N-0187 · barrio jocay · grado 3</title></circle>
+<circle cx="950.5" cy="470.5" r="2.4" fill="#52514e"><title>N-0188 · barrio jocay · grado 3</title></circle>
+<circle cx="952.6" cy="283.9" r="2.4" fill="#52514e"><title>N-0189 · barrio tarqui · grado 6</title></circle>
+<circle cx="953.7" cy="289.2" r="2.4" fill="#52514e"><title>N-0190 · barrio tarqui · grado 3</title></circle>
+<circle cx="954.8" cy="445.5" r="2.4" fill="#52514e"><title>N-0191 · barrio jocay · grado 3</title></circle>
+<circle cx="955.1" cy="475.8" r="2.4" fill="#52514e"><title>N-0192 · barrio jocay · grado 4</title></circle>
+<circle cx="958.0" cy="308.7" r="2.4" fill="#52514e"><title>N-0193 · barrio tarqui · grado 3</title></circle>
+<circle cx="958.4" cy="741.6" r="2.4" fill="#52514e"><title>N-0194 · barrio otro · grado 4</title></circle>
+<circle cx="959.9" cy="501.1" r="2.4" fill="#52514e"><title>N-0195 · barrio jocay · grado 4</title></circle>
+<circle cx="962.6" cy="332.1" r="2.4" fill="#52514e"><title>N-0196 · barrio tarqui · grado 4</title></circle>
+<circle cx="964.3" cy="339.8" r="2.4" fill="#52514e"><title>N-0197 · barrio tarqui · grado 4</title></circle>
+<circle cx="966.4" cy="638.5" r="2.4" fill="#52514e"><title>N-0198 · barrio otro · grado 4</title></circle>
+<circle cx="967.9" cy="491.8" r="2.4" fill="#52514e"><title>N-0199 · barrio jocay · grado 4</title></circle>
+<circle cx="969.6" cy="457.2" r="2.4" fill="#52514e"><title>N-0200 · barrio jocay · grado 3</title></circle>
+<circle cx="972.3" cy="513.5" r="2.4" fill="#52514e"><title>N-0201 · barrio jocay · grado 4</title></circle>
+<circle cx="974.2" cy="767.5" r="2.4" fill="#52514e"><title>N-0202 · barrio otro · grado 3</title></circle>
+<circle cx="978.6" cy="505.6" r="2.4" fill="#52514e"><title>N-0203 · barrio jocay · grado 3</title></circle>
+<circle cx="978.8" cy="280.0" r="2.4" fill="#52514e"><title>N-0204 · barrio tarqui · grado 3</title></circle>
+<circle cx="979.8" cy="306.3" r="2.4" fill="#52514e"><title>N-0205 · barrio tarqui · grado 4</title></circle>
+<circle cx="980.5" cy="345.9" r="2.4" fill="#52514e"><title>N-0206 · barrio tarqui · grado 4</title></circle>
+<circle cx="980.5" cy="626.9" r="2.4" fill="#52514e"><title>N-0207 · barrio otro · grado 4</title></circle>
+<circle cx="980.5" cy="336.5" r="2.4" fill="#52514e"><title>N-0208 · barrio tarqui · grado 4</title></circle>
+<circle cx="980.7" cy="417.1" r="2.4" fill="#52514e"><title>N-0209 · barrio jocay · grado 3</title></circle>
+<circle cx="984.7" cy="662.3" r="2.4" fill="#52514e"><title>N-0210 · barrio otro · grado 4</title></circle>
+<circle cx="985.7" cy="470.2" r="2.4" fill="#52514e"><title>N-0211 · barrio jocay · grado 3</title></circle>
+<circle cx="988.8" cy="941.8" r="2.4" fill="#52514e"><title>N-0212 · barrio otro · grado 3</title></circle>
+<circle cx="992.9" cy="402.0" r="2.4" fill="#52514e"><title>N-0213 · barrio otro · grado 3</title></circle>
+<circle cx="999.0" cy="651.0" r="2.4" fill="#52514e"><title>N-0214 · barrio otro · grado 4</title></circle>
+<circle cx="999.2" cy="947.8" r="2.4" fill="#52514e"><title>N-0215 · barrio otro · grado 3</title></circle>
+<circle cx="1004.0" cy="809.9" r="2.4" fill="#52514e"><title>N-0216 · barrio otro · grado 3</title></circle>
+<circle cx="1011.6" cy="696.5" r="2.4" fill="#52514e"><title>N-0217 · barrio otro · grado 3</title></circle>
+<circle cx="1012.7" cy="357.6" r="2.4" fill="#52514e"><title>N-0218 · barrio otro · grado 4</title></circle>
+<circle cx="1016.1" cy="344.8" r="2.4" fill="#52514e"><title>N-0219 · barrio otro · grado 3</title></circle>
+<circle cx="1025.5" cy="684.6" r="2.4" fill="#52514e"><title>N-0220 · barrio otro · grado 3</title></circle>
+<circle cx="1026.0" cy="583.0" r="2.4" fill="#52514e"><title>N-0221 · barrio otro · grado 3</title></circle>
+<circle cx="1026.2" cy="842.0" r="2.4" fill="#52514e"><title>N-0222 · barrio otro · grado 3</title></circle>
+<circle cx="1033.1" cy="825.6" r="2.4" fill="#52514e"><title>N-0223 · barrio otro · grado 3</title></circle>
+<circle cx="1034.9" cy="847.5" r="2.4" fill="#52514e"><title>N-0224 · barrio otro · grado 2</title></circle>
+<circle cx="1038.9" cy="524.7" r="2.4" fill="#52514e"><title>N-0225 · barrio otro · grado 3</title></circle>
+<circle cx="1050.1" cy="613.4" r="2.4" fill="#52514e"><title>N-0226 · barrio otro · grado 3</title></circle>
+<circle cx="1058.8" cy="607.1" r="2.4" fill="#52514e"><title>N-0227 · barrio otro · grado 3</title></circle>
+<circle cx="1063.8" cy="613.0" r="2.4" fill="#52514e"><title>N-0228 · barrio otro · grado 3</title></circle>
+<circle cx="1075.1" cy="985.9" r="2.4" fill="#52514e"><title>N-0229 · barrio otro · grado 2</title></circle>
+<circle cx="1076.1" cy="254.6" r="2.4" fill="#52514e"><title>N-0230 · barrio otro · grado 2</title></circle>
+<circle cx="1081.2" cy="255.0" r="2.4" fill="#52514e"><title>N-0231 · barrio otro · grado 2</title></circle>
+<circle cx="1082.4" cy="637.0" r="2.4" fill="#52514e"><title>N-0232 · barrio otro · grado 4</title></circle>
+<circle cx="1090.4" cy="587.2" r="2.4" fill="#52514e"><title>N-0233 · barrio otro · grado 4</title></circle>
+<circle cx="1091.0" cy="455.8" r="2.4" fill="#52514e"><title>N-0234 · barrio otro · grado 3</title></circle>
+<circle cx="1106.6" cy="435.2" r="2.4" fill="#52514e"><title>N-0235 · barrio otro · grado 3</title></circle>
+<circle cx="1111.6" cy="613.0" r="2.4" fill="#52514e"><title>N-0236 · barrio otro · grado 3</title></circle>
+<circle cx="1112.7" cy="533.8" r="2.4" fill="#52514e"><title>N-0237 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1113.0" cy="474.9" r="2.4" fill="#52514e"><title>N-0238 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1116.4" cy="864.4" r="2.4" fill="#52514e"><title>N-0239 · barrio otro · grado 2</title></circle>
+<circle cx="1128.6" cy="553.8" r="2.4" fill="#52514e"><title>N-0240 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1129.7" cy="509.6" r="2.4" fill="#52514e"><title>N-0241 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1133.0" cy="518.2" r="2.4" fill="#52514e"><title>N-0242 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1140.1" cy="533.8" r="2.4" fill="#52514e"><title>N-0243 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1143.7" cy="541.9" r="2.4" fill="#52514e"><title>N-0244 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1143.7" cy="389.4" r="2.4" fill="#52514e"><title>N-0245 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1145.8" cy="385.5" r="2.4" fill="#52514e"><title>N-0246 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1150.4" cy="504.5" r="2.4" fill="#52514e"><title>N-0247 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1151.4" cy="948.0" r="2.4" fill="#52514e"><title>N-0248 · barrio otro · grado 3</title></circle>
+<circle cx="1151.4" cy="497.8" r="2.4" fill="#52514e"><title>N-0249 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1154.1" cy="721.8" r="2.4" fill="#52514e"><title>N-0250 · barrio otro · grado 3</title></circle>
+<circle cx="1155.0" cy="477.3" r="2.4" fill="#52514e"><title>N-0251 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1169.3" cy="751.7" r="2.4" fill="#52514e"><title>N-0252 · barrio otro · grado 3</title></circle>
+<circle cx="1171.2" cy="488.0" r="2.4" fill="#52514e"><title>N-0253 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1176.2" cy="405.5" r="2.4" fill="#52514e"><title>N-0254 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1179.2" cy="775.4" r="2.4" fill="#52514e"><title>N-0255 · barrio otro · grado 3</title></circle>
+<circle cx="1182.3" cy="250.6" r="2.4" fill="#52514e"><title>N-0256 · barrio otro · grado 2</title></circle>
+<circle cx="1184.2" cy="500.0" r="2.4" fill="#52514e"><title>N-0257 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1190.1" cy="506.8" r="2.4" fill="#52514e"><title>N-0258 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1192.6" cy="369.3" r="2.4" fill="#52514e"><title>N-0259 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1196.1" cy="258.3" r="2.4" fill="#52514e"><title>N-0260 · barrio otro · grado 2</title></circle>
+<circle cx="1200.7" cy="829.1" r="2.4" fill="#52514e"><title>N-0261 · barrio otro · grado 3</title></circle>
+<circle cx="1204.5" cy="560.1" r="2.4" fill="#52514e"><title>N-0262 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1204.5" cy="520.0" r="2.4" fill="#52514e"><title>N-0263 · barrio los-esteros · grado 5</title></circle>
+<circle cx="1205.2" cy="423.6" r="2.4" fill="#52514e"><title>N-0264 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1215.7" cy="520.0" r="2.4" fill="#52514e"><title>N-0265 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1218.4" cy="762.8" r="2.4" fill="#52514e"><title>N-0266 · barrio otro · grado 4</title></circle>
+<circle cx="1221.1" cy="432.4" r="2.4" fill="#52514e"><title>N-0267 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1228.1" cy="565.1" r="2.4" fill="#52514e"><title>N-0268 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1232.6" cy="588.6" r="2.4" fill="#52514e"><title>N-0269 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1233.6" cy="913.5" r="2.4" fill="#52514e"><title>N-0270 · barrio otro · grado 3</title></circle>
+<circle cx="1237.4" cy="439.6" r="2.4" fill="#52514e"><title>N-0271 · barrio los-esteros · grado 5</title></circle>
+<circle cx="1243.5" cy="588.9" r="2.4" fill="#52514e"><title>N-0272 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1244.3" cy="367.7" r="2.4" fill="#52514e"><title>N-0273 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1246.5" cy="329.1" r="2.4" fill="#52514e"><title>N-0274 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1251.3" cy="448.6" r="2.4" fill="#52514e"><title>N-0275 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1251.3" cy="364.8" r="2.4" fill="#52514e"><title>N-0276 · barrio los-esteros · grado 5</title></circle>
+<circle cx="1255.3" cy="373.3" r="2.4" fill="#52514e"><title>N-0277 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1256.7" cy="630.4" r="2.4" fill="#52514e"><title>N-0278 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1269.5" cy="597.1" r="2.4" fill="#52514e"><title>N-0279 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1278.2" cy="587.6" r="2.4" fill="#52514e"><title>N-0280 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1281.9" cy="815.8" r="2.4" fill="#52514e"><title>N-0281 · barrio otro · grado 2</title></circle>
+<circle cx="1284.6" cy="610.8" r="2.4" fill="#52514e"><title>N-0282 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1299.0" cy="552.3" r="2.4" fill="#52514e"><title>N-0283 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1304.2" cy="538.3" r="2.4" fill="#52514e"><title>N-0284 · barrio los-esteros · grado 3</title></circle>
+<circle cx="1310.3" cy="468.6" r="2.4" fill="#52514e"><title>N-0285 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1340.7" cy="417.9" r="2.4" fill="#52514e"><title>N-0286 · barrio los-esteros · grado 2</title></circle>
+<circle cx="1343.6" cy="420.1" r="2.4" fill="#52514e"><title>N-0287 · barrio los-esteros · grado 2</title></circle>
+<circle cx="1345.1" cy="869.0" r="2.4" fill="#52514e"><title>N-0288 · barrio otro · grado 3</title></circle>
+<circle cx="1427.8" cy="793.7" r="2.4" fill="#52514e"><title>N-0289 · barrio otro · grado 2</title></circle>
+<circle cx="1445.2" cy="443.9" r="2.4" fill="#52514e"><title>N-0290 · barrio los-esteros · grado 4</title></circle>
+<circle cx="1488.9" cy="676.6" r="2.4" fill="#52514e"><title>N-0291 · barrio otro · grado 2</title></circle>
+<circle cx="1562.2" cy="565.6" r="2.4" fill="#52514e"><title>N-0292 · barrio otro · grado 2</title></circle>
+<circle cx="1564.0" cy="477.0" r="2.4" fill="#52514e"><title>N-0293 · barrio otro · grado 2</title></circle>
+<text x="196.6" y="110.3" font-size="15" fill="#0b0b0b" font-weight="700" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">BARBASQUILLO</text>
+<text x="196.6" y="126.3" font-size="12" fill="#52514e" font-weight="normal" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">38 nodos</text>
+<text x="867.3" y="157.2" font-size="15" fill="#0b0b0b" font-weight="700" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">TARQUI</text>
+<text x="867.3" y="173.2" font-size="12" fill="#52514e" font-weight="normal" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">38 nodos</text>
+<text x="851.1" y="610.5" font-size="15" fill="#0b0b0b" font-weight="700" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">JOCAY</text>
+<text x="851.1" y="626.5" font-size="12" fill="#52514e" font-weight="normal" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">38 nodos</text>
+<text x="1277.3" y="284.0" font-size="15" fill="#0b0b0b" font-weight="700" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">LOS ESTEROS</text>
+<text x="1277.3" y="300.0" font-size="12" fill="#52514e" font-weight="normal" text-anchor="middle" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">41 nodos</text>
+<line x1="329.7" y1="315.1" x2="309.8" y2="296.5" stroke="#0b0b0b" stroke-width="1.2"/>
+<path d="M329.7,309.1 l6,6 l-6,6 l-6,-6 z" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.4"/>
+<rect x="298.8" y="285.5" width="22" height="22" rx="4" fill="#0b0b0b"><title>R-1 · Universidad Laica Eloy Alfaro de Manabí (ULEAM) · N-0034</title></rect>
+<text x="309.8" y="301.0" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">R1</text>
+<text x="324.8" y="290.5" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">Universidad Laica Eloy Alfaro de Manabí (ULEAM)</text>
+<text x="324.8" y="306.5" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">R-1 · nodo N-0034</text>
+<line x1="1090.1" y1="517.1" x2="1112.7" y2="533.8" stroke="#0b0b0b" stroke-width="1.2"/>
+<path d="M1090.1,511.1 l6,6 l-6,6 l-6,-6 z" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.4"/>
+<rect x="1101.7" y="522.8" width="22" height="22" rx="4" fill="#0b0b0b"><title>R-2 · Estadio Jocay · N-0237</title></rect>
+<text x="1112.7" y="538.3" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">R2</text>
+<text x="1127.7" y="527.8" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">Estadio Jocay</text>
+<text x="1127.7" y="543.8" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">R-2 · nodo N-0237</text>
+<line x1="1245.8" y1="891.2" x2="1233.6" y2="913.5" stroke="#0b0b0b" stroke-width="1.2"/>
+<path d="M1245.8,885.2 l6,6 l-6,6 l-6,-6 z" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.4"/>
+<rect x="1222.6" y="902.5" width="22" height="22" rx="4" fill="#0b0b0b"><title>R-3 · Hospital General IESS Manta · N-0270</title></rect>
+<text x="1233.6" y="918.0" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">R3</text>
+<text x="1248.6" y="907.5" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">Hospital General IESS Manta</text>
+<text x="1248.6" y="923.5" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">R-3 · nodo N-0270</text>
+<line x1="790.6" y1="828.3" x2="795.8" y2="814.8" stroke="#0b0b0b" stroke-width="1.2"/>
+<path d="M790.6,822.3 l6,6 l-6,6 l-6,-6 z" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.4"/>
+<rect x="784.8" y="803.8" width="22" height="22" rx="4" fill="#0b0b0b"><title>R-4 · Colegio Réplica Manta · N-0135</title></rect>
+<text x="795.8" y="819.3" font-size="11" fill="#ffffff" font-weight="700" text-anchor="middle">R4</text>
+<text x="810.8" y="808.8" font-size="13" fill="#0b0b0b" font-weight="600" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">Colegio Réplica Manta</text>
+<text x="810.8" y="824.8" font-size="11" fill="#52514e" font-weight="normal" text-anchor="start" stroke="#ffffff" stroke-width="3.5" paint-order="stroke" stroke-linejoin="round">R-4 · nodo N-0135</text>
+<text x="36.0" y="34.0" font-size="22" fill="#0b0b0b" font-weight="700" text-anchor="start">Grafo vial de Manta · Escape de Manta Zombie</text>
+<text x="36.0" y="58.0" font-size="14" fill="#52514e" font-weight="normal" text-anchor="start">293 intersecciones · 476 calles · 33 puentes · 190 avenidas · 0 sin salida (0.0 %) · 4 refugios</text>
+<line x1="36" y1="1035.9423519024836" x2="70" y2="1035.9423519024836" stroke="#eb6834" stroke-width="3.2" stroke-linecap="round"/>
+<text x="78.0" y="1040.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">avenida · 50 km/h (190)</text>
+<line x1="286" y1="1035.9423519024836" x2="320" y2="1035.9423519024836" stroke="#2a78d6" stroke-width="1.8" stroke-linecap="round"/>
+<text x="328.0" y="1040.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">calle · 30 km/h (253)</text>
+<line x1="536" y1="1035.9423519024836" x2="570" y2="1035.9423519024836" stroke="#898781" stroke-width="1.2" stroke-linecap="round"/>
+<text x="578.0" y="1040.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">callejón · 15 km/h (0)</text>
+<line x1="786" y1="1035.9423519024836" x2="820" y2="1035.9423519024836" stroke="#0b0b0b" stroke-width="7.0" stroke-linecap="round"/>
+<line x1="786" y1="1035.9423519024836" x2="820" y2="1035.9423519024836" stroke="#1baf7a" stroke-width="4.6" stroke-linecap="round"/>
+<text x="828.0" y="1040.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">puente · 40 km/h (33)</text>
+<circle cx="42" cy="1065.9423519024836" r="2.4" fill="#52514e"/>
+<text x="52.0" y="1070.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">intersección</text>
+<circle cx="172" cy="1065.9423519024836" r="3.6" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.4"/>
+<text x="182.0" y="1070.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">sin salida</text>
+<rect x="281" y="1056.9423519024836" width="18" height="18" rx="3" fill="#0b0b0b"/>
+<path d="M316,1059.9423519024836 l6,6 l-6,6 l-6,-6 z" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.4"/>
+<text x="328.0" y="1070.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">refugio: nodo del juego (cuadro) y lugar real (rombo)</text>
+<circle cx="726" cy="1065.9423519024836" r="9" fill="#f0efec" stroke="#c3c2b7"/>
+<text x="741.0" y="1070.4" font-size="13" fill="#0b0b0b" font-weight="normal" text-anchor="start">barrio (radio usado; cada nodo va al centroide más cercano)</text>
+<line x1="1403.4" y1="1095.9423519024836" x2="1564" y2="1095.9423519024836" stroke="#0b0b0b" stroke-width="2"/>
+<line x1="1403.4" y1="1090.9423519024836" x2="1403.4" y2="1100.9423519024836" stroke="#0b0b0b" stroke-width="2"/>
+<line x1="1564" y1="1090.9423519024836" x2="1564" y2="1100.9423519024836" stroke="#0b0b0b" stroke-width="2"/>
+<text x="1483.7" y="1087.9" font-size="12" fill="#0b0b0b" font-weight="600" text-anchor="middle">1 km</text>
+<text x="36.0" y="1101.9" font-size="12" fill="#52514e" font-weight="normal" text-anchor="start">Datos © colaboradores de OpenStreetMap (ODbL) · base OSM 2026-10-27T16:07:54Z · calles dibujadas como recta entre nodos, igual que en el juego</text>
+</svg>
