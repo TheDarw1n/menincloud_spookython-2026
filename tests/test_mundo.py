@@ -199,3 +199,15 @@ def test_la_ruta_del_mapa_empieza_con_el_mismo_paso_que_paso():
     m.publicar_zombies(1, [z("Z", "caminante", "N-0012", previo="N-0011", pasos=[("N-0011", "N-0012")])], [])
     paso = m.planner.siguiente_nodo("N-0012", "S")
     assert paso != "N-0011" and m.planner.ruta("N-0012", "S")[:2] == ["N-0012", paso]
+
+
+def test_texto_de_eventos_con_y_sin_nombre_de_calle():
+    from src.world import events
+    g = _grafo([("A", "B", 100), ("B", "C", 100), ("A", "C", 100)], ["C"])
+    g.calles["E0"]["tipo"] = "puente"
+    g.calles["E1"].update(tipo="puente", nombre="Av. de la Cultura")
+    bloq = []
+    ev = events.aplicar(g, [(1, "puente")], 1, bloq, random.Random(0), uso={"E1": 5})
+    assert ev[0]["texto"] == "Colapsó el puente Av. de la Cultura (E1)"
+    ev = events.aplicar(g, [(2, "puente")], 2, bloq, random.Random(0))
+    assert ev[0]["texto"] == "Colapsó un puente (E0)"

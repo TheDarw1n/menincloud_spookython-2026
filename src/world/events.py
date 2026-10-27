@@ -1,6 +1,7 @@
 """Eventos de ciudad: un puente colapsa o una avenida se bloquea (la arista desaparece en vivo)."""
 
-TEXTO = {"puente": "Colapsó el puente", "avenida": "Se bloqueó la avenida"}
+TEXTO = {"puente": ("Colapsó el puente", "Colapsó un puente"),
+         "avenida": ("Se bloqueó la avenida", "Se bloqueó una avenida")}
 
 
 def _alcanzables(grafo, bloqueadas, origenes):
@@ -44,6 +45,7 @@ def aplicar(grafo, eventos, turno, bloqueadas, rng, uso=None):
         elegida = rng.choice(sorted(c for c in candidatas if uso.get(c, 0) == maximo))
         bloqueadas.append(elegida)
         nombre = grafo.calles[elegida].get("nombre")
-        texto = f"{TEXTO.get(tipo, 'Se cerró la calle')} {nombre or elegida}"
+        con, sin = TEXTO.get(tipo, ("Se cerró la calle", "Se cerró una calle"))
+        texto = f"{con} {nombre} ({elegida})" if nombre else f"{sin} ({elegida})"
         ocurridos.append({"turno": turno, "tipo": tipo, "arista": elegida, "texto": texto})
     return ocurridos
