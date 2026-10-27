@@ -151,13 +151,22 @@ async def estado():
     return Response(content=MUNDO.json_estado(), media_type="application/json")
 
 
+MAX_WS = int(os.environ.get("MAX_WS", "100"))  # visores simultaneos; el resto cae a polling
+_visores = 0
+
+
 @app.websocket("/ws")
 async def ws(websocket: WebSocket):
+    global _visores
     publico = os.environ.get("PUBLIC_STATE", "true").lower() != "false"
     if not publico and not key_valida(websocket.headers.get("x-api-key") or websocket.query_params.get("key")):
         await websocket.close(code=4401)
         return
+    if _visores >= MAX_WS:
+        await websocket.close(code=1013)  # "intenta mas tarde": el mapa sigue por polling a /estado
+        return
     await websocket.accept()
+    _visores += 1
     ultimo, silencio = None, 0
     try:
         while True:
@@ -172,6 +181,8 @@ async def ws(websocket: WebSocket):
             silencio += 1
     except (WebSocketDisconnect, RuntimeError):
         pass
+    finally:
+        _visores -= 1
 
 
 # Control del simulador. Van bajo /ws/ porque el plan Free de CloudFront permite solo 5

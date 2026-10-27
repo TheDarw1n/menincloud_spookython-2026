@@ -97,3 +97,18 @@ def test_paso_valida_tipos_y_tamano():
 
 def test_docs_apagados_por_defecto():
     assert c.get("/docs").status_code == 404 and c.get("/openapi.json").status_code == 404
+
+
+def test_websocket_limita_visores(monkeypatch):
+    import pytest
+    from starlette.websockets import WebSocketDisconnect
+
+    import src.api.main as api
+    monkeypatch.setattr(api, "MAX_WS", 1)
+    with c.websocket_connect("/ws") as uno:
+        assert "turno" in uno.receive_json()
+        with pytest.raises(WebSocketDisconnect):
+            with c.websocket_connect("/ws") as dos:
+                dos.receive_json()
+    with c.websocket_connect("/ws") as otra:  # al cerrarse el primero se libera el cupo
+        assert "turno" in otra.receive_json()
