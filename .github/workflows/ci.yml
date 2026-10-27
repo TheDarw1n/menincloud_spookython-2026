@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - run: pytest -q
+      - name: Validar el grafo de Manta
+        run: python tools/validar_grafo.py data/manta_graph.json
+
+  carga:
+    # Emula la tarea de Fargate: 1 contenedor con 0.5 vCPU y 1 GB, el simulador interno llamando
+    # POST /paso por HTTP (SIM_MODO=http, 200 a la vez en la ronda 3) y luego carga externa.
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Construir y levantar el contenedor con 0.5 vCPU y 1 GB
+        run: |
+          docker build -t manta .
+          docker run -d --name manta --cpus 0.5 --memory 1g -p 8000:8000 \
+            -e API_KEY=ci -e SIM_MODO=http -e TURNOS_RONDA=30 manta
+          for i in $(seq 1 30); do curl -sf localhost:8000/salud && break; sleep 1; done
+      - name: Las 3 rondas seguidas (30 turnos de 2 s cada una) con el simulador por HTTP
+        run: |
+          curl -sf -X POST "localhost:8000/ws/sim/iniciar?ronda=ciclo" -H "x-api-key: ci"
+          for i in $(seq 1 60); do
+            sleep 5
+            corriendo=$(curl -sf localhost:8000/ws/sim/resultados -H "x-api-key: ci" | python -c "import json,sys; print(json.load(sys.stdin)['corriendo'])")
+            [ "$corriendo" = "False" ] && break
+          done
+          curl -sf localhost:8000/ws/sim/resultados -H "x-api-key: ci" > resultados.json
+          echo "## Prueba de fuego en contenedor de 0.5 vCPU (30 turnos por ronda)" >> "$GITHUB_STEP_SUMMARY"
+          python tools/resumen_resultados.py < resultados.json | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Carga externa con latency.py (20, 80 y 200 a la vez, un turno cada 2 s)
+        run: |
+          echo '## Carga externa (latency.py)' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          python -m src.simulator.latency http://127.0.0.1:8000 ci --niveles 20,80,200 --turnos 10 --intervalo 2 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Logs del contenedor
+        if: always()
+        run: docker logs manta 2>&1 | tail -40
