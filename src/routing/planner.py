@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 from ..world.zombies import zonas_horda
-from . import riesgo
+from . import capacidad, riesgo
 from .dijkstra import INF, dijkstra_inverso
 
 ESPERA_S = 20.0  # costo de quedarse quieto un turno (~ lo que toma una calle a pie)
@@ -15,7 +15,9 @@ class Snapshot:
     prohibidos: frozenset = frozenset()          # nodos letales: zombie visible o zona de horda
     bloqueadas: frozenset = frozenset()          # calles cerradas por eventos
     cruces: frozenset = frozenset()              # pasos (u, v) que se cruzan con un zombie en la misma calle
-    penal: dict = field(default_factory=dict)    # nodo -> segundos extra (cercania a zombies)
+    penal: dict = field(default_factory=dict)    # nodo -> segundos extra (trampas y prediccion)
+    asignacion: dict = field(default_factory=dict)  # sobreviviente -> refugio (PRO capacidad)
+    llenos: frozenset = frozenset()                 # refugios sin cupo en este turno
 
 
 class Planner:
@@ -23,9 +25,10 @@ class Planner:
     turno) a partir del estado publicado. Los snapshots son inmutables y se reemplazan de forma
     atomica, asi que /paso los lee desde muchos hilos sin lock: cada consulta es O(grado)."""
 
-    def __init__(self, grafo, prediccion=True):
+    def __init__(self, grafo, prediccion=True, capacidad=True):
         self.grafo = grafo
         self.prediccion = prediccion  # PRO: anticipar a corredores, caminantes y hordas
+        self.usa_capacidad = capacidad  # PRO: repartir segun el cupo de los refugios
         self._snap = Snapshot(-1)
 
     @property
@@ -46,11 +49,25 @@ class Planner:
             # no se planifica a traves de OTRO refugio: pisarlo ya es llegar a ese refugio
             evitar = prohibidos | (g.nodos_refugio - {nodo})
             tablas[rid], saltos[rid] = dijkstra_inverso(g, nodo, bloqueadas, evitar, penal)
-        self._snap = Snapshot(est.get("turno", 0), tablas, saltos, prohibidos, bloqueadas, cruces, penal)
+        asignacion, llenos = {}, frozenset()
+        if self.usa_capacidad:
+            asignacion, llenos = capacidad.asignar(tablas, saltos, est.get("sobrevivientes", ()),
+                                                   est.get("refugios", ()), self._snap.asignacion)
+        self._snap = Snapshot(est.get("turno", 0), tablas, saltos, prohibidos, bloqueadas, cruces, penal,
+                              asignacion, llenos)
 
     # ---------- consultas (ruta caliente de /paso) ----------
     def _tablas(self, snap, sid):
-        return list(snap.tablas.values())
+        rid = snap.asignacion.get(sid)
+        return [snap.tablas[rid]] if rid in snap.tablas else list(snap.tablas.values())
+
+    def refugio_de(self, sid, nodo):
+        """Refugio al que va (asignado por capacidad o el mas barato desde su nodo)."""
+        snap = self._snap
+        rid = snap.asignacion.get(sid)
+        if rid is None and snap.tablas:
+            rid = min(snap.tablas, key=lambda r: snap.tablas[r].get(nodo, INF))
+        return rid
 
     def _movimientos(self, snap, nodo):
         """Vecinos a los que se puede ir sin morir este turno, con los segundos de la calle."""

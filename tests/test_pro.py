@@ -1,0 +1,88 @@
+"""Tests del nivel PRO: capacidad de refugios (y, mas abajo, flota de rescate)."""
+import asyncio
+import os
+
+from src.routing import capacidad
+from src.routing.planner import Planner
+from src.simulator.engine import Simulador
+from src.world.graph import Grafo
+from src.world.mundo import Mundo
+
+G = Grafo.desde_archivo(os.environ["GRAPH_PATH"])
+CALLADO = dict(log=lambda *a, **k: None)
+
+
+def _grafo(calles, refugios):
+    ids = sorted({a for a, _, _ in calles} | {b for _, b, _ in calles})
+    return Grafo({"nodos": [{"id": n, "lat": 0, "lng": 0} for n in ids],
+                  "calles": [{"id": f"E{i}", "de": a, "a": b, "distancia_m": d, "tipo": "calle"}
+                             for i, (a, b, d) in enumerate(calles)],
+                  "refugios": [{"id": n, "nodo": n} for n in refugios]})
+
+
+def _cupo(rid, capacidad, ocupacion=0, evacua=0):
+    return {"id": rid, "capacidad": capacidad, "ocupacion": ocupacion, "evacuaPorTurno": evacua}
+
+
+def test_reparte_cuando_el_refugio_cercano_no_tiene_cupo():
+    # a y b estan junto a R0 (cupo 1, no evacua); R1 queda lejos pero libre
+    g = _grafo([("S1", "R0", 100), ("S2", "R0", 150), ("S1", "M", 500), ("S2", "M", 500), ("M", "R1", 500)],
+               ["R0", "R1"])
+    p = Planner(g, prediccion=False)
+    p.actualizar({"turno": 1, "sobrevivientes": [{"id": "a", "nodo": "S1"}, {"id": "b", "nodo": "S2"}],
+                  "refugios": [_cupo("R0", 1), _cupo("R1", 10)]})
+    assert p._snap.asignacion == {"a": "R0", "b": "R1"}
+    assert p.siguiente_nodo("S2", "b") == "M"       # va al refugio con cupo aunque R0 este al lado
+    assert p.siguiente_nodo("S2", "otro") == "R0"   # alguien sin asignar va al mas cercano
+    assert p.refugio_de("b", "S2") == "R1" and p.refugio_de("otro", "S2") == "R0"
+
+
+def test_cupo_proyectado_cuenta_la_evacuacion_desde_el_turno_siguiente():
+    tablas = {"R0": {"A": 1.0, "B": 2.0}, "R1": {"A": 50.0, "B": 50.0}}
+    saltos = {"R0": {"A": 1, "B": 2}, "R1": {"A": 5, "B": 5}}
+    svs = [{"id": "a", "nodo": "A"}, {"id": "b", "nodo": "B"}]
+    # R0 lleno y evacua 1 por turno: quien llega este turno (a, 1 calle) no entra; b llega en 2 y si
+    asig, llenos = capacidad.asignar(tablas, saltos, svs, [_cupo("R0", 3, 3, 1), _cupo("R1", 9)], {})
+    assert asig == {"a": "R1", "b": "R0"} and llenos == {"R0"}
+
+
+def _sim(**kw):
+    mundo = Mundo(G, Planner(G))
+
+    async def directa(sid, nodo, turno):
+        return mundo.planner.siguiente_nodo(nodo, sid)
+
+    return mundo, Simulador(mundo, consulta=directa, turno_s=0, seed=5, **CALLADO, **kw)
+
+
+def test_los_refugios_nunca_superan_su_cupo_y_se_publica_la_ocupacion():
+    mundo, sim = _sim(turnos_ronda=60)
+    sim._preparar(3)
+
+    async def jugar():
+        for _ in range(60):
+            await sim.turno()
+            for r in sim.s["refugios"].values():
+                assert 0 <= r["ocupacion"] <= r["capacidad"]
+
+    asyncio.run(jugar())
+    pub = {r["id"]: r for r in mundo.estado["refugios"]}
+    assert all({"capacidad", "ocupacion", "evacuaPorTurno", "nombre"} <= set(r) for r in pub.values())
+    assert sum(r["evacua"] for r in sim.s["refugios"].values()) >= 4
+    assert {s["refugio"] for s in mundo.estado["sobrevivientes"]} <= set(G.refugios)
+
+
+def test_refugio_lleno_rechaza_y_luego_admite_tras_evacuar():
+    _, sim = _sim(turnos_ronda=1)
+    sim._preparar(1)
+    sim.s["refugios"] = {"R-2": {"capacidad": 1, "evacua": 1, "ocupacion": 1}}
+    assert not sim._admitir("R-2")
+    sim.s["refugios"]["R-2"]["ocupacion"] -= sim.s["refugios"]["R-2"]["evacua"]
+    assert sim._admitir("R-2") and sim._admitir("R-1")  # R-1 sin cupo definido: sin limite
+
+
+def test_sin_capacidad_no_hay_cupos():
+    mundo, sim = _sim(turnos_ronda=5, capacidad=False)
+    asyncio.run(sim.correr(2))
+    assert sim.s["refugios"] == {} and sim.resultados[-1]["rechazados"] == 0
+    assert all("capacidad" not in r for r in mundo.estado["refugios"])

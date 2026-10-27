@@ -4,7 +4,7 @@ consulta POST /paso (500 ms o se queda quieto), (5) mordidas, (6) llegadas a ref
 (7) se reponen sobrevivientes y se publican el turno y las metricas de la rubrica."""
 import asyncio
 import json
-from collections import deque
+from collections import Counter, deque
 import os
 import random
 import time
@@ -25,6 +25,11 @@ RONDAS = {
 }
 LIMITE_S = 0.5  # /paso debe responder en < 500 ms; si no, el sobreviviente se queda quieto
 MAX_MUESTRAS = 100_000
+# PRO capacidad: cada refugio evacua E personas por turno hacia la zona segura y tiene cupo para
+# BUFFER_TURNOS turnos de su evacuacion. La evacuacion total cubre EVAC_FACTOR veces las llegadas
+# esperadas, repartida segun la demanda de cada refugio; el de mayor demanda queda chico (CUELLO):
+# si todos van al mas cercano se llena, asi que el planner tiene que repartir.
+EVAC_FACTOR, CUELLO, BUFFER_TURNOS = 1.6, 0.45, 4
 
 
 def log_json(evento, **datos):
@@ -34,12 +39,13 @@ def log_json(evento, **datos):
 
 class Simulador:
     def __init__(self, mundo, consulta=None, turno_s=2.0, turnos_ronda=150, snapshots=None,
-                 snapshot_cada=10, ruta_max=25, seed=None, reponer=True, log=log_json):
+                 snapshot_cada=10, ruta_max=25, seed=None, reponer=True, capacidad=True, log=log_json):
         self.mundo, self.grafo = mundo, mundo.grafo
         self.consulta = consulta or self._consulta_http
         self.turno_s, self.turnos_ronda = turno_s, turnos_ronda
         self.snapshots, self.snapshot_cada, self.ruta_max = snapshots, snapshot_cada, ruta_max
         self.reponer = reponer  # True: N sobrevivientes a la vez toda la ronda; False: poblacion fija
+        self.capacidad = capacidad  # PRO: refugios con cupo y evacuacion
         self.log = log
         self.rng = random.Random(seed)
         self.s = None
@@ -47,6 +53,7 @@ class Simulador:
         self.resultados = []                    # historial de rondas terminadas
         self.ultimos, self.lat_rondas = {}, {}  # ultima corrida de cada ronda (para el puntaje)
         self.optimo = {}                        # nodo -> calles de la ruta mas corta sin zombies
+        self.cercano = {}                       # nodo -> refugio con menos calles
         self._nodos_spawn = list(self.grafo.nodos)
         self._tarea = None
         self._cliente = None
@@ -102,14 +109,46 @@ class Simulador:
                   "poblacion": cfg["sobrevivientes"],
                   "zombies": zm.crear(self.grafo, cfg["zombies"], self.rng, excluir=self.grafo.nodos_refugio),
                   "bloqueadas": [], "eventos": [list(e) for e in cfg["eventos"]], "log_eventos": [],
-                  "seq": 0, "sobrevivientes": [],
-                  "stats": {"salvados": 0, "mordidos": 0, "turnos_salvado": 0, "ef_suma": 0.0, "ef_n": 0}}
+                  "seq": 0, "sobrevivientes": [], "refugios": {},
+                  "stats": {"salvados": 0, "mordidos": 0, "rechazados": 0, "turnos_salvado": 0,
+                            "ef_suma": 0.0, "ef_n": 0}}
         self._calcular_optimo()
+        self.s["refugios"] = self._cupos(cfg["sobrevivientes"])
         self.s["sobrevivientes"] = self._nuevos(cfg["sobrevivientes"])
         # turno 0: el mapa muestra la ronda antes del primer movimiento
         self.mundo.publicar_zombies(0, self.s["zombies"], [], ronda=ronda, corriendo=True,
-                                    turnosRestantes=self.turnos_ronda, eventos=[])
+                                    turnosRestantes=self.turnos_ronda, eventos=[], refugios=self._pub_refugios())
         self._publicar_turno()
+
+    def _cupos(self, n):
+        """{refugio: cupo, evacuacion por turno y ocupacion} para N sobrevivientes a la vez.
+        Llegadas esperadas por turno = N / viaje promedio (1.2 x el minimo de calles desde donde
+        nacen); demanda de cada refugio = parte de esos nodos que le queda mas cerca."""
+        if not self.capacidad:
+            return {}
+        nodos = [x for x in self._nodos_spawn if self.optimo.get(x)]
+        if not nodos:
+            return {}
+        viaje = max(1.0, 1.2 * sum(self.optimo[x] for x in nodos) / len(nodos))
+        demanda = Counter(self.cercano[x] for x in nodos)
+        mayor = max(demanda, key=demanda.get)
+        cupos = {}
+        for rid in sorted(self.grafo.refugios):
+            parte = demanda.get(rid, 0) / len(nodos)
+            e = max(1, round(EVAC_FACTOR * n / viaje * parte * (CUELLO if rid == mayor else 1.0)))
+            cupos[rid] = {"capacidad": e * BUFFER_TURNOS, "evacua": e, "ocupacion": 0}
+        return cupos
+
+    def _pub_refugios(self):
+        g, cupos = self.grafo, self.s["refugios"]
+        pub = []
+        for rid, nodo in g.refugios.items():
+            r = {"id": rid, "nodo": nodo, "nombre": g.info_refugios[rid].get("nombre", rid)}
+            if rid in cupos:
+                c = cupos[rid]
+                r.update(capacidad=c["capacidad"], ocupacion=c["ocupacion"], evacuaPorTurno=c["evacua"])
+            pub.append(r)
+        return pub
 
     @staticmethod
     def _normalizar(snap):
@@ -117,8 +156,10 @@ class Simulador:
         s = dict(snap)
         s.setdefault("poblacion", RONDAS[s["ronda"]]["sobrevivientes"])
         s.setdefault("log_eventos", [])
+        s.setdefault("refugios", {})
         st = dict(s.get("stats", {}))
-        for k, v in (("salvados", 0), ("mordidos", 0), ("turnos_salvado", 0), ("ef_suma", 0.0), ("ef_n", 0)):
+        for k, v in (("salvados", 0), ("mordidos", 0), ("rechazados", 0), ("turnos_salvado", 0),
+                     ("ef_suma", 0.0), ("ef_n", 0)):
             st.setdefault(k, v)
         s["stats"] = st
         return s
@@ -130,12 +171,14 @@ class Simulador:
         su eficiencia contra esta base queda apenas bajo 1."""
         g, bloq = self.grafo, frozenset(self.s["bloqueadas"])
         self.optimo = dict.fromkeys(g.nodos_refugio, 0)
+        self.cercano = dict(g.refugio_de_nodo)  # nodo -> refugio con menos calles
         cola = deque(g.nodos_refugio)
         while cola:
             u = cola.popleft()
             for v, c, _ in g.vecinos[u]:
                 if c not in bloq and v not in self.optimo:
                     self.optimo[v] = self.optimo[u] + 1
+                    self.cercano[v] = self.cercano[u]
                     cola.append(v)
 
     def _nuevos(self, k):
@@ -199,6 +242,9 @@ class Simulador:
         s, g = self.s, self.grafo
         s["turno"] += 1
         t = s["turno"]
+        # 0) los refugios evacuan hacia la zona segura (PRO capacidad)
+        for r in s["refugios"].values():
+            r["ocupacion"] = max(0, r["ocupacion"] - r["evacua"])
         # 1) eventos de ciudad: la calle desaparece del mapa en vivo
         if any(e[0] == t for e in s["eventos"]):
             ocurridos = events.aplicar(g, s["eventos"], t, s["bloqueadas"], self.rng, self._uso_calles())
@@ -213,7 +259,8 @@ class Simulador:
         zonas = zm.zonas_horda(g, s["zombies"])
         # 3) se publica el mundo: el planner se recalcula UNA vez para todo el turno
         self.mundo.publicar_zombies(t, s["zombies"], s["bloqueadas"], ronda=s["ronda"], corriendo=True,
-                                    turnosRestantes=s["turnos_restantes"] - 1, eventos=s["log_eventos"])
+                                    turnosRestantes=s["turnos_restantes"] - 1, eventos=s["log_eventos"],
+                                    refugios=self._pub_refugios())
         # 4) cada sobreviviente consulta POST /paso (en paralelo)
         vivos = s["sobrevivientes"]
         resp = await asyncio.gather(*(self._consultar(sv, t) for sv in vivos))
@@ -223,13 +270,17 @@ class Simulador:
         muertos = bites.mordidos(mov, s["zombies"], zonas)
         st, quedan = s["stats"], []
         for sv in vivos:
-            sv["nodo"] = mov[sv["id"]][1]
+            prev, sv["nodo"] = sv["nodo"], mov[sv["id"]][1]
             if sv["id"] in muertos:
                 st["mordidos"] += 1
-            elif sv["nodo"] in g.nodos_refugio:  # 6) llego a un refugio
-                self._salvar(sv, t)
-            else:
-                quedan.append(sv)
+                continue
+            if sv["nodo"] in g.nodos_refugio:  # 6) en un refugio: entra si hay cupo
+                if self._admitir(g.refugio_de_nodo[sv["nodo"]]):
+                    self._salvar(sv, t)
+                    continue
+                if prev != sv["nodo"]:
+                    st["rechazados"] += 1  # llego a un refugio lleno: espera en la puerta
+            quedan.append(sv)
         # 7) poblacion continua: siempre N a la vez en la calle
         if self.reponer:
             quedan += self._nuevos(s["poblacion"] - len(quedan))
@@ -242,6 +293,15 @@ class Simulador:
                 await asyncio.to_thread(self.snapshots.guardar, t, self.exportar())
             except Exception as e:  # un fallo de DynamoDB no debe romper el juego
                 print("snapshot fallo:", e)
+
+    def _admitir(self, rid):
+        r = self.s["refugios"].get(rid)
+        if r is None:
+            return True  # sin limite de cupo
+        if r["ocupacion"] >= r["capacidad"]:
+            return False
+        r["ocupacion"] += 1
+        return True
 
     def _salvar(self, sv, t):
         st = self.s["stats"]
@@ -261,7 +321,7 @@ class Simulador:
     def _metricas(self):
         s, st = self.s, self.s["stats"]
         p95 = puntaje.percentil(sorted(self.lat), 0.95)
-        return {"salvados": st["salvados"], "mordidos": st["mordidos"],
+        return {"salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
                 "supervivencia": self._supervivencia(),
                 "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                 "latenciaP95": round(p95, 2) if p95 is not None else None,
@@ -269,13 +329,15 @@ class Simulador:
                 "consultas": self.consultas, "turnosRestantes": s["turnos_restantes"] - 1}
 
     def _publicar_turno(self):
-        s, planner = self.s, self.mundo.planner
+        s, planner, g = self.s, self.mundo.planner, self.grafo
         metricas = self._metricas()
         self.mundo.publicar(
             sobrevivientes=[{"id": sv["id"], "nodo": sv["nodo"],
+                             "refugio": g.refugio_de_nodo.get(sv["nodo"]) or planner.refugio_de(sv["id"], sv["nodo"]),
+                             "estado": "en_puerta" if sv["nodo"] in g.nodos_refugio else "caminando",
                              "ruta": planner.ruta(sv["nodo"], sv["id"], self.ruta_max)}
                             for sv in s["sobrevivientes"]],
-            metricas=metricas)
+            refugios=self._pub_refugios(), metricas=metricas)
         return metricas
 
     def exportar(self):
@@ -288,7 +350,7 @@ class Simulador:
         lat = sorted(self.lat)
         pct = lambda p: round(puntaje.percentil(lat, p), 2) if lat else None
         res = {"ronda": s["ronda"], "nombre": RONDAS[s["ronda"]]["nombre"], "turnos": s["turno"],
-               "salvados": st["salvados"], "mordidos": st["mordidos"],
+               "salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
                "supervivencia": self._supervivencia(),
                "eficiencia": round(st["ef_suma"] / st["ef_n"], 3) if st["ef_n"] else None,
                "turnos_promedio_por_rescate": round(st["turnos_salvado"] / st["salvados"], 2) if st["salvados"] else None,
@@ -301,7 +363,7 @@ class Simulador:
         self.ultimos[s["ronda"]], self.lat_rondas[s["ronda"]] = res, lat
         nota = puntaje.calcular(self.ultimos, self.lat_rondas)
         resumen = [{"ronda": r["ronda"], "nombre": r["nombre"], "turnos": r["turnos"],
-                    "salvados": r["salvados"], "mordidos": r["mordidos"],
+                    "salvados": r["salvados"], "mordidos": r["mordidos"], "rechazados": r["rechazados"],
                     "supervivencia": r["supervivencia"], "eficiencia": r["eficiencia"],
                     "latenciaP95": r["latencia_ms"]["p95"], "pctErrores": r["pct_errores"]}
                    for r in (self.ultimos[k] for k in sorted(self.ultimos))]

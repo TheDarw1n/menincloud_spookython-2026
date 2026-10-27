@@ -15,7 +15,8 @@ from ..world.mundo import Mundo
 from .auth import key_valida, lectura_estado, verificar_api_key
 
 GRAFO = Grafo.desde_archivo(os.environ.get("GRAPH_PATH", "data/manta_graph.json"))
-PLANNER = Planner(GRAFO, prediccion=os.environ.get("PRO_PREDICCION", "1") != "0")
+PRO_CAPACIDAD = os.environ.get("PRO_CAPACIDAD", "1") != "0"
+PLANNER = Planner(GRAFO, prediccion=os.environ.get("PRO_PREDICCION", "1") != "0", capacidad=PRO_CAPACIDAD)
 MUNDO = Mundo(GRAFO, PLANNER)
 SNAPSHOTS = Snapshots()
 
@@ -29,7 +30,8 @@ async def _consulta_directa(sid, nodo, turno):
 
 SIM = Simulador(MUNDO, consulta=_consulta_directa if os.environ.get("SIM_MODO", "http") == "directo" else None,
                 turno_s=float(os.environ.get("TURNO_S", "2.0")), turnos_ronda=int(os.environ.get("TURNOS_RONDA", "150")),
-                snapshots=SNAPSHOTS, reponer=os.environ.get("SIM_POBLACION", "continua") != "fija")
+                snapshots=SNAPSHOTS, reponer=os.environ.get("SIM_POBLACION", "continua") != "fija",
+                capacidad=PRO_CAPACIDAD)
 
 
 @asynccontextmanager
