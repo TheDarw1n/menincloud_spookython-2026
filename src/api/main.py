@@ -4,7 +4,7 @@ import os
 import secrets
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import Depends, FastAPI, HTTPException, Response, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 
 from ..persistence import Snapshots
@@ -123,8 +123,8 @@ def salud():
 
 
 @app.get("/estado", dependencies=[Depends(lectura_estado)])
-def estado():
-    return MUNDO.estado
+async def estado():
+    return Response(content=MUNDO.json_estado(), media_type="application/json")
 
 
 @app.post("/paso", dependencies=[Depends(verificar_api_key)])
@@ -147,7 +147,7 @@ async def ws(websocket: WebSocket):
         while True:
             est = MUNDO.estado
             if est is not ultimo:
-                await websocket.send_json(est)
+                await websocket.send_text(MUNDO.json_estado())
                 ultimo, silencio = est, 0
             elif silencio >= 80:  # ~20 s sin cambios: heartbeat para no caer por inactividad
                 await websocket.send_json({"ping": True})

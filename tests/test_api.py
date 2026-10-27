@@ -64,3 +64,12 @@ def test_planner_se_recalcula_una_sola_vez_bajo_concurrencia(monkeypatch):
 def test_paso_cuerpo_invalido():
     assert c.post("/paso", headers=H, json={"nodoActual": "N-0001"}).status_code == 422
     assert c.post("/paso", headers=H, content=b"no-json").status_code == 422
+
+
+def test_estado_se_serializa_una_vez_por_publicacion():
+    MUNDO.publicar(metricas={"salvados": 7})
+    primero = MUNDO.json_estado()
+    assert MUNDO.json_estado() is primero                    # mismo turno: no se vuelve a serializar
+    assert c.get("/estado").json()["metricas"] == {"salvados": 7}
+    MUNDO.publicar(metricas={"salvados": 8})
+    assert MUNDO.json_estado() is not primero and '"salvados":8' in MUNDO.json_estado()

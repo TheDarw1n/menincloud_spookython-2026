@@ -1,3 +1,4 @@
+import json
 import threading
 
 from .zombies import zonas_horda
@@ -12,6 +13,7 @@ class Mundo:
         self.grafo = grafo
         self.planner = planner
         self._lock = threading.Lock()
+        self._json = (None, "")  # (estado, texto): serializado una sola vez por publicacion
         self.estado = {
             "turno": 0, "ronda": None, "corriendo": False, "turnosRestantes": 0,
             "zombies": [], "aristasBloqueadas": [], "zonasHorda": [], "sobrevivientes": [],
@@ -34,6 +36,15 @@ class Mundo:
     def publicar(self, **campos):
         with self._lock:
             self.estado = dict(self.estado, **campos)
+
+    def json_estado(self):
+        """El estado en JSON, serializado UNA vez por publicacion: lo comparten /estado y todos
+        los WebSocket (con muchos visores, serializar 40 KB por cliente costaba mas que /paso)."""
+        est, (previo, texto) = self.estado, self._json
+        if previo is not est:
+            texto = json.dumps(est, ensure_ascii=False, separators=(",", ":"))
+            self._json = (est, texto)
+        return texto
 
     def asegurar_planner(self):
         """Compara contra el turno del SERVIDOR (no el del cliente) con doble verificacion."""
