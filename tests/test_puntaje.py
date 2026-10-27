@@ -100,3 +100,12 @@ def test_dynamodb_lento_no_frena_el_turno():
 
     assert asyncio.run(jugar()) < 0.4   # 6 turnos (3 snapshots) sin esperar a DynamoDB
     assert Lento.llamadas >= 1          # se intento guardar; los que encontraron uno en curso se omiten
+
+
+def test_los_sobrevivientes_nacen_en_los_barrios_del_enunciado():
+    g = Grafo.desde_archivo("data/manta_graph.json")
+    mundo = Mundo(g, Planner(g))
+    sim = Simulador(mundo, consulta=None, turno_s=0, seed=1, **CALLADO)
+    sim._preparar(3)
+    barrios = {g.nodos[sv["nodo"]]["barrio"] for sv in sim.s["sobrevivientes"]}
+    assert barrios <= {"tarqui", "los-esteros", "barbasquillo", "jocay"} and len(barrios) == 4

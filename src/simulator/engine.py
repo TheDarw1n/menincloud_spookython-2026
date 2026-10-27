@@ -58,7 +58,10 @@ class Simulador:
         self.ultimos, self.lat_rondas = {}, {}  # ultima corrida de cada ronda (para el puntaje)
         self.optimo = {}                        # nodo -> calles de la ruta mas corta sin zombies
         self.cercano = {}                       # nodo -> refugio con menos calles
-        self._nodos_spawn = list(self.grafo.nodos)
+        # Los sobrevivientes estan atrapados en los barrios del enunciado (Tarqui, Los Esteros,
+        # Barbasquillo y Jocay) si el grafo los trae; si no, en cualquier nodo.
+        self._nodos_spawn = ([n for n, d in self.grafo.nodos.items() if d.get("barrio", "otro") != "otro"]
+                             or list(self.grafo.nodos))
         self._tarea = None
         self._cliente = None
         self._guardando = None  # guardado en DynamoDB en curso (en segundo plano)
