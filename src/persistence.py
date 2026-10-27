@@ -24,6 +24,12 @@ class Snapshots:
             self._t = boto3.resource("dynamodb", region_name=self.region, config=cfg).Table(self.tabla)
         return self._t
 
+    def preparar(self):
+        """Importa boto3 y arma la tabla al arrancar: hacerlo en el primer snapshot (turno 10 de la
+        primera ronda) costaba ~1.1 s de CPU a mitad de ronda, compitiendo con /paso."""
+        if self.habilitado:
+            self._table().meta.client.meta.service_model.operation_model("PutItem")
+
     def _put(self, pk, sk, texto):
         self._table().put_item(Item={"pk": pk, "sk": sk, "estado": texto, "ttl": int(time.time()) + 7 * 86400})
 

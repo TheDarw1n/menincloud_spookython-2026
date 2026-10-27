@@ -1,4 +1,5 @@
 import asyncio
+import gc
 import json
 import os
 import secrets
@@ -62,6 +63,14 @@ async def lifespan(app):
     if os.environ.get("API_KEY") and not os.environ.get("ADMIN_API_KEY"):
         log_json("aviso", texto="ADMIN_API_KEY no definida: /ws/sim/* acepta la API_KEY de /paso "
                                 "(solo para desarrollo local)")
+    try:
+        await asyncio.to_thread(SNAPSHOTS.preparar)
+    except Exception as e:  # sin credenciales (local) o sin red: el juego sigue sin snapshots
+        log_json("aviso", texto=f"DynamoDB no disponible al arrancar: {e!r}")
+    # el grafo, el planner y boto3 ya estan cargados: se congelan para que las colecciones
+    # completas del GC (16-37 ms) no los recorran durante las rafagas de /paso
+    gc.collect()
+    gc.freeze()
     tarea = asyncio.create_task(autoarranque(modo)) if modo != "none" else None
     yield
     if tarea:

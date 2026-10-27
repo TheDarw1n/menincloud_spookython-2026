@@ -147,6 +147,30 @@ def test_arranque_avisa_de_configuracion_invalida(monkeypatch, capsys):
     assert "ADMIN_API_KEY no definida" in salida
 
 
+def test_arranque_prepara_dynamodb_y_congela_el_heap(monkeypatch):
+    import asyncio
+    import gc
+
+    import src.api.main as api
+
+    class Tabla:
+        habilitado, preparada = True, False
+
+        def preparar(self):
+            Tabla.preparada = True
+
+    monkeypatch.setattr(api, "SNAPSHOTS", Tabla())
+    monkeypatch.setenv("SIM_AUTOSTART", "none")
+
+    async def arrancar():
+        async with api.lifespan(app):
+            pass
+
+    asyncio.run(arrancar())
+    assert Tabla.preparada and gc.get_freeze_count() > 0
+    gc.unfreeze()
+
+
 def test_autoarranque_espera_a_que_el_puerto_acepte_conexiones(monkeypatch):
     import asyncio
 
