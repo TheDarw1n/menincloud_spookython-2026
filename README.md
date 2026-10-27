@@ -242,9 +242,7 @@ Resumen de [`docs/costos.md`](docs/costos.md) (precios verificados el 2026-10-27
 
 `manta-zombie-mensual`: 50 USD/mes, alertas al 50, 80 y 100 % (y pronosticado) a los 3 correos del equipo, sobre el gasto **bruto** (sin créditos). **Avisa, no corta el gasto.**
 
-![AWS Budget con alerta](docs/budget.png)
-
-> Pendiente del equipo: guardar la captura del Budget como `docs/budget.png`.
+![AWS Budget manta-zombie-mensual: 50 USD/mes, 4 alertas y 3 correos verificados](docs/Budget.png)
 
 ## Limitaciones conocidas
 
