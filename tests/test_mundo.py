@@ -208,6 +208,6 @@ def test_texto_de_eventos_con_y_sin_nombre_de_calle():
     g.calles["E1"].update(tipo="puente", nombre="Av. de la Cultura")
     bloq = []
     ev = events.aplicar(g, [(1, "puente")], 1, bloq, random.Random(0), uso={"E1": 5})
-    assert ev[0]["texto"] == "Colapsó el puente Av. de la Cultura (E1)"
+    assert ev[0]["texto"] == "Colapsó un puente: Av. de la Cultura (E1)"
     ev = events.aplicar(g, [(2, "puente")], 2, bloq, random.Random(0))
     assert ev[0]["texto"] == "Colapsó un puente (E0)"

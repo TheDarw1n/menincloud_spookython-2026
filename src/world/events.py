@@ -1,7 +1,7 @@
 """Eventos de ciudad: un puente colapsa o una avenida se bloquea (la arista desaparece en vivo)."""
 
-TEXTO = {"puente": ("Colapsó el puente", "Colapsó un puente"),
-         "avenida": ("Se bloqueó la avenida", "Se bloqueó una avenida")}
+# El nombre va despues de ":" porque en OSM ya trae su propio tipo ("Avenida 113", "Vía Interbarrial")
+TEXTO = {"puente": "Colapsó un puente", "avenida": "Se bloqueó una avenida"}
 
 
 def _alcanzables(grafo, bloqueadas, origenes):
@@ -45,7 +45,7 @@ def aplicar(grafo, eventos, turno, bloqueadas, rng, uso=None):
         elegida = rng.choice(sorted(c for c in candidatas if uso.get(c, 0) == maximo))
         bloqueadas.append(elegida)
         nombre = grafo.calles[elegida].get("nombre")
-        con, sin = TEXTO.get(tipo, ("Se cerró la calle", "Se cerró una calle"))
-        texto = f"{con} {nombre} ({elegida})" if nombre else f"{sin} ({elegida})"
+        base = TEXTO.get(tipo, "Se cerró una calle")
+        texto = f"{base}: {nombre} ({elegida})" if nombre else f"{base} ({elegida})"
         ocurridos.append({"turno": turno, "tipo": tipo, "arista": elegida, "texto": texto})
     return ocurridos
