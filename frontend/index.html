@@ -2,91 +2,1415 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Escape de Manta Zombie</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b1a">
+<meta name="description" content="Mapa en vivo del reto Escape de Manta Zombie: un motor de rutas en AWS guía a los sobrevivientes de Manta hasta un refugio esquivando zombies.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self' ws: wss:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Escape de Manta Zombie · Mapa en vivo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%9F%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
-  html,body{height:100%;margin:0;background:#0b0b1a;color:#eee;font-family:system-ui,sans-serif}
-  #map{position:absolute;inset:0}
-  #hud{position:absolute;z-index:1000;top:10px;left:50px;background:#0b0b1ae6;border:1px solid #6b46c1;
-       padding:8px 12px;border-radius:8px;font-size:14px;line-height:1.5}
-  #hud b{color:#f6ad55} #hud input,#hud button,#hud select{font:inherit}
-  .ic{font-size:18px;line-height:18px;text-align:center}
-  .dormido{opacity:.35}
+  :root{
+    --fondo:#0b0b1a; --panel:#12122a; --panel-2:#1a1a38; --borde:#2c2a52;
+    --morado:#6b46c1; --morado-claro:#c4a8ff; --naranja:#f6ad55;
+    --texto:#ecebf7; --texto-2:#b9b6d8; --texto-3:#8f8cb3;
+    --ok:#3fbf5f; --aviso:#f6ad55; --serio:#ec835a; --critico:#e5484d;
+    --ff:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --emoji:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  .oculto-visual{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  html,body{height:100%;margin:0}
+  body{background:var(--fondo);color:var(--texto);font:14px/1.45 var(--ff);display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+  button,input{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid var(--naranja);outline-offset:2px}
+  .sub{color:var(--texto-2);font-size:12.5px}
+
+  /* ---------- cabecera ---------- */
+  .barra{flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"titulo conexion" "lema conexion";column-gap:16px;align-items:center;padding:10px 16px;background:linear-gradient(90deg,#1a1038,#0b0b1a 70%);border-bottom:1px solid var(--borde)}
+  h1{grid-area:titulo;margin:0;font:18px/1.35 "Press Start 2P",ui-monospace,monospace;color:var(--naranja);text-shadow:2px 2px 0 var(--morado);letter-spacing:.5px}
+  .lema{grid-area:lema;margin:5px 0 0;color:var(--texto-2);font-size:13.5px}
+  .lema-corta{display:none}
+  .conexion{grid-area:conexion;display:flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--borde);border-radius:999px;background:var(--panel);font-size:13px;white-space:nowrap}
+  .conexion .punto{width:10px;height:10px;border-radius:50%;background:var(--texto-3);flex:none}
+  .conexion[data-modo=ws] .punto{background:var(--ok);animation:latido 2s ease-out infinite}
+  .conexion[data-modo=polling] .punto{background:var(--aviso)}
+  .conexion[data-modo=sin] .punto{background:var(--critico)}
+  .con-det{color:var(--texto-2)}
+  @keyframes latido{0%{box-shadow:0 0 0 0 rgba(63,191,95,.7)}100%{box-shadow:0 0 0 9px rgba(63,191,95,0)}}
+
+  /* ---------- distribucion ---------- */
+  .layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 360px}
+  .zona-mapa{position:relative;min-width:0;min-height:0;overflow:hidden}
+  #mapa{position:absolute;inset:0;z-index:0;background:#0e0e1c}
+  .hud{min-height:0;display:flex;flex-direction:column;border-left:1px solid var(--borde);background:var(--fondo)}
+  .hud-barra{display:none}
+  .hud-cuerpo{flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;scrollbar-color:var(--borde) transparent}
+
+  /* ---------- tarjetas del HUD ---------- */
+  .tarjeta{background:var(--panel);border:1px solid var(--borde);border-radius:10px;padding:12px}
+  .tarjeta h3{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--morado-claro)}
+  .tarjeta h3 .sub{text-transform:none;letter-spacing:0;font-weight:400}
+  .fila-tit{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .fila-tit h2{margin:0;font-size:19px;line-height:1.2;color:var(--naranja)}
+  .chip{flex:none;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--borde);color:var(--texto-2)}
+  .chip[data-estado=curso]{color:#8ff0a4;border-color:#2f7a44;background:#0f2a18}
+  .chip[data-estado=pausa]{color:var(--naranja);border-color:#7a5320;background:#2a1c08}
+  .chip[data-estado=fin]{color:var(--morado-claro);border-color:var(--morado)}
+  #ronda-desc{margin:4px 0 10px}
+  .turno-fila{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px}
+  .turno-fila b{font-size:20px;font-variant-numeric:tabular-nums}
+  .medidor{display:block;height:6px;border-radius:3px;background:#262448;overflow:hidden;margin-top:6px}
+  .medidor i{display:block;height:100%;width:0;border-radius:3px;background:var(--morado-claro);transition:width .6s ease}
+  .medidor i[data-nivel=ok]{background:var(--ok)}
+  .medidor i[data-nivel=alto],.medidor i[data-nivel=aviso]{background:var(--aviso)}
+  .medidor i[data-nivel=serio]{background:var(--serio)}
+  .medidor i[data-nivel=lleno],.medidor i[data-nivel=critico]{background:var(--critico)}
+  .pulso{height:3px;margin-top:6px;border-radius:2px;background:#1c1b3a;overflow:hidden}
+  .pulso i{display:block;height:100%;width:0;background:var(--naranja)}
+  .contadores{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .cont{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;background:var(--panel-2);border-radius:8px;padding:8px 10px;border-left:3px solid var(--borde)}
+  .cont[data-tono=ok]{border-left-color:var(--ok)}
+  .cont[data-tono=mal]{border-left-color:var(--critico)}
+  .cont[data-tono=aviso]{border-left-color:var(--aviso)}
+  .cont[data-tono=info]{border-left-color:#3987e5}
+  .cont-ico{grid-row:span 2;font:20px/1 var(--emoji)}
+  .cont b{font-size:22px;line-height:1.1;font-weight:700}
+  .cont-lbl{font-size:12px;color:var(--texto-2);line-height:1.2}
+  #en-mapa{margin:8px 0 0}
+  .metricas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}
+  .metricas>div{background:var(--panel-2);border-radius:8px;padding:8px 10px}
+  .metricas dt{font-size:12px;color:var(--texto-2)}
+  .metricas dd{margin:2px 0 0;font-size:18px;font-weight:700;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+  .insignia{font-size:11px;font-weight:700;padding:1px 6px;border-radius:999px;border:1px solid currentColor}
+  .insignia[data-nivel=ok]{color:#7ee396}.insignia[data-nivel=aviso]{color:#ffc46b}.insignia[data-nivel=serio]{color:#f4a07c}.insignia[data-nivel=critico]{color:#ff8a8d}
+  #m-consultas{margin:8px 0 0}
+  .p-total{display:flex;align-items:baseline;gap:4px;margin-bottom:6px}
+  .p-total b{font-size:46px;line-height:1;font-weight:800}
+  .p-total b[data-nivel=ok]{color:#7ee396}.p-total b[data-nivel=aviso]{color:#ffc46b}.p-total b[data-nivel=serio]{color:#f4a07c}.p-total b[data-nivel=critico]{color:#ff8a8d}
+  .p-total span{color:var(--texto-2);font-size:18px}
+  .p-comp{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .p-comp li{display:grid;grid-template-columns:128px 1fr 34px;align-items:center;gap:8px;font-size:13px}
+  .p-comp small{color:var(--texto-3)}
+  .p-comp .medidor{margin:0}
+  .p-comp b{text-align:right;font-variant-numeric:tabular-nums}
+  #p-rondas{margin:8px 0 0}
+  .eventos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:210px;overflow-y:auto}
+  .evento{display:grid;grid-template-columns:34px 22px 1fr;align-items:start;gap:4px;padding:6px 8px;border-radius:6px;background:var(--panel-2);font-size:13px;box-shadow:inset 3px 0 0 transparent}
+  .ev-t{color:var(--texto-3);font-variant-numeric:tabular-nums;font-size:12px;padding-top:1px}
+  .ev-i{font-family:var(--emoji)}
+  .evento.nuevo{animation:destello 7s ease-out}
+  @keyframes destello{0%,25%{background:#4a2a0e;box-shadow:inset 3px 0 0 var(--naranja)}100%{background:var(--panel-2);box-shadow:inset 3px 0 0 transparent}}
+  .lista-ref{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .lista-ref li{display:grid;grid-template-columns:12px 1fr auto;column-gap:8px;align-items:center;font-size:13px}
+  .lista-ref .medidor{grid-column:2/-1;margin-top:3px}
+  .punto-ref{width:12px;height:12px;border-radius:50%;border:2px solid #0b0b1a;box-shadow:0 0 0 1px #ffffff55}
+  .lr-nom{font-weight:600;min-width:0;line-height:1.25}
+  .lr-num{font-variant-numeric:tabular-nums;color:var(--texto-2);white-space:nowrap}
+  .lr-alto{color:#ffc46b}.lr-lleno{color:#ff8a8d}
+  .lr-puerta{grid-column:2/-1;font-size:12px;color:#ffc46b;margin-top:2px}
+  .tabla-scroll{overflow-x:auto}
+  .tabla{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .tabla th,.tabla td{padding:5px 4px;text-align:right;border-bottom:1px solid var(--borde);white-space:nowrap}
+  .tabla th{color:var(--texto-2);font-weight:600}
+  .tabla th:first-child,.tabla td:first-child{text-align:left}
+  abbr{text-decoration:none}
+  .operador summary{cursor:pointer;font-weight:700;list-style-position:inside}
+  .operador[open] summary{margin-bottom:8px}
+  .campo{display:grid;gap:4px;font-size:12.5px;color:var(--texto-2);margin:8px 0}
+  .campo input{width:100%;padding:8px 10px;border-radius:6px;border:1px solid var(--borde);background:#0d0d20;color:var(--texto)}
+  .botones{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .botones button{padding:8px 6px;border-radius:6px;border:1px solid var(--borde);background:var(--panel-2);cursor:pointer;font-weight:600;font-size:13px}
+  .botones button:hover:not(:disabled){border-color:var(--morado-claro)}
+  .botones button:disabled{opacity:.55;cursor:progress}
+  .botones .ancho{grid-column:1/-1}
+  .botones .primario{background:var(--morado);border-color:var(--morado)}
+  .botones .peligro{border-color:#8a2c2c;color:#ffb3b3}
+  .op-salida{margin:8px 0 0;max-height:180px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#0d0d20;border:1px solid var(--borde);border-radius:6px;padding:8px;font:12px/1.4 ui-monospace,Consolas,monospace;color:var(--texto-2)}
+  .op-salida[data-tono=ok]{border-color:#2f7a44;color:#b9f5c8}
+  .op-salida[data-tono=error]{border-color:#8a2c2c;color:#ffc2c2}
+
+  /* ---------- capas sobre el mapa ---------- */
+  .aviso-error{flex:none;padding:9px 16px;background:#5c1111;border-bottom:1px solid #ff6b6b;color:#fff;font-weight:600;text-align:center}
+  .vacio{position:absolute;z-index:15;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 32px));padding:20px 22px;text-align:center;background:rgba(18,18,42,.95);border:1px solid var(--morado);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.55);pointer-events:none}
+  .vacio-ico{font:40px/1 var(--emoji)}
+  .vacio h2{margin:8px 0 6px;font-size:19px;line-height:1.3;color:var(--naranja)}
+  .vacio p{margin:0;color:var(--texto-2)}
+  .vacio-rondas{margin:12px 0 0;padding:0;list-style:none;text-align:left;display:grid;gap:4px;font-size:13px;color:var(--texto-2)}
+  .vacio-rondas b{color:var(--texto)}
+  .vacio[data-modo=fin]{top:14px;transform:translateX(-50%);padding:10px 16px;width:min(520px,calc(100% - 140px))}
+  .vacio[data-modo=fin] .vacio-ico,.vacio[data-modo=fin] .vacio-rondas{display:none}
+  .vacio[data-modo=fin] h2{margin:0 0 2px;font-size:16px}
+  .toasts{position:absolute;z-index:20;top:10px;left:50%;transform:translateX(-50%);width:min(440px,calc(100% - 140px));display:flex;flex-direction:column;gap:6px;pointer-events:none}
+  .toast{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:10px;background:rgba(43,23,8,.94);border:1px solid var(--naranja);box-shadow:0 8px 26px rgba(0,0,0,.55);font-size:13.5px;line-height:1.3;animation:entrar .35s ease-out;transition:opacity .5s,transform .5s}
+  .toast-i{font:19px/1 var(--emoji)}
+  .toast.saliendo{opacity:0;transform:translateY(-8px)}
+  @keyframes entrar{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+
+  /* ---------- leyenda ---------- */
+  .leyenda{position:absolute;z-index:12;left:12px;bottom:26px;width:min(430px,calc(100% - 24px));background:rgba(15,15,36,.95);border:1px solid var(--borde);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.45);font-size:12.5px}
+  .ley-cab{display:flex;align-items:center;justify-content:space-between;width:100%;padding:7px 12px;background:none;border:0;border-radius:12px;font-weight:700;cursor:pointer}
+  .ley-cab .flecha{transition:transform .2s}
+  .leyenda[data-abierta=false] .flecha{transform:rotate(180deg)}
+  .leyenda[data-abierta=false] .ley-cuerpo{display:none}
+  .ley-cuerpo{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;padding:0 12px 9px}
+  .ley-cuerpo h4{margin:0 0 3px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--morado-claro)}
+  .ley-lista{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+  .ley-lista li{display:flex;align-items:center;gap:7px;min-height:25px;line-height:1.2}
+  .ley-lista small{color:var(--texto-2)}
+  .ley-ico{flex:none;width:32px;display:grid;place-items:center}
+  .ley-calles{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:3px 12px;margin-top:6px}
+  .ley-calles h4{margin:0;width:100%}
+  .ley-calles span{display:inline-flex;align-items:center;gap:6px}
+  .ley-opciones{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:7px;padding-top:7px;border-top:1px solid var(--borde)}
+  .cam-ley{transform:scale(.78)}
+  .ref-ley{transform:scale(.72)}
+  .sw-espera{width:13px;height:13px;border-radius:50%;background:#3987e5;border:2.5px solid var(--naranja)}
+  .ley-opciones label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .ley-opciones input{accent-color:var(--morado);width:16px;height:16px;margin:0}
+  .ley-ico .zb{animation:none;width:24px;height:24px;font-size:13px}
+  .ley-ico .zb-horda{width:30px;height:30px}
+  .ley-ico .zb-horda span{font-size:10px}
+  .ley-ico .zb-horda .h3{left:8px}
+  .sw{display:inline-block;width:26px;height:0;border-top:3px solid}
+  .sw-avenida{border-top:5px solid #a78bfa}
+  .sw-calle{border-top:3px solid #7c6cc4}
+  .sw-puente{border-top:6px solid #4fd1c5}
+  .sw-bloq{height:9px;border-top:0;border-radius:2px;background:repeating-linear-gradient(90deg,#ff5c5c 0 6px,transparent 6px 11px) 0 50%/100% 5px no-repeat,#0b0b1a}
+  .sw-ruta{border-top:2px solid #3987e5;width:30px}
+  .sw-cam{border-top:3px dotted var(--naranja);width:30px}
+  .sw-zona{width:26px;height:26px;border:1.5px dashed rgba(255,92,92,.9);border-radius:50%;background:radial-gradient(circle,rgba(255,59,59,.55) 0 4px,rgba(255,59,59,.14) 5px)}
+  .sw-puntos{display:flex;gap:3px}
+  .sw-puntos i{width:9px;height:9px;border-radius:50%;border:1.5px solid #0b0b1a;box-shadow:0 0 0 1px #ffffff40}
+
+  /* ---------- marcadores del mapa ---------- */
+  .mk-z,.mk-cam,.mk-ref,.mk-bloq,.mk-fx,.mk-barrio{background:none;border:0}
+  .zb{position:relative;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#24101e;border:2px solid var(--c);box-shadow:0 0 0 2px rgba(11,11,26,.75),0 0 12px -2px var(--c);font:18px/1 var(--emoji);animation:bamboleo 1.4s ease-in-out infinite alternate}
+  .zb-caminante{--c:#ff6b6b}
+  .zb-corredor{--c:#ff9f43;background:#3a1d05}
+  .zb-corredor .rayo{position:absolute;right:-8px;top:-8px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:#ffd23f;border:1.5px solid #0b0b1a;font:10px/1 var(--emoji);font-style:normal}
+  .zb-horda{--c:#ff2e3d;width:40px;height:40px;background:#3a0b14}
+  .zb-horda span{position:absolute;font-size:15px}
+  .zb-horda .h1{left:2px;top:5px}.zb-horda .h2{right:2px;top:5px}.zb-horda .h3{left:11px;bottom:2px}
+  .zb-dormido{--c:#9c9ac0;opacity:.55;border-style:dashed;animation:none;box-shadow:0 0 0 2px rgba(11,11,26,.6)}
+  .sin-dormidos .mk-dormido{display:none}
+  @keyframes bamboleo{from{transform:translateY(-1px) rotate(-5deg)}to{transform:translateY(1px) rotate(5deg)}}
+  .cam{position:relative;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:#2b1a05;border:2px solid var(--naranja);box-shadow:0 0 0 2px rgba(11,11,26,.75);font:17px/1 var(--emoji)}
+  .cam.en-refugio{translate:-24px -22px}
+  .cam b{position:absolute;right:-11px;top:-10px;min-width:18px;padding:2px 4px;border-radius:999px;background:var(--naranja);border:1px solid #0b0b1a;color:#1a1000;font:800 11px/1 var(--ff);text-align:center}
+  .ref{display:flex;align-items:center;gap:6px;width:max-content}
+  .ref-ico{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#0f1730;border:3px solid var(--c);box-shadow:0 0 0 2px rgba(11,11,26,.8),0 0 16px -2px var(--c);font:17px/1 var(--emoji)}
+  .ref-info{min-width:92px;max-width:190px;padding:3px 7px 4px;border-radius:6px;background:rgba(11,11,26,.9);border:1px solid var(--c)}
+  .ref-nom{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font:700 11.5px/1.25 var(--ff);color:#fff}
+  .ref-barra{height:5px;margin:3px 0 2px;border-radius:3px;background:#2c2a52;overflow:hidden}
+  .ref-barra i{display:block;height:100%;width:0;background:var(--ok);transition:width .6s ease}
+  .ref-barra[data-nivel=alto] i{background:var(--aviso)}
+  .ref-barra[data-nivel=lleno] i{background:var(--critico)}
+  .ref-num{display:block;font:11px/1.2 var(--ff);color:var(--texto-2);white-space:nowrap}
+  .ref-num b{color:#ff8a8d}
+  .ref-puerta{display:block;font:11px/1.2 var(--ff);color:#ffc46b;white-space:nowrap}
+  .ref-corto{display:none;font:700 10.5px/1.25 var(--ff);color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .ref-info[data-nivel=alto] .ref-corto{color:#ffc46b}
+  .ref-info[data-nivel=lleno] .ref-corto{color:#ff8a8d}
+  .bloq{position:relative;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#2a0b0b;border:2px solid #ff5c5c;box-shadow:0 0 0 2px rgba(11,11,26,.8);font:13px/1 var(--emoji);transform-origin:50% 34px}
+  .bloq::after{content:'';position:absolute;left:50%;top:calc(100% + 2px);width:2px;height:10px;margin-left:-1px;background:#ff5c5c;box-shadow:0 0 0 1px rgba(11,11,26,.8)}
+  .bloq.pulso-bloq{animation:alarma 1s ease-out 10}
+  @keyframes alarma{from{box-shadow:0 0 0 0 rgba(255,92,92,.95)}to{box-shadow:0 0 0 30px rgba(255,92,92,0)}}
+  .fx{white-space:nowrap;text-align:center;font:800 14px/1 var(--ff);text-shadow:0 0 4px #000,0 0 8px #000;animation:subir 1.8s ease-out forwards;pointer-events:none}
+  .fx-ok{color:#8ff0a4}
+  .fx-mal{font:18px/1 var(--emoji)}
+  @keyframes subir{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-26px)}}
+  .compacto .zb,.compacto .cam,.compacto .bloq,.compacto .ref-ico{scale:.7}
+  /* Con la ciudad entera en pantalla chica el refugio muestra solo su ocupacion (14/40) */
+  .compacto .ref{gap:2px}
+  .compacto .ref-info{min-width:0;padding:1px 6px;border-radius:999px}
+  .compacto .ref-nom,.compacto .ref-barra,.compacto .ref-num,.compacto .ref-puerta,.compacto .ref-info.sin-datos{display:none}
+  .compacto .ref-corto{display:block}
+  .barrio{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;font:800 12px/1 var(--ff);letter-spacing:.28em;text-transform:uppercase;color:rgba(236,235,247,.6);text-shadow:0 0 3px #000,0 0 10px #000}
+  .leaflet-pane.leaflet-etiquetas-pane{pointer-events:none}
+
+  /* ---------- ajustes de Leaflet al tema oscuro ---------- */
+  .leaflet-container{background:#0e0e1c;font-family:var(--ff)}
+  .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.45)}
+  .leaflet-bar{border:1px solid var(--borde)!important;box-shadow:0 2px 10px rgba(0,0,0,.4)!important}
+  .leaflet-bar a,.leaflet-bar button{background:var(--panel);color:var(--texto);border-bottom-color:var(--borde)}
+  .leaflet-bar a:hover,.leaflet-bar button:hover{background:var(--panel-2);color:#fff}
+  .leaflet-bar a.leaflet-disabled{background:var(--panel);color:#55536f}
+  .btn-encuadre{display:block;width:30px;height:30px;border:0;border-radius:4px;cursor:pointer;font:16px/30px var(--ff);text-align:center;padding:0}
+  .leaflet-control-attribution{background:rgba(11,11,26,.8)!important;color:var(--texto-2)!important}
+  .leaflet-control-attribution a{color:#d6c4ff!important}
+  .leaflet-tooltip{background:#1a1a38;color:var(--texto);border:1px solid var(--morado);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.5);font-size:12.5px}
+  .leaflet-tooltip-top:before{border-top-color:var(--morado)}
+  .leaflet-tooltip-bottom:before{border-bottom-color:var(--morado)}
+  .leaflet-tooltip-left:before{border-left-color:var(--morado)}
+  .leaflet-tooltip-right:before{border-right-color:var(--morado)}
+
+  /* ---------- pantallas medianas y telefonos ---------- */
+  @media (max-width:1100px){ .layout{grid-template-columns:minmax(0,1fr) 320px} .p-comp li{grid-template-columns:112px 1fr 30px} }
+  @media (max-width:900px){
+    .barra{grid-template-areas:"titulo conexion" "lema lema";column-gap:10px;padding:8px 12px}
+    h1{font-size:12px;letter-spacing:0;text-shadow:1px 1px 0 var(--morado)}
+    .lema{font-size:12.5px;margin-top:6px}
+    .lema-larga{display:none}
+    .lema-corta{display:inline}
+    .conexion{padding:5px 9px;font-size:12px}
+    .con-det{display:none}
+    .layout{display:flex;flex-direction:column}
+    .zona-mapa{flex:1}
+    .hud{flex:none;position:relative;border-left:0;border-top:1px solid var(--borde)}
+    .hud-barra{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:8px 12px max(8px,env(safe-area-inset-bottom));border:0;background:var(--panel);cursor:pointer;font-size:13.5px;text-align:left}
+    .hb-ronda{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;color:var(--naranja)}
+    .hb-dato{white-space:nowrap;font-variant-numeric:tabular-nums}
+    .hb-dato i{font-style:normal;font-family:var(--emoji)}
+    .hb-mas{white-space:nowrap;color:var(--morado-claro);font-weight:700}
+    .hb-mas .flecha{display:inline-block;transition:transform .2s}
+    .hud.abierto .hb-mas .flecha{transform:rotate(180deg)}
+    .hud-cuerpo{display:none;position:absolute;z-index:40;left:0;right:0;bottom:100%;max-height:68vh;max-height:68dvh;background:var(--fondo);border-top:1px solid var(--morado);border-radius:14px 14px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.6)}
+    .hud.abierto .hud-cuerpo{display:flex}
+    .leyenda{left:auto;right:10px;top:10px;bottom:auto;width:auto;max-width:calc(100% - 66px)}
+    .leyenda[data-abierta=true]{width:calc(100% - 66px)}
+    .ley-cuerpo{grid-template-columns:1fr;max-height:calc(100dvh - 240px);overflow-y:auto}
+    .toasts{top:auto;bottom:12px;width:calc(100% - 24px)}
+    .vacio{padding:16px}
+    .vacio h2{font-size:17px}
+    .vacio[data-modo=fin]{top:auto;bottom:12px;transform:translateX(-50%);width:calc(100% - 24px)}
+    .p-comp li{grid-template-columns:118px 1fr 30px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .zb,.conexion[data-modo=ws] .punto,.bloq.pulso-bloq{animation:none}
+    .evento.nuevo{animation:none;background:#3a220c}
+    .fx{animation-duration:.01s}
+  }
 </style>
 </head>
 <body>
-<div id="map"></div>
-<div id="hud">
-  <div><b>Escape de Manta Zombie</b> · <span id="conn">conectando…</span></div>
-  <div>Ronda <b id="ronda">-</b> · Turno <b id="turno">0</b> · Salvados <b id="salv">0</b> · Mordidos <b id="mord">0</b></div>
-  <div>🧟 caminante · 🏃 corredor · 👹 horda · 💤 dormido · 🙂 sobreviviente · 🏠 refugio</div>
-  <details><summary>Control (operador)</summary>
-    <input id="key" type="password" placeholder="API key (solo en memoria)">
-    <select id="modo"><option>1</option><option>2</option><option>3</option><option>ciclo</option></select>
-    <button onclick="ctl('iniciar')">Iniciar</button> <button onclick="ctl('detener')">Detener</button>
-    <div id="msg"></div>
-  </details>
-</div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<header class="barra">
+  <h1>Escape de Manta Zombie</h1>
+  <p class="lema"><span class="lema-larga">En vivo: cada 2&nbsp;segundos los zombies se mueven y nuestro motor de rutas en AWS recalcula el camino de cada sobreviviente hacia un refugio seguro.</span><span class="lema-corta">En vivo: cada 2&nbsp;s nuestro motor en AWS guía a los sobrevivientes a un refugio esquivando zombies.</span></p>
+  <div id="conexion" class="conexion" data-modo="conectando" role="status" aria-live="polite" title="Conexión con el servidor del juego">
+    <span class="punto" aria-hidden="true"></span><span id="con-txt">Conectando…</span><span id="con-det" class="con-det"></span>
+  </div>
+</header>
+<div id="aviso-error" class="aviso-error" role="alert" hidden></div>
+
+<main class="layout">
+  <section class="zona-mapa" aria-label="Mapa en vivo de Manta">
+    <div id="mapa"></div>
+    <div id="toasts" class="toasts"></div>
+    <div id="vacio" class="vacio" data-modo="inicio" role="status">
+      <div class="vacio-ico" aria-hidden="true">🧟</div>
+      <h2 id="vacio-titulo">Esperando que el operador inicie una ronda</h2>
+      <p id="vacio-texto">Cuando empiece, aquí verás moverse a los zombies y a los sobrevivientes turno a turno.</p>
+      <ol class="vacio-rondas">
+        <li><b>Ronda 1 · Anochecer:</b> 20 sobrevivientes, solo zombies caminantes.</li>
+        <li><b>Ronda 2 · Medianoche:</b> 80 sobrevivientes, corredores y hordas; colapsa un puente.</li>
+        <li><b>Ronda 3 · Apocalipsis:</b> 200 a la vez, todos los zombies; se bloquean dos calles.</li>
+      </ol>
+    </div>
+
+    <div id="leyenda" class="leyenda" data-abierta="true">
+      <button id="ley-toggle" class="ley-cab" type="button" aria-expanded="true" aria-controls="ley-cuerpo"><span>Leyenda</span><span class="flecha" aria-hidden="true">▾</span></button>
+      <div id="ley-cuerpo" class="ley-cuerpo">
+        <div>
+          <h4>Zombies</h4>
+          <ul class="ley-lista">
+            <li><span class="ley-ico"><span class="zb zb-caminante"><span>🧟</span></span></span><span><b>Caminante</b> <small>lento, sin rumbo</small></span></li>
+            <li><span class="ley-ico"><span class="zb zb-corredor"><span>🧟</span><i class="rayo">⚡</i></span></span><span><b>Corredor</b> <small>rápido, persigue</small></span></li>
+            <li><span class="ley-ico"><span class="zb zb-horda"><span class="h1">🧟</span><span class="h2">🧟</span><span class="h3">🧟</span></span></span><span><b>Horda</b> <small>bloquea su zona</small></span></li>
+            <li><span class="ley-ico"><span class="zb zb-dormido"><span>💤</span></span></span><span><b>Dormido</b> <small>despierta si te acercas</small></span></li>
+            <li><span class="ley-ico"><span class="sw-zona"></span></span><span>Zona de peligro</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Personas</h4>
+          <ul class="ley-lista">
+            <li><span class="ley-ico"><span class="sw-puntos"><i style="background:#3987e5"></i><i style="background:#eab308"></i><i style="background:#d55181"></i></span></span><span><b>Sobreviviente</b> <small>color = su refugio</small></span></li>
+            <li><span class="ley-ico"><span class="sw-espera"></span></span><span>Espera camioneta</span></li>
+            <li><span class="ley-ico"><span class="cam cam-ley">🚐<b>2</b></span></span><span><b>Camioneta</b> <small>personas a bordo</small></span></li>
+            <li><span class="ley-ico"><span class="ref-ico ref-ley" style="--c:#3987e5">🏠</span></span><span><b>Refugio</b> <small>barra = ocupación</small></span></li>
+          </ul>
+        </div>
+        <div class="ley-calles">
+          <h4>Calles y rutas</h4>
+          <span><i class="sw sw-avenida"></i>Avenida</span>
+          <span><i class="sw sw-calle"></i>Calle</span>
+          <span><i class="sw sw-puente"></i>Puente</span>
+          <span><i class="sw sw-bloq"></i>Bloqueada 🚧</span>
+          <span><i class="sw sw-ruta"></i>Ruta planificada</span>
+          <span><i class="sw sw-cam"></i>Ruta de camioneta</span>
+        </div>
+        <div class="ley-opciones">
+          <label><input type="checkbox" id="ver-rutas" checked> Mostrar rutas</label>
+          <label id="filtro-dormidos" hidden><input type="checkbox" id="ver-dormidos" checked> Mostrar dormidos</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside id="hud" class="hud" aria-label="Datos de la simulación">
+    <button id="hud-toggle" class="hud-barra" type="button" aria-expanded="false" aria-controls="hud-cuerpo">
+      <span id="hb-ronda" class="hb-ronda">Sin ronda</span>
+      <span class="hb-dato" title="Tiempo restante"><i aria-hidden="true">⏱</i> <b id="hb-tiempo">--:--</b><span class="oculto-visual"> de ronda restante,</span></span>
+      <span class="hb-dato" title="Salvados"><i aria-hidden="true">✅</i> <b id="hb-salvados">0</b><span class="oculto-visual"> salvados,</span></span>
+      <span class="hb-dato" title="Mordidos"><i aria-hidden="true">💀</i> <b id="hb-mordidos">0</b><span class="oculto-visual"> mordidos.</span></span>
+      <span class="hb-mas">Detalles <span class="flecha" aria-hidden="true">▴</span></span>
+    </button>
+    <div id="hud-cuerpo" class="hud-cuerpo">
+      <section class="tarjeta" aria-labelledby="ronda-titulo">
+        <div class="fila-tit"><h2 id="ronda-titulo">Sin ronda en curso</h2><span id="ronda-chip" class="chip" data-estado="espera">En espera</span></div>
+        <p id="ronda-desc" class="sub">El operador todavía no inicia la prueba.</p>
+        <div class="turno-fila"><span>Turno <b id="turno">0</b><span id="turno-total" class="sub"></span></span><span>Quedan <b id="tiempo">--:--</b></span></div>
+        <div class="medidor" aria-hidden="true"><i id="prog-ronda"></i></div>
+        <div class="pulso" title="Tiempo hasta el próximo turno" aria-hidden="true"><i id="prog-turno"></i></div>
+      </section>
+
+      <section class="tarjeta">
+        <h3>Sobrevivientes</h3>
+        <div class="contadores">
+          <div class="cont" data-tono="ok"><span class="cont-ico" aria-hidden="true">✅</span><b id="c-salvados">0</b><span class="cont-lbl">Salvados</span></div>
+          <div class="cont" data-tono="mal"><span class="cont-ico" aria-hidden="true">💀</span><b id="c-mordidos">0</b><span class="cont-lbl">Mordidos</span></div>
+          <div class="cont" data-tono="aviso" title="Llegaron a un refugio que ya estaba lleno"><span class="cont-ico" aria-hidden="true">⛔</span><b id="c-rechazados">0</b><span class="cont-lbl">Rechazados (refugio lleno)</span></div>
+          <div class="cont" data-tono="info"><span class="cont-ico" aria-hidden="true">🚐</span><b id="c-camioneta">0</b><span class="cont-lbl">Rescatados en camioneta</span></div>
+        </div>
+        <p id="en-mapa" class="sub">Sin datos todavía.</p>
+      </section>
+
+      <section class="tarjeta">
+        <h3>Motor de rutas</h3>
+        <dl class="metricas">
+          <div title="Salvados ÷ (salvados + mordidos)"><dt>Supervivencia</dt><dd id="m-superv">—</dd></div>
+          <div title="Turnos de la ruta más corta sin zombies ÷ turnos que realmente usaron"><dt>Eficiencia</dt><dd id="m-efic">—</dd></div>
+          <div title="Percentil 95 del tiempo de respuesta de POST /paso. Rúbrica: ≤150 ms = 10, ≤300 ms = 7, ≤500 ms = 4"><dt>Latencia p95</dt><dd><span id="m-lat">—</span><span id="m-lat-n" class="insignia" hidden></span></dd></div>
+          <div title="Peticiones con error o fuera de tiempo. Rúbrica: &lt;0,5 % = 10, &lt;2 % = 6, &lt;5 % = 3"><dt>Errores</dt><dd><span id="m-err">—</span><span id="m-err-n" class="insignia" hidden></span></dd></div>
+        </dl>
+        <p id="m-consultas" class="sub"></p>
+      </section>
+
+      <section class="tarjeta">
+        <h3>Puntaje de la prueba <span class="sub">· de 0 a 10, con las rondas ya terminadas</span></h3>
+        <p id="puntaje-vacio" class="sub">Aparece cuando termine la primera ronda.</p>
+        <div id="puntaje" hidden>
+          <div class="p-total"><b id="p-total">0</b><span>/ 10</span></div>
+          <ul id="p-comp" class="p-comp"></ul>
+          <p id="p-rondas" class="sub"></p>
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <h3>Eventos de la ciudad</h3>
+        <ol id="eventos" class="eventos"><li class="sub">Sin eventos por ahora. Aquí aparecerán los puentes que colapsan y las calles que se bloquean.</li></ol>
+      </section>
+
+      <section class="tarjeta">
+        <h3>Refugios</h3>
+        <ul id="lista-refugios" class="lista-ref"><li class="sub">Cargando refugios…</li></ul>
+      </section>
+
+      <section id="resultados-tarjeta" class="tarjeta" hidden>
+        <h3>Resultados por ronda</h3>
+        <div class="tabla-scroll">
+          <table class="tabla">
+            <thead><tr><th scope="col">Ronda</th><th scope="col"><abbr title="Salvados">Salv.</abbr></th><th scope="col"><abbr title="Mordidos">Mord.</abbr></th><th scope="col"><abbr title="Supervivencia">Superv.</abbr></th><th scope="col"><abbr title="Eficiencia">Efic.</abbr></th><th scope="col"><abbr title="Latencia p95 en milisegundos">p95 ms</abbr></th><th scope="col"><abbr title="Errores o timeouts">Err.</abbr></th></tr></thead>
+            <tbody id="resultados"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <details id="operador" class="tarjeta operador">
+        <summary>Control del operador</summary>
+        <p class="sub">Solo para el equipo. La clave se queda en la memoria de esta pestaña: no se guarda en el navegador.</p>
+        <label class="campo">Key de operador<input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="ADMIN_API_KEY"></label>
+        <div class="botones">
+          <button type="button" data-accion="iniciar" data-ronda="1">Ronda 1</button>
+          <button type="button" data-accion="iniciar" data-ronda="2">Ronda 2</button>
+          <button type="button" data-accion="iniciar" data-ronda="3">Ronda 3</button>
+          <button type="button" class="ancho primario" data-accion="iniciar" data-ronda="ciclo">Las 3 seguidas (ciclo)</button>
+          <button type="button" class="peligro" data-accion="detener">Detener</button>
+          <button type="button" data-accion="reanudar">Reanudar</button>
+          <button type="button" data-accion="resultados" title="GET /ws/sim/resultados">Resultados</button>
+        </div>
+        <pre id="op-salida" class="op-salida" aria-live="polite">Todavía no se envió ninguna orden.</pre>
+      </details>
+    </div>
+  </aside>
+</main>
+<noscript><p style="position:fixed;inset:auto 0 0 0;margin:0;padding:12px;background:#5c1111;color:#fff;text-align:center">Este mapa necesita JavaScript.</p></noscript>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
+'use strict';
+/* Mapa en vivo de Escape de Manta Zombie.
+   Datos: manta_graph.json (archivo estatico) + estado del mundo por WebSocket /ws, con respaldo
+   de polling a /estado. Cualquier campo del estado puede faltar (backends antiguos): todo se lee
+   de forma defensiva. Los marcadores se reutilizan por id y se animan entre turnos. */
+
+// ================= Configuracion =================
+const TURNO_MS = 2000, ANIM_MS = 1500, POLL_MS = 2000;
+// WebSocket: espera del handshake, reintentos (se duplican si el socket dura poco) y silencio maximo
+// (en ronda llega un estado por turno; fuera de ronda solo un ping cada ~20 s)
+const WS_ESPERA_MS = 4000, WS_REINTENTO_MS = 10000, WS_REINTENTO_MAX_MS = 60000;
+const WS_SILENCIO_RONDA_MS = 10000, WS_SILENCIO_MS = 45000;
+const RONDAS = {
+  1: {nombre: 'Anochecer', desc: '20 sobrevivientes · solo zombies caminantes'},
+  2: {nombre: 'Medianoche', desc: '80 sobrevivientes · caminantes, corredores y hordas · colapsa un puente'},
+  3: {nombre: 'Apocalipsis', desc: '200 sobrevivientes a la vez · todos los zombies · se bloquean dos calles'},
+};
+const ZOMBIE = {
+  caminante: {nombre: 'Caminante', html: '<span>🧟</span>'},
+  corredor: {nombre: 'Corredor', html: '<span>🧟</span><i class="rayo">⚡</i>'},
+  horda: {nombre: 'Horda', html: '<span class="h1">🧟</span><span class="h2">🧟</span><span class="h3">🧟</span>'},
+  dormido: {nombre: 'Dormido', html: '<span>💤</span>'},
+};
+// Colores por refugio en orden fijo (validados para daltonismo); el 5.o en adelante es gris
+const COLORES_REFUGIO = ['#3987e5', '#eab308', '#d55181', '#e9ecef'];
+const COLOR_SIN_REFUGIO = '#9a98b8';
+const ESTILO_CALLE = {
+  avenida: {color: '#a78bfa', weight: 4.5, opacity: .9},
+  calle: {color: '#7c6cc4', weight: 2.5, opacity: .8},
+  callejon: {color: '#5d5592', weight: 1.5, opacity: .85},
+  puente: {color: '#4fd1c5', weight: 6, opacity: 1},
+};
+// Calle bloqueada: barrera roja a trazos sobre un borde oscuro, por encima de rutas y zonas
+const ESTILO_BLOQUEADA = {color: '#ff5c5c', weight: 5, opacity: 1, dashArray: '7 6', lineCap: 'butt'};
+const ESTILO_BLOQUEADA_FONDO = {color: '#0b0b1a', weight: 9, opacity: .9, lineCap: 'butt'};
+
+// ================= Utilidades =================
 const $ = id => document.getElementById(id);
-const ICONO = {caminante:'🧟', corredor:'🏃', horda:'👹', dormido:'💤'};
-const map = L.map('map', {zoomControl:true}).setView([-0.95, -80.71], 15);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(map);
-const capaGrafo = L.layerGroup().addTo(map), capaBloq = L.layerGroup().addTo(map),
-      capaRutas = L.layerGroup().addTo(map), capaZ = L.layerGroup().addTo(map), capaS = L.layerGroup().addTo(map);
-let nodos = {}, calles = {}, refugiosPintados = false;
+const movil = window.matchMedia('(max-width: 900px)');
+const esNum = v => typeof v === 'number' && Number.isFinite(v);
+const lista = v => Array.isArray(v) ? v : [];
+const objeto = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
+const fmt0 = new Intl.NumberFormat('es-EC', {maximumFractionDigits: 0});
+const fmt1 = new Intl.NumberFormat('es-EC', {maximumFractionDigits: 1});
+const fmt2 = new Intl.NumberFormat('es-EC', {maximumFractionDigits: 2});
+const entero = v => esNum(v) ? fmt0.format(v) : '0';
+const pct = v => esNum(v) ? fmt1.format(v * 100) + ' %' : '—';
+const pctDirecto = v => esNum(v) ? fmt2.format(v) + ' %' : '—';
+const ms = v => esNum(v) ? fmt1.format(v) + ' ms' : '—';
+const plural = (n, uno, varios) => `${fmt0.format(n)} ${n === 1 ? uno : varios}`;
+const cmpIds = (a, b) => String(a).localeCompare(String(b), 'es', {numeric: true});
+function poner(el, texto) { texto = String(texto); if (el && el.textContent !== texto) el.textContent = texto; }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); }
+function mmss(milis) { const s = Math.max(0, Math.ceil(milis / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+function unirY(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1]; }
+const nivelNota = v => v >= 8 ? 'ok' : v >= 6 ? 'aviso' : v >= 4 ? 'serio' : 'critico';
+function notaLatencia(p95) { if (!esNum(p95)) return null; return p95 <= 150 ? [10, 'ok'] : p95 <= 300 ? [7, 'aviso'] : p95 <= 500 ? [4, 'serio'] : [0, 'critico']; }
+function notaErrores(p) { if (!esNum(p)) return null; return p < .5 ? [10, 'ok'] : p < 2 ? [6, 'aviso'] : p < 5 ? [3, 'serio'] : [0, 'critico']; }
+function iconoEvento(texto, tipo) {
+  if (tipo === 'puente') return '💥';
+  if (tipo === 'avenida' || tipo === 'calle' || tipo === 'callejon') return '🚧';
+  const t = ' ' + String(texto || '').toLowerCase();
+  if (/despert|dormid/.test(t)) return '💤';
+  if (/colaps|derrumb|\s(cay|caí)/.test(t)) return '💥';
+  if (/puente/.test(t)) return '🌉';
+  if (/bloque|cerr|cort/.test(t)) return '🚧';
+  if (/horda/.test(t)) return '🧟';
+  if (/refugio|lleno/.test(t)) return '🏠';
+  return '⚠️';
+}
+function mostrarError(texto) {
+  const el = $('aviso-error');
+  if (el.hidden === !texto && el.textContent === texto) return;
+  poner(el, texto); el.hidden = !texto;
+  if (mapa) mapa.invalidateSize();  // el aviso ocupa espacio sobre el mapa
+}
 
-const emoji = (e, cls='') => L.divIcon({className:'', html:`<div class="ic ${cls}">${e}</div>`, iconSize:[20,20]});
-const ll = id => [nodos[id].lat, nodos[id].lng];
+// ================= Mapa base =================
+const HAY_MAPA = typeof window.L !== 'undefined';
+let mapa = null, rCalles, rZonas, rRutas, rBloqueos, rActores, capaCalles, capaZonas, capaRutas, capaRutasCam, capaActores, capaMarcas, capaEtiquetas;
+let enZoom = false;
 
-// El grafo es un archivo estatico en S3 (no hay ruta /grafo: CloudFront Free permite solo 5 behaviors)
-fetch('manta_graph.json').then(r => r.json()).then(g => {
-  g.nodos.forEach(n => nodos[n.id] = n);
-  g.calles.forEach(c => { calles[c.id] = c;
-    L.polyline([ll(c.de), ll(c.a)], {color:'#7c6fb0', weight:2, opacity:.6}).addTo(capaGrafo); });
-  g.refugios.forEach(r => L.marker(ll(r.nodo), {icon: emoji('🏠')}).bindTooltip(r.id).addTo(map));
-  map.fitBounds(L.latLngBounds(g.nodos.map(n => [n.lat, n.lng])), {padding:[40,40]});
-}).catch(() => $('conn').textContent = 'no se pudo cargar manta_graph.json');
+if (HAY_MAPA) {
+  mapa = L.map('mapa', {preferCanvas: true, zoomSnap: .5, minZoom: 11, maxZoom: 19}).setView([-0.955, -80.72], 14);
+  mapa.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">colaboradores de OpenStreetMap</a>',
+  }).addTo(mapa);
+  // Un canvas por capa: animar a los sobrevivientes no obliga a redibujar las 500 calles
+  const lienzo = (nombre, z, extra) => { mapa.createPane(nombre).style.zIndex = z; return L.canvas({pane: nombre, padding: .3, ...extra}); };
+  rCalles = lienzo('calles', 410);
+  rZonas = lienzo('zonas', 420);
+  rRutas = lienzo('rutas', 430);
+  rBloqueos = lienzo('bloqueos', 435);
+  rActores = lienzo('actores', 440, {tolerance: 4, padding: .1});  // se redibuja en cada cuadro: lienzo chico
+  mapa.createPane('etiquetas').style.zIndex = 450;
+  [capaCalles, capaZonas, capaRutas, capaRutasCam, capaActores, capaMarcas, capaEtiquetas] = Array.from({length: 7}, () => L.layerGroup().addTo(mapa));
+  mapa.on('zoomstart', () => { enZoom = true; });
+  mapa.on('zoomend', () => { enZoom = false; ajustarEscala(); });
+  movil.addEventListener('change', ajustarEscala);
 
-function pintar(e) {
-  if (!e.turno && e.turno !== 0 || !Object.keys(nodos).length) return;
-  $('turno').textContent = e.turno; $('ronda').textContent = e.ronda ?? '-';
-  $('salv').textContent = e.metricas?.salvados ?? 0; $('mord').textContent = e.metricas?.mordidos ?? 0;
-  capaBloq.clearLayers(); capaZ.clearLayers(); capaS.clearLayers(); capaRutas.clearLayers();
-  (e.aristasBloqueadas||[]).forEach(id => { const c = calles[id];
-    if (c) L.polyline([ll(c.de), ll(c.a)], {color:'#e53e3e', weight:5, dashArray:'6 6'}).addTo(capaBloq); });
-  (e.zombies||[]).forEach(z => L.marker(ll(z.nodo), {icon: emoji(ICONO[z.tipo]||'🧟', z.visible ? '' : 'dormido')})
-      .bindTooltip(`${z.id} · ${z.tipo}`).addTo(capaZ));
-  (e.sobrevivientes||[]).forEach(s => {
-    if (s.ruta && s.ruta.length > 1)
-      L.polyline(s.ruta.map(ll), {color:'#4299e1', weight:2, opacity:.5}).addTo(capaRutas);
-    L.marker(ll(s.nodo), {icon: emoji('🙂')}).bindTooltip(s.id).addTo(capaS);
+  // Boton para volver a ver toda la ciudad
+  const Encuadre = L.Control.extend({
+    options: {position: 'topleft'},
+    onAdd() {
+      const caja = L.DomUtil.create('div', 'leaflet-bar');
+      const b = L.DomUtil.create('button', 'btn-encuadre', caja);
+      b.type = 'button'; b.title = 'Ver toda la ciudad'; b.setAttribute('aria-label', 'Ver toda la ciudad'); b.textContent = '⤢';
+      L.DomEvent.disableClickPropagation(caja);
+      L.DomEvent.on(b, 'click', encuadrar);
+      return caja;
+    },
   });
+  new Encuadre().addTo(mapa);
+} else {
+  mostrarError('No se pudo cargar la librería del mapa (Leaflet). Los datos de la simulación siguen actualizándose en el panel.');
 }
 
-// WebSocket con respaldo: si /ws no conecta (CloudFront Free sin probar) hace polling a /estado cada 2 s
-let poll = null;
-function empezarPolling() {
-  if (poll) return;
-  $('conn').textContent = 'modo polling (2 s)';
-  poll = setInterval(() => fetch('/estado').then(r => r.json()).then(pintar).catch(() => {}), 2000);
-}
-function conectar() {
-  const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
-  const t = setTimeout(() => { ws.close(); empezarPolling(); }, 4000);
-  ws.onopen = () => { clearTimeout(t); $('conn').textContent = 'en vivo (WebSocket)'; if (poll) { clearInterval(poll); poll = null; } };
-  ws.onmessage = m => { const d = JSON.parse(m.data); if (!d.ping) pintar(d); };
-  ws.onclose = () => { clearTimeout(t); empezarPolling(); setTimeout(conectar, 5000); };
-}
-conectar();
+// ================= Grafo =================
+const G = {
+  nodos: new Map(),       // id -> [lat, lng]
+  vecinos: new Map(),     // id -> Set(ids)
+  calles: new Map(),      // id -> calle del grafo
+  lineas: new Map(),      // id calle -> polyline
+  refugios: [],           // refugios del grafo
+  refugioNodo: new Map(), // nodo -> id refugio
+  limites: null, radioZona: 40, listo: false,
+};
+const ordenRefugios = [];
 
-async function ctl(accion) {
-  const q = accion === 'iniciar' ? '?ronda=' + $('modo').value : '';
-  const r = await fetch('/ws/sim/' + accion + q, {method:'POST', headers:{'x-api-key': $('key').value}});
-  $('msg').textContent = r.status + ' ' + JSON.stringify(await r.json());
+function registrarRefugios(ids) {
+  for (const id of [...ids].map(String).sort(cmpIds)) if (!ordenRefugios.includes(id)) ordenRefugios.push(id);
 }
+function colorRefugio(id) {
+  if (id == null) return COLOR_SIN_REFUGIO;
+  if (!ordenRefugios.includes(String(id))) ordenRefugios.push(String(id));
+  return COLORES_REFUGIO[ordenRefugios.indexOf(String(id))] || COLOR_SIN_REFUGIO;
+}
+const estiloCalle = tipo => ({...(ESTILO_CALLE[tipo] || ESTILO_CALLE.calle), dashArray: null});
+const adyacentes = (a, b) => !!(G.vecinos.get(a) && G.vecinos.get(a).has(b));
+
+async function cargarGrafo() {
+  if (!HAY_MAPA) return;
+  try {
+    const r = await fetch('manta_graph.json', {cache: 'no-cache'});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    construirGrafo(await r.json());
+    mostrarError('');
+  } catch (err) {
+    mostrarError(`No se pudo cargar el mapa de la ciudad (manta_graph.json: ${err.message}). Reintentando en 10 s…`);
+    setTimeout(cargarGrafo, 10000);
+  }
+}
+
+function construirGrafo(g) {
+  const nodos = lista(g && g.nodos).filter(n => n && n.id != null && esNum(n.lat) && esNum(n.lng));
+  if (!nodos.length) throw new Error('el archivo no tiene nodos');
+  for (const n of nodos) { G.nodos.set(String(n.id), [n.lat, n.lng]); G.vecinos.set(String(n.id), new Set()); }
+  const largos = [];
+  for (const c of lista(g.calles)) {
+    if (!c || c.id == null) continue;
+    const de = String(c.de), a = String(c.a), pa = G.nodos.get(de), pb = G.nodos.get(a);
+    if (!pa || !pb) continue;
+    G.vecinos.get(de).add(a); G.vecinos.get(a).add(de);
+    G.calles.set(String(c.id), c);
+    if (esNum(c.distancia_m) && c.distancia_m > 0) largos.push(c.distancia_m);
+    const linea = L.polyline([pa, pb], {...estiloCalle(c.tipo), renderer: rCalles, interactive: false});
+    G.lineas.set(String(c.id), linea);
+    capaCalles.addLayer(linea);
+  }
+  // Radio de las zonas de horda segun el largo tipico de una calle
+  largos.sort((x, y) => x - y);
+  if (largos.length) G.radioZona = Math.min(90, Math.max(25, largos[largos.length >> 1] * .35));
+  G.refugios = lista(g.refugios).filter(r => r && r.id != null && G.nodos.has(String(r.nodo)));
+  registrarRefugios(G.refugios.map(r => r.id));
+  for (const r of G.refugios) G.refugioNodo.set(String(r.nodo), String(r.id));
+  for (const b of lista(g.barrios)) {
+    if (!b || !esNum(b.lat) || !esNum(b.lng)) continue;
+    L.marker([b.lat, b.lng], {pane: 'etiquetas', interactive: false, keyboard: false,
+      icon: L.divIcon({className: 'mk-barrio', iconSize: [0, 0], html: `<div class="barrio">${esc(b.nombre || b.id)}</div>`})}).addTo(capaEtiquetas);
+  }
+  G.limites = L.latLngBounds([...G.nodos.values()]);
+  encuadrar();
+  ajustarEscala();
+  mapa.setMinZoom(Math.max(11, Math.floor(mapa.getZoom()) - 2));
+  mapa.setMaxBounds(G.limites.pad(.6));
+  G.listo = true;
+  if (ultimo) { recibirMapa(ultimo, null); }
+}
+
+// Encuadra la ciudad; si sobra alto, la sube para que la leyenda abierta no tape calles
+function encuadrar() {
+  if (!mapa || !G.limites) return;
+  const z = mapa.getBoundsZoom(G.limites, false, L.point(48, 48));
+  const alto = Math.abs(mapa.project(G.limites.getSouthWest(), z).y - mapa.project(G.limites.getNorthEast(), z).y);
+  const ley = $('leyenda').dataset.abierta === 'true' && !movil.matches ? $('leyenda').offsetHeight : 0;
+  const extra = Math.max(0, Math.min(ley, mapa.getSize().y - 48 - alto - 1));
+  mapa.fitBounds(G.limites, {paddingTopLeft: [24, 24], paddingBottomRight: [24, 24 + extra]});
+}
+
+// Con la ciudad entera en una pantalla chica los iconos se achican y las etiquetas de refugio
+// se ocultan (tocar un refugio muestra su nombre y ocupacion)
+function ajustarEscala() {
+  if (!mapa) return;
+  const z = mapa.getZoom();
+  $('mapa').classList.toggle('compacto', movil.matches ? z < 14.5 : z < 12.5);
+}
+
+// ================= Animacion =================
+// Cada actor guarda su posicion dibujada (pos) y un camino de puntos que recorre en ANIM_MS desde t0.
+const animados = new Set();
+let rafId = 0;
+
+function crearActor(capa, grupo, nodo, tooltip) {
+  const act = {capa, grupo, nodo, pos: G.nodos.get(nodo), pts: null, acum: null, total: 0};
+  capa.bindTooltip(() => tooltip(act), {direction: 'top', offset: [0, capa instanceof L.CircleMarker ? -6 : -16]});
+  grupo.addLayer(capa);
+  return act;
+}
+
+function programar(act, pts) {
+  const acum = [0];
+  let total = 0;
+  for (let i = 1; i < pts.length; i++) { total += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); acum.push(total); }
+  if (total < 1e-9) { animados.delete(act); return; }
+  Object.assign(act, {pts, acum, total, t0: performance.now()});
+  animados.add(act);
+}
+
+function ubicar(act, k) {
+  const d = k * act.total, acum = act.acum;
+  let i = 1;
+  while (i < acum.length - 1 && acum[i] < d) i++;
+  const a = act.pts[i - 1], b = act.pts[i], tramo = acum[i] - acum[i - 1];
+  const f = tramo > 0 ? Math.min(1, Math.max(0, (d - acum[i - 1]) / tramo)) : 1;
+  act.pos = [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+  act.capa.setLatLng(act.pos);
+}
+
+// Salta sin animar (actor nuevo, pestana oculta o movimiento imposible por calles)
+function saltar(act, nodo) {
+  act.nodo = nodo; act.pos = G.nodos.get(nodo); animados.delete(act);
+  act.capa.setLatLng(act.pos);
+}
+
+// Mueve un actor por una lista de nodos que empieza en su nodo actual
+function mover(act, camino, nodoNuevo, animar) {
+  // Ya va hacia ese nodo: el backend publica dos veces por turno (zombies y luego personas) y no
+  // hay que reiniciar la animacion (cortaria la esquina en diagonal)
+  if (animar && nodoNuevo === act.nodo && animados.has(act)) return;
+  if (!animar || !camino) { saltar(act, nodoNuevo); return; }
+  act.nodo = nodoNuevo;
+  programar(act, [act.pos, ...camino.map(n => G.nodos.get(n))]);
+}
+
+const suave = t => t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+
+function cuadro(ahora) {
+  rafId = 0;
+  if (!enZoom) {
+    for (const act of animados) {
+      const t = Math.min(1, Math.max(0, (ahora - act.t0) / ANIM_MS));
+      ubicar(act, suave(t));
+      if (t >= 1) animados.delete(act);
+    }
+  }
+  if (animados.size) rafId = requestAnimationFrame(cuadro);
+}
+
+function arrancarAnimacion() {
+  if (!rafId && animados.size) rafId = requestAnimationFrame(cuadro);
+}
+
+// Une el nodo actual con los nodos recorridos este turno; null si no hay camino por calles
+function unir(desde, nodos) {
+  nodos = nodos.filter(n => G.nodos.has(n));
+  if (!nodos.length) return null;
+  if (nodos[0] === desde) return nodos;
+  const i = nodos.indexOf(desde);
+  if (i > 0) return nodos.slice(i);
+  if (adyacentes(desde, nodos[0])) return [desde, ...nodos];
+  for (const v of G.vecinos.get(desde) || []) if (adyacentes(v, nodos[0])) return [desde, v, ...nodos];
+  return null;
+}
+
+// ================= Capas dinamicas =================
+const zombies = new Map(), sobrevivientes = new Map(), camionetas = new Map();
+const zonas = new Map(), halos = new Map(), bloqueadas = new Map(), refugios = new Map();
+const iconosZombie = {};
+let efectosActivos = 0;
+
+// Se quita del grupo (no solo del mapa) para no dejar capas huerfanas dentro del LayerGroup
+function quitarActor(act) {
+  animados.delete(act);
+  act.grupo.removeLayer(act.capa);
+  if (act.linea) act.grupoLinea.removeLayer(act.linea);
+}
+
+function reiniciarActores() {
+  for (const m of [zombies, sobrevivientes, camionetas]) { m.forEach(quitarActor); m.clear(); }
+  eventosLocales.length = 0;
+}
+
+function claseZombie(z) {
+  if (z.visible === false || z.tipo === 'dormido') return 'dormido';
+  return ZOMBIE[z.tipo] ? z.tipo : 'caminante';
+}
+function iconoZombie(clase) {
+  return iconosZombie[clase] || (iconosZombie[clase] = L.divIcon({
+    className: 'mk-z mk-' + clase, iconSize: clase === 'horda' ? [40, 40] : [30, 30],
+    html: `<div class="zb zb-${clase}">${ZOMBIE[clase].html}</div>`,
+  }));
+}
+function textoZombie(act) {
+  const z = act.datos || {};
+  return `<b>${esc(ZOMBIE[act.clase].nombre)}</b> · ${esc(z.id)}` +
+    (act.clase === 'dormido' ? '<br>Invisible para el motor hasta que despierte' : '') +
+    (act.clase === 'horda' ? '<br>Bloquea su esquina y las vecinas' : '');
+}
+
+function pintarZombies(datos, animar) {
+  const vistos = new Set();
+  for (const z of datos) {
+    if (!z || z.id == null || !G.nodos.has(String(z.nodo))) continue;
+    const id = String(z.id), nodo = String(z.nodo), clase = claseZombie(z);
+    vistos.add(id);
+    let act = zombies.get(id);
+    if (!act) {
+      act = crearActor(L.marker(G.nodos.get(nodo), {icon: iconoZombie(clase), keyboard: false, zIndexOffset: 1000}), capaMarcas, nodo, textoZombie);
+      act.clase = clase;
+      zombies.set(id, act);
+    } else {
+      if (act.clase !== clase) { act.capa.setIcon(iconoZombie(clase)); act.clase = clase; }
+      const pasos = lista(z.pasos).filter(p => Array.isArray(p) && p.length >= 2);
+      const nodos = pasos.length ? [String(pasos[0][0]), ...pasos.map(p => String(p[1]))]
+        : z.previo != null && String(z.previo) !== nodo ? [String(z.previo), nodo] : [nodo];
+      mover(act, unir(act.nodo, nodos), nodo, animar);
+    }
+    act.datos = z;
+  }
+  for (const [id, act] of zombies) if (!vistos.has(id)) { quitarActor(act); zombies.delete(id); }
+}
+
+// Camino de una persona: un paso por calle o, si se salto un turno, por su ruta anterior
+function caminoPersona(act, nodo) {
+  if (nodo === act.nodo || adyacentes(act.nodo, nodo)) return [act.nodo, nodo];
+  const i = (act.ruta || []).indexOf(nodo);
+  return i > 0 && i <= 4 ? unir(act.nodo, act.ruta.slice(0, i + 1)) : unir(act.nodo, [nodo]);
+}
+
+function ponerRuta(act, ruta, grupo, estilo) {
+  const firma = ruta.join(',') + estilo.color;
+  if (act.firmaRuta === firma) return;
+  act.firmaRuta = firma;
+  if (ruta.length < 2) { if (act.linea) { grupo.removeLayer(act.linea); act.linea = null; } return; }
+  const pts = ruta.map(n => G.nodos.get(n));
+  if (!act.linea) {
+    act.linea = L.polyline(pts, {...estilo, renderer: rRutas, interactive: false});
+    act.grupoLinea = grupo;
+    grupo.addLayer(act.linea);
+  } else { act.linea.setLatLngs(pts); act.linea.setStyle(estilo); }
+}
+
+function refugioDeRuta(ruta) { return ruta.length ? G.refugioNodo.get(ruta[ruta.length - 1]) ?? null : null; }
+
+function textoSobreviviente(act) {
+  const s = act.datos || {}, r = refugios.get(act.ref);
+  const destino = r ? (r.datos.nombre || r.id) : act.ref || 'sin refugio asignado';
+  return `<b>${esc(s.id)}</b> → ${esc(destino)}` +
+    (s.estado === 'esperando' ? '<br>Esperando camioneta' : '') +
+    (s.estado === 'en_puerta' ? '<br>Espera en la puerta: el refugio está lleno' : '') +
+    (act.ruta && act.ruta.length > 1 ? `<br>Ruta planificada: ${act.ruta.length - 1} calles` : '');
+}
+
+function pintarSobrevivientes(datos, animar, mordidosNuevos) {
+  const vistos = new Set();
+  for (const s of datos) {
+    if (!s || s.id == null || !G.nodos.has(String(s.nodo))) continue;
+    const id = String(s.id), nodo = String(s.nodo);
+    vistos.add(id);
+    const ruta = lista(s.ruta).map(String).filter(n => G.nodos.has(n));
+    let act = sobrevivientes.get(id);
+    const ref = s.refugio != null ? String(s.refugio) : refugioDeRuta(ruta) ?? (act ? act.ref : null);
+    const color = colorRefugio(ref), espera = s.estado === 'esperando';
+    if (!act) {
+      act = crearActor(L.circleMarker(G.nodos.get(nodo), {renderer: rActores, radius: 5}), capaActores, nodo, textoSobreviviente);
+      sobrevivientes.set(id, act);
+    } else {
+      mover(act, caminoPersona(act, nodo), nodo, animar);
+    }
+    const estilo = color + (espera ? '|e' : '');
+    if (act.estilo !== estilo) {
+      act.estilo = estilo;
+      act.capa.setStyle(espera ? {radius: 6.5, color: '#f6ad55', weight: 2.5, fillColor: color, fillOpacity: 1}
+        : {radius: 5, color: '#0b0b1a', weight: 1.5, fillColor: color, fillOpacity: 1});
+    }
+    ponerRuta(act, ruta, capaRutas, {color, weight: 2, opacity: .6});
+    Object.assign(act, {datos: s, ruta, ref});
+  }
+  // Los que desaparecen: llegaron a un refugio, los mordieron o subieron a una camioneta
+  const llegadas = new Map(), posibles = [];
+  for (const [id, act] of sobrevivientes) {
+    if (vistos.has(id)) continue;
+    const refId = G.refugioNodo.get(act.nodo) || (act.ruta && G.refugioNodo.get(act.ruta[1]));
+    if (refId) llegadas.set(refId, (llegadas.get(refId) || 0) + 1);
+    else if (act.datos && act.datos.estado !== 'esperando') posibles.push(act.pos);
+    quitarActor(act);
+    sobrevivientes.delete(id);
+  }
+  if (!animar) return;
+  for (const [refId, n] of llegadas) { const r = refugios.get(refId); if (r) efecto(G.nodos.get(r.nodo), `+${n} ✓`, 'fx-ok'); }
+  posibles.slice(0, mordidosNuevos).forEach(pos => efecto(pos, '💀', 'fx-mal'));
+}
+
+function pintarCamionetas(datos, animar) {
+  const vistos = new Set();
+  for (const c of datos) {
+    if (!c || c.id == null || !G.nodos.has(String(c.nodo))) continue;
+    const id = String(c.id), nodo = String(c.nodo);
+    vistos.add(id);
+    let act = camionetas.get(id);
+    if (!act) {
+      act = crearActor(L.marker(G.nodos.get(nodo), {keyboard: false, zIndexOffset: 2000,
+        icon: L.divIcon({className: 'mk-cam', iconSize: [30, 30], html: '<div class="cam">🚐<b>0</b></div>'})}), capaMarcas, nodo, textoCamioneta);
+      camionetas.set(id, act);
+    } else {
+      mover(act, caminoPersona(act, nodo), nodo, animar);
+    }
+    const ruta = lista(c.ruta).map(String).filter(n => G.nodos.has(n));
+    ponerRuta(act, ruta, capaRutasCam, {color: '#f6ad55', weight: 3, opacity: .9, dashArray: '2 7', lineCap: 'round'});
+    Object.assign(act, {datos: c, ruta});
+    const el = act.capa.getElement();
+    if (el) {
+      poner(el.querySelector('b'), esNum(c.pasajeros) ? c.pasajeros : '?');
+      el.firstChild.classList.toggle('en-refugio', G.refugioNodo.has(nodo));  // no tapar el refugio
+    }
+  }
+  for (const [id, act] of camionetas) if (!vistos.has(id)) { quitarActor(act); camionetas.delete(id); }
+}
+function textoCamioneta(act) {
+  const c = act.datos || {};
+  const estado = {recogiendo: 'va a recoger personas', entregando: 'lleva personas a un refugio', libre: 'libre'}[c.estado] || c.estado || '';
+  return `<b>Camioneta ${esc(c.id)}</b><br>${esc(esNum(c.pasajeros) ? c.pasajeros : '?')} de ${esc(esNum(c.capacidad) ? c.capacidad : 4)} pasajeros` + (estado ? `<br>${esc(estado)}` : '');
+}
+
+function pintarZonas(e) {
+  let nodos;
+  if (Array.isArray(e.zonasHorda)) nodos = e.zonasHorda.map(String);
+  else { // respaldo para backends antiguos: nodo de la horda + vecinos
+    nodos = [];
+    for (const z of lista(e.zombies)) if (z && z.tipo === 'horda' && G.nodos.has(String(z.nodo))) nodos.push(String(z.nodo), ...(G.vecinos.get(String(z.nodo)) || []));
+  }
+  const activos = new Set(nodos.filter(n => G.nodos.has(n)));
+  for (const [n, c] of zonas) if (!activos.has(n)) { capaZonas.removeLayer(c); zonas.delete(n); }
+  for (const n of activos) {
+    if (zonas.has(n)) continue;
+    const c = L.circle(G.nodos.get(n), {renderer: rZonas, radius: G.radioZona, color: '#ff5c5c', weight: 1, opacity: .7, fillColor: '#ff3b3b', fillOpacity: .3, interactive: false});
+    capaZonas.addLayer(c);
+    zonas.set(n, c);
+  }
+  pintarHalos(lista(e.zombies));
+}
+
+// Halo de peligro alrededor de cada horda: cubre su esquina y todas las vecinas
+function pintarHalos(datos) {
+  const vivas = new Set();
+  for (const z of datos) {
+    if (!z || z.tipo !== 'horda' || z.visible === false || !G.nodos.has(String(z.nodo))) continue;
+    const id = String(z.id), nodo = String(z.nodo), centro = G.nodos.get(nodo);
+    vivas.add(id);
+    let h = halos.get(id);
+    if (h && h.nodo === nodo) continue;
+    let radio = G.radioZona * 2;
+    for (const v of G.vecinos.get(nodo) || []) radio = Math.max(radio, mapa.distance(centro, G.nodos.get(v)) + G.radioZona);
+    if (!h) {
+      h = L.circle(centro, {renderer: rZonas, radius: radio, color: '#ff5c5c', weight: 1.5, opacity: .8, dashArray: '6 6', fillColor: '#ff3b3b', fillOpacity: .12, interactive: false});
+      capaZonas.addLayer(h);
+      halos.set(id, h);
+    } else { h.setLatLng(centro); h.setRadius(radio); }
+    h.nodo = nodo;
+  }
+  for (const [id, h] of halos) if (!vivas.has(id)) { capaZonas.removeLayer(h); halos.delete(id); }
+}
+
+// Alfiler sobre el punto medio de la calle: el cartel no tapa la calle cortada (si es corta)
+const iconoBloqueo = () => L.divIcon({className: 'mk-bloq', iconSize: [24, 34], iconAnchor: [12, 34], html: '<div class="bloq">🚧</div>'});
+const eventosLocales = [];
+
+function pintarBloqueadas(ids, e, primera) {
+  const activas = new Set(lista(ids).map(String).filter(id => G.calles.has(id)));
+  for (const [id, m] of bloqueadas) {
+    if (activas.has(id)) continue;
+    capaMarcas.removeLayer(m); m.lineas.forEach(x => capaZonas.removeLayer(x)); bloqueadas.delete(id);
+    const l = G.lineas.get(id); if (l) l.setStyle(estiloCalle(G.calles.get(id).tipo));
+  }
+  for (const id of activas) {
+    if (bloqueadas.has(id)) continue;
+    const c = G.calles.get(id);
+    const a = G.nodos.get(String(c.de)), b = G.nodos.get(String(c.a));
+    G.lineas.get(id).setStyle({opacity: .2});  // la calle sale del mapa vivo
+    const lineas = [ESTILO_BLOQUEADA_FONDO, ESTILO_BLOQUEADA].map(est => L.polyline([a, b], {...est, renderer: rBloqueos, interactive: false}).addTo(capaZonas));
+    const titulo = c.tipo === 'puente' ? 'Puente caído' : 'Calle bloqueada';
+    const m = L.marker([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], {icon: iconoBloqueo(), keyboard: false, zIndexOffset: 1600})
+      .bindTooltip(`<b>${titulo}</b>${c.nombre ? '<br>' + esc(c.nombre) : ''}<br><small>${esc(id)}</small>`, {direction: 'top', offset: [0, -36]})
+      .addTo(capaMarcas);
+    m.lineas = lineas;
+    bloqueadas.set(id, m);
+    // Backends sin "eventos": se arma el evento aqui. Si ya estaba bloqueada al abrir el mapa se
+    // lista sin turno y sin aviso emergente
+    if (!Array.isArray(e.eventos)) {
+      const ev = {turno: primera ? null : e.turno, arista: id, texto: `${titulo}: ${c.nombre ? c.nombre + ' (' + id + ')' : id}`};
+      if (primera) eventosVistos.add(claveEvento(ev));
+      eventosLocales.push(ev);
+      if (eventosLocales.length > 10) eventosLocales.shift();
+    }
+  }
+}
+
+function destacarArista(id) {
+  const m = bloqueadas.get(String(id));
+  const el = m && m.getElement();
+  if (!el) return;
+  const div = el.querySelector('.bloq');
+  div.classList.remove('pulso-bloq'); void div.offsetWidth; div.classList.add('pulso-bloq');
+}
+
+function efecto(pos, texto, clase) {
+  if (!pos || efectosActivos >= 40 || document.hidden) return;
+  efectosActivos++;
+  const m = L.marker(pos, {interactive: false, keyboard: false, zIndexOffset: 3000,
+    icon: L.divIcon({className: 'mk-fx', iconSize: [60, 20], iconAnchor: [30, 26], html: `<div class="fx ${clase}">${esc(texto)}</div>`})}).addTo(capaMarcas);
+  setTimeout(() => { capaMarcas.removeLayer(m); efectosActivos--; }, 1900);
+}
+
+// Refugios: union del grafo (nodo, nombre) y del estado (capacidad, ocupacion)
+function datosRefugios(e) {
+  const porId = new Map();
+  for (const r of G.refugios) porId.set(String(r.id), {...r});
+  for (const r of lista(e && e.refugios)) if (r && r.id != null) porId.set(String(r.id), {...porId.get(String(r.id)), ...r});
+  // Personas esperando en la puerta de un refugio lleno (PRO capacidad)
+  for (const s of lista(e && e.sobrevivientes)) {
+    if (!s || s.estado !== 'en_puerta') continue;
+    const r = porId.get(String(s.refugio ?? G.refugioNodo.get(String(s.nodo))));
+    if (r) r.enPuerta = (r.enPuerta || 0) + 1;
+  }
+  return [...porId.values()].sort((a, b) => cmpIds(a.id, b.id));
+}
+
+function pintarRefugiosMapa(datos) {
+  for (const d of datos) {
+    const id = String(d.id), nodo = String(d.nodo);
+    if (!G.nodos.has(nodo)) continue;
+    let r = refugios.get(id);
+    if (!r) {
+      const color = colorRefugio(id);
+      const icono = L.divIcon({className: 'mk-ref', iconSize: [34, 34],
+        html: `<div class="ref" style="--c:${color}"><div class="ref-ico">🏠</div><div class="ref-info"><span class="ref-nom"></span><div class="ref-barra"><i></i></div><span class="ref-num"></span><span class="ref-puerta"></span><span class="ref-corto"></span></div></div>`});
+      r = {id, nodo, marca: L.marker(G.nodos.get(nodo), {icon: icono, keyboard: false, zIndexOffset: 1800}).addTo(capaMarcas)};
+      r.marca.bindTooltip(() => textoRefugio(r), {direction: 'bottom', offset: [0, 18]});
+      refugios.set(id, r);
+      G.refugioNodo.set(nodo, id);
+    }
+    r.datos = d;
+    const el = r.marca.getElement();
+    if (!el) continue;
+    poner(el.querySelector('.ref-nom'), d.nombre || id);
+    const info = el.querySelector('.ref-info'), barra = el.querySelector('.ref-barra'), num = el.querySelector('.ref-num');
+    const puerta = el.querySelector('.ref-puerta'), corto = el.querySelector('.ref-corto');
+    const cap = esNum(d.capacidad) && d.capacidad > 0 ? d.capacidad : null, oc = esNum(d.ocupacion) ? d.ocupacion : null;
+    const sinDatos = cap == null || oc == null;
+    info.classList.toggle('sin-datos', sinDatos);
+    barra.hidden = num.hidden = corto.hidden = sinDatos;
+    puerta.hidden = sinDatos || !d.enPuerta;
+    if (sinDatos) continue;
+    const f = Math.min(1, oc / cap), nivel = oc >= cap ? 'lleno' : f >= .8 ? 'alto' : 'ok';
+    const cuenta = `${fmt0.format(oc)}/${fmt0.format(cap)}`;
+    barra.dataset.nivel = info.dataset.nivel = nivel;
+    barra.firstChild.style.width = (f * 100).toFixed(0) + '%';
+    const html = cuenta + (nivel === 'lleno' ? ' · <b>LLENO</b>' : nivel === 'alto' ? ' personas · casi lleno' : ' personas');
+    if (num.dataset.html !== html) { num.dataset.html = html; num.innerHTML = html; }
+    if (d.enPuerta) poner(puerta, `${plural(d.enPuerta, 'espera', 'esperan')} en la puerta`);
+    poner(corto, nivel === 'lleno' ? `${cuenta} lleno` : cuenta);
+  }
+}
+function textoRefugio(r) {
+  const d = r.datos || {};
+  let t = `<b>${esc(d.nombre || r.id)}</b> (${esc(r.id)})`;
+  if (esNum(d.capacidad) && esNum(d.ocupacion)) t += `<br>Ocupación: ${fmt0.format(d.ocupacion)} de ${fmt0.format(d.capacidad)}`;
+  if (d.enPuerta) t += `<br>Esperan en la puerta: ${fmt0.format(d.enPuerta)}`;
+  if (esNum(d.evacuaPorTurno)) t += `<br>Evacúa ${fmt0.format(d.evacuaPorTurno)} por turno`;
+  return t;
+}
+
+// ================= Estado recibido =================
+let ultimo = null, tTurno = 0, primerEstado = true;
+
+function recibir(e) {
+  if (!e || typeof e !== 'object' || Array.isArray(e) || e.ping) return;
+  const previo = ultimo;
+  const turno = esNum(e.turno) ? e.turno : 0;
+  const turnoNuevo = !previo || turno !== previo.turno;
+  if (turnoNuevo) tTurno = Date.now();
+  // Ronda nueva o repetida: sus eventos (mismo turno y calle) se vuelven a avisar
+  if (previo && (e.ronda !== previo.ronda || turno < (esNum(previo.turno) ? previo.turno : 0))) eventosVistos.clear();
+  ultimo = e;
+  try { pintarHUD(e, turnoNuevo); } catch (err) { console.error('HUD', err); }
+  try { if (G.listo) recibirMapa(e, previo); } catch (err) { console.error('mapa', err); }
+  primerEstado = false;
+}
+
+function recibirMapa(e, previo) {
+  const prevTurno = previo && esNum(previo.turno) ? previo.turno : 0;
+  const reinicio = previo && (e.ronda !== previo.ronda || (esNum(e.turno) ? e.turno : 0) < prevTurno);
+  if (reinicio) reiniciarActores();
+  const animar = !!previo && !reinicio && !document.hidden;
+  const mordidos = esNum(objeto(e.metricas).mordidos) ? e.metricas.mordidos : 0;
+  const mordidosAntes = previo && esNum(objeto(previo.metricas).mordidos) ? previo.metricas.mordidos : mordidos;
+  pintarBloqueadas(e.aristasBloqueadas, e, !previo);
+  pintarZonas(e);
+  pintarRefugiosMapa(datosRefugios(e));
+  pintarZombies(lista(e.zombies), animar);
+  pintarSobrevivientes(lista(e.sobrevivientes), animar, Math.max(0, mordidos - mordidosAntes));
+  pintarCamionetas(lista(e.camionetas), animar);
+  if (!Array.isArray(e.eventos)) pintarEventos(eventosLocales);
+  if (animados.size) arrancarAnimacion();
+}
+
+function restantes(e) {
+  if (!e) return null;
+  if (esNum(e.turnosRestantes)) return e.turnosRestantes;
+  const m = objeto(e.metricas);
+  return esNum(m.turnosRestantes) ? m.turnosRestantes : null;
+}
+function corriendoAhora() {
+  if (!ultimo) return false;
+  if (typeof ultimo.corriendo === 'boolean') return ultimo.corriendo;
+  // Backend antiguo sin "corriendo": se deduce de que el turno siga avanzando
+  return esNum(ultimo.turno) && ultimo.turno > 0 && Date.now() - tTurno < 3 * TURNO_MS + 1000;
+}
+
+// ================= HUD =================
+let firmaEventos = '', firmaPuntaje = '', firmaRefugios = '', firmaResultados = '';
+const eventosVistos = new Set();
+
+function pintarHUD(e, turnoNuevo) {
+  const m = objeto(e.metricas);
+  const info = RONDAS[e.ronda];
+  const turno = esNum(e.turno) ? e.turno : 0, tr = restantes(e);
+  // Sin numero de ronda (backend antiguo) pero con turnos: se habla de "la simulacion"
+  const sinNumero = e.ronda == null && turno > 0;
+  poner($('ronda-titulo'), info ? `Ronda ${e.ronda} · ${info.nombre}` : e.ronda != null ? `Ronda ${e.ronda}` : sinNumero ? 'Simulación de Manta' : 'Sin ronda en curso');
+  poner($('ronda-desc'), info ? info.desc : sinNumero ? 'Cada 2 s los zombies se mueven y el motor recalcula la ruta de cada sobreviviente.' : 'El operador todavía no inicia la prueba.');
+  poner($('hb-ronda'), info ? `R${e.ronda} · ${info.nombre}` : e.ronda != null ? `Ronda ${e.ronda}` : sinNumero ? 'Simulación' : 'Sin ronda');
+  poner($('turno'), fmt0.format(turno));
+  const total = tr != null ? turno + tr : null;
+  poner($('turno-total'), total ? ` de ${fmt0.format(total)}` : '');
+  $('prog-ronda').style.width = total ? (100 * turno / total).toFixed(1) + '%' : '0%';
+  if (turnoNuevo) reiniciarPulso();
+
+  poner($('c-salvados'), entero(m.salvados)); poner($('hb-salvados'), entero(m.salvados));
+  poner($('c-mordidos'), entero(m.mordidos)); poner($('hb-mordidos'), entero(m.mordidos));
+  poner($('c-rechazados'), entero(m.rechazados));
+  poner($('c-camioneta'), entero(m.rescatadosEnCamioneta));
+  const sob = lista(e.sobrevivientes), zs = lista(e.zombies).filter(Boolean), cams = lista(e.camionetas);
+  const dormidos = zs.filter(z => z.visible === false || z.tipo === 'dormido').length;
+  // El backend real no publica a los dormidos (son invisibles): solo informa cuantos hay
+  const ocultos = !dormidos && esNum(m.dormidosOcultos) && m.dormidosOcultos > 0 ? m.dormidosOcultos : 0;
+  $('filtro-dormidos').hidden = !dormidos;
+  const aBordo = esNum(m.aBordo) && m.aBordo > 0 ? ` con ${plural(m.aBordo, 'persona', 'personas')} a bordo` : '';
+  poner($('en-mapa'), `En el mapa: ${plural(sob.length, 'sobreviviente', 'sobrevivientes')} · ${plural(zs.length - dormidos, 'zombie visible', 'zombies visibles')}` +
+    (dormidos ? ` · ${plural(dormidos, 'dormido', 'dormidos')}` : '') + (ocultos ? ` · ${plural(ocultos, 'dormido oculto', 'dormidos ocultos')}` : '') +
+    (cams.length ? ` · ${plural(cams.length, 'camioneta', 'camionetas')}${aBordo}` : ''));
+
+  const salv = esNum(m.salvados) ? m.salvados : 0, mord = esNum(m.mordidos) ? m.mordidos : 0;
+  poner($('m-superv'), esNum(m.supervivencia) ? pct(m.supervivencia) : salv + mord ? pct(salv / (salv + mord)) : '—');
+  poner($('m-efic'), pct(m.eficiencia));
+  pintarNota('m-lat', ms(m.latenciaP95), notaLatencia(m.latenciaP95));
+  pintarNota('m-err', pctDirecto(m.pctErrores), notaErrores(m.pctErrores));
+  poner($('m-consultas'), esNum(m.consultas) ? `${fmt0.format(m.consultas)} consultas a POST /paso en esta ronda` : '');
+
+  pintarPuntaje(e.puntaje);
+  if (Array.isArray(e.eventos)) pintarEventos(e.eventos);
+  pintarListaRefugios(datosRefugios(e));
+  if (Array.isArray(e.resultados)) pintarResultados(e.resultados);
+  pintarEstadoRonda();
+}
+
+function pintarNota(id, texto, nota) {
+  poner($(id), texto);
+  const ins = $(id + '-n');
+  ins.hidden = !nota;
+  if (nota) { poner(ins, `${nota[0]}/10`); ins.dataset.nivel = nota[1]; ins.title = `Puntos de la rúbrica: ${nota[0]} de 10`; }
+}
+
+function reiniciarPulso() {
+  const barra = $('prog-turno');
+  barra.style.transition = 'none'; barra.style.width = '0%';
+  if (!corriendoAhora()) return;
+  void barra.offsetWidth;
+  barra.style.transition = `width ${TURNO_MS}ms linear`; barra.style.width = '100%';
+}
+
+// Se llama en cada estado y cada 250 ms: reloj, chip de la ronda y mensaje de espera
+function pintarEstadoRonda() {
+  const e = ultimo, corriendo = corriendoAhora();
+  const turno = e && esNum(e.turno) ? e.turno : 0, tr = restantes(e);
+  const reloj = tr == null || (!corriendo && turno === 0) ? '--:--'
+    : mmss(tr * TURNO_MS - (corriendo ? Math.min(TURNO_MS, Date.now() - tTurno) : 0));
+  poner($('tiempo'), reloj); poner($('hb-tiempo'), reloj);
+  const [estado, texto] = corriendo ? ['curso', 'En curso'] : turno > 0 ? (tr === 0 ? ['fin', 'Terminada'] : ['pausa', 'Detenida']) : ['espera', 'En espera'];
+  const chip = $('ronda-chip');
+  if (chip.dataset.estado !== estado) { chip.dataset.estado = estado; poner(chip, texto); if (!corriendo) reiniciarPulso(); }
+  const vacio = $('vacio');
+  vacio.hidden = corriendo;
+  if (corriendo) return;
+  const info = e && RONDAS[e.ronda];
+  if (turno > 0) {
+    vacio.dataset.modo = 'fin';
+    const quien = e.ronda != null ? `La ronda ${e.ronda}${info ? ' · ' + info.nombre : ''}` : 'La simulación';
+    poner($('vacio-texto'), `${quien} ${tr === 0 ? 'terminó' : 'se detuvo'} en el turno ${turno}. El mapa muestra cómo quedó.`);
+  } else {
+    vacio.dataset.modo = 'inicio';
+    poner($('vacio-texto'), 'Cuando empiece, aquí verás moverse a los zombies y a los sobrevivientes turno a turno.');
+  }
+}
+
+const COMPONENTES = [['supervivencia', 'Supervivencia', '50 %'], ['eficiencia', 'Eficiencia', '20 %'], ['latencia', 'Latencia', '15 %'], ['disponibilidad', 'Disponibilidad', '15 %']];
+function pintarPuntaje(p) {
+  const hay = !!p && typeof p === 'object' && esNum(p.total);
+  $('puntaje').hidden = !hay; $('puntaje-vacio').hidden = hay;
+  if (!hay) return;
+  poner($('p-total'), fmt1.format(p.total));
+  $('p-total').dataset.nivel = nivelNota(p.total);
+  const html = COMPONENTES.map(([k, nombre, peso]) => {
+    const v = esNum(p[k]) ? p[k] : null;
+    return `<li><span>${nombre} <small>${peso}</small></span><span class="medidor"><i data-nivel="${v == null ? '' : nivelNota(v)}" style="width:${v == null ? 0 : Math.max(0, Math.min(100, v * 10))}%"></i></span><b>${v == null ? '—' : fmt1.format(v)}</b></li>`;
+  }).join('');
+  if (html !== firmaPuntaje) { $('p-comp').innerHTML = html; firmaPuntaje = html; }
+  const rs = lista(p.rondas).map(String);
+  poner($('p-rondas'), rs.length ? `Calculado con ${rs.length === 1 ? 'la ronda' : 'las rondas'} ${unirY(rs)}.` : '');
+}
+
+function claveEvento(ev) { return `${ev.turno}|${ev.texto}|${ev.arista}`; }
+function pintarEventos(evs) {
+  evs = lista(evs).filter(ev => ev && (ev.texto || ev.arista));
+  const firma = evs.map(claveEvento).join('#');
+  if (firma === firmaEventos) return;
+  firmaEventos = firma;
+  const ol = $('eventos');
+  ol.textContent = '';
+  if (!evs.length) {
+    ol.innerHTML = '<li class="sub">Sin eventos por ahora. Aquí aparecerán los puentes que colapsan y las calles que se bloquean.</li>';
+    return;
+  }
+  for (const ev of evs.slice().reverse()) {
+    const clave = claveEvento(ev), nuevo = !eventosVistos.has(clave);
+    const texto = ev.texto || `Calle bloqueada (${ev.arista})`;
+    const li = document.createElement('li');
+    li.className = 'evento' + (nuevo && !primerEstado ? ' nuevo' : '');
+    li.innerHTML = `<span class="ev-t">${ev.turno != null ? 'T' + esc(ev.turno) : '—'}</span><span class="ev-i" aria-hidden="true">${iconoEvento(texto, ev.tipo)}</span><span></span>`;
+    li.lastChild.textContent = texto;
+    ol.appendChild(li);
+    if (nuevo) {
+      eventosVistos.add(clave);
+      if (!primerEstado) { aviso(ev.turno, texto, ev.tipo); if (ev.arista != null) setTimeout(() => destacarArista(ev.arista), 50); }
+    }
+  }
+}
+
+function aviso(turno, texto, tipo) {
+  const caja = $('toasts');
+  const div = document.createElement('div');
+  div.className = 'toast';
+  div.setAttribute('role', 'status');
+  div.innerHTML = `<span class="toast-i" aria-hidden="true">${iconoEvento(texto, tipo)}</span><div><b>Turno ${esc(turno ?? '?')}</b> · <span class="toast-x"></span></div>`;
+  div.querySelector('.toast-x').textContent = texto;
+  caja.prepend(div);
+  while (caja.children.length > 2) caja.lastChild.remove();  // no tapar media ciudad con avisos
+  setTimeout(() => div.classList.add('saliendo'), 6500);
+  setTimeout(() => div.remove(), 7100);
+}
+
+function pintarListaRefugios(datos) {
+  let html;
+  if (!datos.length) html = '<li class="sub">Sin datos de refugios todavía.</li>';
+  else html = datos.map(r => {
+    const color = colorRefugio(String(r.id));
+    const cap = esNum(r.capacidad) && r.capacidad > 0 ? r.capacidad : null, oc = esNum(r.ocupacion) ? r.ocupacion : null;
+    const cab = `<li title="${esc(r.id)}${esNum(r.evacuaPorTurno) ? ` · evacúa ${esc(r.evacuaPorTurno)} por turno` : ''}"><span class="punto-ref" style="background:${color}"></span><span class="lr-nom">${esc(r.nombre || r.id)}</span>`;
+    if (cap == null || oc == null) return cab + '<span class="lr-num">sin datos de capacidad</span></li>';
+    const f = Math.min(1, oc / cap), nivel = oc >= cap ? 'lleno' : f >= .8 ? 'alto' : 'ok';
+    const etiqueta = nivel === 'lleno' ? ' · <b class="lr-lleno">Lleno</b>' : nivel === 'alto' ? ' · <b class="lr-alto">Casi lleno</b>' : '';
+    const puerta = r.enPuerta ? `<span class="lr-puerta">${plural(r.enPuerta, 'persona espera', 'personas esperan')} en la puerta</span>` : '';
+    return cab + `<span class="lr-num">${fmt0.format(oc)}/${fmt0.format(cap)}${etiqueta}</span><span class="medidor"><i data-nivel="${nivel}" style="width:${(f * 100).toFixed(0)}%"></i></span>${puerta}</li>`;
+  }).join('');
+  if (html !== firmaRefugios) { $('lista-refugios').innerHTML = html; firmaRefugios = html; }
+}
+
+function pintarResultados(res) {
+  res = lista(res).filter(r => r && typeof r === 'object');
+  $('resultados-tarjeta').hidden = !res.length;
+  const html = res.map(r => {
+    const lat = esNum(r.latenciaP95) ? r.latenciaP95 : objeto(r.latencia_ms).p95;
+    const err = esNum(r.pctErrores) ? r.pctErrores : r.pct_errores;
+    const nombre = RONDAS[r.ronda] ? RONDAS[r.ronda].nombre : '';
+    return `<tr><td title="${esc(nombre)}">${esc(r.ronda ?? '?')}</td><td>${entero(r.salvados)}</td><td>${entero(r.mordidos)}</td><td>${pct(r.supervivencia)}</td><td>${pct(r.eficiencia)}</td><td>${esNum(lat) ? fmt1.format(lat) : '—'}</td><td>${pctDirecto(err)}</td></tr>`;
+  }).join('');
+  if (html !== firmaResultados) { $('resultados').innerHTML = html; firmaResultados = html; }
+}
+
+// ================= Conexion: WebSocket con respaldo de polling =================
+// ws: socket actual (uno a la vez); wsVivo: ya trajo al menos un estado. Hay a lo sumo un intervalo
+// de polling, un reintento agendado y un socket; los sockets abandonados se sueltan sin esperar su close.
+let ws = null, wsVivo = false, wsReintento = 0, wsIntento = 0, wsPausa = WS_REINTENTO_MS, ultimoMensaje = 0;
+let pollTimer = 0, pidiendo = false, fallosPoll = 0, pideClave = false;
+
+function setConexion(modo) {
+  const el = $('conexion');
+  if (el.dataset.modo === modo) return;
+  el.dataset.modo = modo;
+  const [txt, det, titulo] = {
+    ws: ['En vivo', ' · WebSocket', 'Recibe cada turno al instante por WebSocket'],
+    polling: ['Polling', ' · cada 2 s', 'El WebSocket no está disponible: se consulta /estado cada 2 segundos'],
+    sin: ['Sin conexión', ' · reintentando', 'No hay respuesta del servidor; se sigue reintentando'],
+    clave: ['Sin acceso', ' · falta la key', 'El servidor pide una key para leer el estado: escríbela en Control del operador'],
+  }[modo] || ['Conectando…', '', ''];
+  poner($('con-txt'), txt); poner($('con-det'), det); el.title = titulo;
+}
+function conectarWS() {
+  wsReintento = 0;
+  if (ws) return;
+  wsIntento = Date.now(); ultimoMensaje = 0; wsVivo = false;
+  try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws'); }
+  catch (err) { soltarWS(); return; }
+  const sock = ws;
+  sock.onmessage = ev => {
+    ultimoMensaje = Date.now();
+    let d;
+    try { d = JSON.parse(ev.data); } catch { return; }
+    if (!d || typeof d !== 'object' || d.ping) return;  // los {"ping":true} solo mantienen viva la conexion
+    if (!wsVivo) { wsVivo = true; detenerPolling(); setConexion('ws'); }  // el polling sigue hasta el primer estado
+    recibir(d);
+  };
+  sock.onclose = () => { if (ws === sock) soltarWS(); };  // un error siempre termina en close: basta este evento
+}
+
+// Suelta el socket sin esperar su evento close (con la red caida el navegador tarda hasta un minuto
+// en darlo), sigue por polling y agenda otro intento. Si el socket duro poco, cada intento espera el doble.
+function soltarWS() {
+  const sock = ws, duro = wsVivo && Date.now() - wsIntento > 30000;
+  ws = null; wsVivo = false;
+  if (sock) {
+    sock.onmessage = sock.onclose = null;
+    try { sock.close(); } catch { /* ya estaba cerrado */ }
+  }
+  iniciarPolling();
+  if (duro) wsPausa = WS_REINTENTO_MS;
+  programarWS();
+  if (!duro) wsPausa = Math.min(WS_REINTENTO_MAX_MS, wsPausa * 2);
+}
+// El proximo intento se cuenta desde que empezo el anterior
+function programarWS() {
+  if (!wsReintento) wsReintento = setTimeout(conectarWS, Math.max(1000, wsPausa - (Date.now() - wsIntento)));
+}
+
+function iniciarPolling() {
+  if (pollTimer) return;
+  if ($('conexion').dataset.modo === 'ws' || $('conexion').dataset.modo === 'conectando') setConexion('polling');
+  pedirEstado();
+  pollTimer = setInterval(pedirEstado, POLL_MS);
+}
+function detenerPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = 0; } }
+
+async function pedirEstado() {
+  if (pidiendo) return;
+  pidiendo = true;
+  const pedidoEn = Date.now();
+  const ctl = new AbortController(), corte = setTimeout(() => ctl.abort(), 4000);
+  try {
+    const clave = $('api-key').value.trim();
+    const r = await fetch('/estado', {cache: 'no-store', signal: ctl.signal, headers: pideClave && clave ? {'x-api-key': clave} : {}});
+    if (r.status === 401 || r.status === 403) { pideClave = true; if (pollTimer && !wsVivo) setConexion('clave'); return; }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    fallosPoll = 0;
+    if (wsVivo && ultimoMensaje >= pedidoEn) return;  // el WebSocket ya trajo un estado igual o mas nuevo
+    if (pollTimer && !wsVivo) setConexion('polling');
+    recibir(d);
+  } catch (err) {
+    if (++fallosPoll >= 2 && pollTimer && !wsVivo) setConexion('sin');
+  } finally {
+    clearTimeout(corte);
+    pidiendo = false;
+  }
+}
+
+// Vigia: un socket que no abre, o que abrio y quedo mudo (sin estado ni ping), se suelta y se sigue
+// por polling. En ronda llega un estado por turno: 10 s de silencio ya es una conexion muerta.
+setInterval(() => {
+  if (!ws) return;
+  const limite = ws.readyState === WebSocket.CONNECTING ? WS_ESPERA_MS
+    : !wsVivo || (ultimo && ultimo.corriendo === true) ? WS_SILENCIO_RONDA_MS : WS_SILENCIO_MS;
+  if (Date.now() - Math.max(ultimoMensaje, wsIntento) > limite) soltarWS();
+}, 1000);
+window.addEventListener('online', () => { if (!ws) { clearTimeout(wsReintento); wsPausa = WS_REINTENTO_MS; conectarWS(); } });
+
+// ================= Control del operador =================
+const botonesOp = [...document.querySelectorAll('[data-accion]')];
+function salidaOp(texto, tono) { const el = $('op-salida'); el.textContent = texto; el.dataset.tono = tono || ''; }
+
+async function operar(boton) {
+  const clave = $('api-key').value.trim();
+  if (!clave) { salidaOp('Escribe primero la key de operador (ADMIN_API_KEY).', 'error'); $('api-key').focus(); return; }
+  const {accion, ronda} = boton.dataset;
+  if (accion === 'detener' && !confirm('¿Detener la ronda en curso?')) return;
+  const metodo = accion === 'resultados' ? 'GET' : 'POST';
+  const url = '/ws/sim/' + accion + (accion === 'iniciar' ? '?ronda=' + encodeURIComponent(ronda) : '');
+  botonesOp.forEach(b => { b.disabled = true; });
+  salidaOp(`${metodo} ${url} …`);
+  const ctl = new AbortController(), corte = setTimeout(() => ctl.abort(), 15000);
+  try {
+    const r = await fetch(url, {method: metodo, headers: {'x-api-key': clave}, cache: 'no-store', signal: ctl.signal});
+    const cuerpo = await r.text();
+    let bonito = cuerpo;
+    try {
+      const d = JSON.parse(cuerpo);
+      bonito = JSON.stringify(d, null, 2);
+      if (r.ok && accion === 'resultados') pintarResultados(d.resultados);
+    } catch { /* respuesta que no es JSON: se muestra tal cual */ }
+    salidaOp(`HTTP ${r.status}${r.statusText ? ' ' + r.statusText : ''}\n${bonito}`, r.ok ? 'ok' : 'error');
+    if (r.ok && accion !== 'resultados') pedirEstado();
+  } catch (err) {
+    salidaOp(`Sin respuesta del servidor (${err.name === 'AbortError' ? 'tiempo agotado' : err.message}).`, 'error');
+  } finally {
+    clearTimeout(corte);
+    botonesOp.forEach(b => { b.disabled = false; });
+  }
+}
+botonesOp.forEach(b => b.addEventListener('click', () => operar(b)));
+
+// ================= Interfaz: leyenda, HUD movil y filtros =================
+function abrirLeyenda(abierta) {
+  $('leyenda').dataset.abierta = abierta;
+  $('ley-toggle').setAttribute('aria-expanded', abierta);
+}
+// Abierta por defecto solo si el mapa tiene espacio; si no, queda a un toque en el boton "Leyenda"
+abrirLeyenda(!movil.matches && $('mapa').clientWidth >= 900 && $('mapa').clientHeight >= 560);
+$('ley-toggle').addEventListener('click', () => abrirLeyenda($('leyenda').dataset.abierta !== 'true'));
+$('hud-toggle').addEventListener('click', () => {
+  const abierto = $('hud').classList.toggle('abierto');
+  $('hud-toggle').setAttribute('aria-expanded', abierto);
+  if (abierto && movil.matches) abrirLeyenda(false);
+});
+$('ver-rutas').addEventListener('change', ev => {
+  if (!capaRutas) return;
+  if (ev.target.checked) capaRutas.addTo(mapa); else capaRutas.remove();
+});
+$('ver-dormidos').addEventListener('change', ev => $('mapa').classList.toggle('sin-dormidos', !ev.target.checked));
+
+// ================= Arranque =================
+// Diagnostico de solo lectura para la consola del navegador (cuantos marcadores hay en el mapa)
+window.diagnosticoMapa = () => ({zombies: zombies.size, sobrevivientes: sobrevivientes.size, camionetas: camionetas.size,
+  zonasHorda: zonas.size, bloqueadas: bloqueadas.size, refugios: refugios.size, animando: animados.size,
+  calles: G.lineas.size, conexion: $('conexion').dataset.modo, turno: ultimo ? ultimo.turno : null});
+setInterval(() => { if (ultimo) pintarEstadoRonda(); }, 250);
+cargarGrafo();
+pedirEstado();   // primer dato sin esperar al WebSocket
+conectarWS();
 </script>
 </body>
 </html>
