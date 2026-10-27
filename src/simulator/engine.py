@@ -416,7 +416,10 @@ class Simulador:
 
     def _metricas(self):
         s, st = self.s, self.s["stats"]
-        p95 = puntaje.percentil(sorted(self.lat), 0.95)
+        # en su lugar: la lista ya viene ordenada y Timsort solo mezcla las del ultimo turno
+        # (sorted() de toda la ronda costaba ~11 ms por turno al final de R3)
+        self.lat.sort()
+        p95 = puntaje.percentil(self.lat, 0.95)
         return {"salvados": st["salvados"], "mordidos": st["mordidos"], "rechazados": st["rechazados"],
                 "rescatadosEnCamioneta": st["en_camioneta"], "aBordo": self._a_bordo(),
                 "dormidosOcultos": sum(1 for z in s["zombies"] if not z["visible"]),
