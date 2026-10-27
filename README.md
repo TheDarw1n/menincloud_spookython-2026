@@ -158,7 +158,7 @@ Todas las claves de `/estado` existen desde el arranque (`puntaje` es `null` has
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                                                 # 58 tests
+pytest                                                 # 71 tests
 python tools/validar_grafo.py data/manta_graph.json
 
 # Ronda completa sin HTTP (rápido): 1, 2, 3 o ciclo
