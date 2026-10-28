@@ -169,83 +169,14 @@
 <noscript><p style="position:fixed;inset:auto 0 0 0;margin:0;padding:12px;background:#5c1111;color:#fff;text-align:center">Este mapa necesita JavaScript.</p></noscript>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="js/config.js"></script>
+<script src="js/utilidades.js"></script>
 <script>
 'use strict';
 /* Mapa en vivo de Escape de Manta Zombie.
    Datos: manta_graph.json (archivo estatico) + estado del mundo por WebSocket /ws, con respaldo
    de polling a /estado. Cualquier campo del estado puede faltar (backends antiguos): todo se lee
    de forma defensiva. Los marcadores se reutilizan por id y se animan entre turnos. */
-
-// ================= Configuracion =================
-const TURNO_MS = 2000, ANIM_MS = 1500, POLL_MS = 2000;
-// WebSocket: espera del handshake, reintentos (se duplican si el socket dura poco) y silencio maximo
-// (en ronda llega un estado por turno; fuera de ronda solo un ping cada ~20 s)
-const WS_ESPERA_MS = 4000, WS_REINTENTO_MS = 10000, WS_REINTENTO_MAX_MS = 60000;
-const WS_SILENCIO_RONDA_MS = 10000, WS_SILENCIO_MS = 45000;
-const RONDAS = {
-  1: {nombre: 'Anochecer', desc: '20 sobrevivientes · solo zombies caminantes'},
-  2: {nombre: 'Medianoche', desc: '80 sobrevivientes · caminantes, corredores y hordas · colapsa un puente'},
-  3: {nombre: 'Apocalipsis', desc: '200 sobrevivientes a la vez · todos los zombies · se bloquean dos calles'},
-};
-const ZOMBIE = {
-  caminante: {nombre: 'Caminante', html: '<span>🧟</span>'},
-  corredor: {nombre: 'Corredor', html: '<span>🧟</span><i class="rayo">⚡</i>'},
-  horda: {nombre: 'Horda', html: '<span class="h1">🧟</span><span class="h2">🧟</span><span class="h3">🧟</span>'},
-  dormido: {nombre: 'Dormido', html: '<span>💤</span>'},
-};
-// Colores por refugio en orden fijo (validados para daltonismo); el 5.o en adelante es gris
-const COLORES_REFUGIO = ['#3987e5', '#eab308', '#d55181', '#e9ecef'];
-const COLOR_SIN_REFUGIO = '#9a98b8';
-const ESTILO_CALLE = {
-  avenida: {color: '#a78bfa', weight: 4.5, opacity: .9},
-  calle: {color: '#7c6cc4', weight: 2.5, opacity: .8},
-  callejon: {color: '#5d5592', weight: 1.5, opacity: .85},
-  puente: {color: '#4fd1c5', weight: 6, opacity: 1},
-};
-// Calle bloqueada: barrera roja a trazos sobre un borde oscuro, por encima de rutas y zonas
-const ESTILO_BLOQUEADA = {color: '#ff5c5c', weight: 5, opacity: 1, dashArray: '7 6', lineCap: 'butt'};
-const ESTILO_BLOQUEADA_FONDO = {color: '#0b0b1a', weight: 9, opacity: .9, lineCap: 'butt'};
-
-// ================= Utilidades =================
-const $ = id => document.getElementById(id);
-const movil = window.matchMedia('(max-width: 900px)');
-const esNum = v => typeof v === 'number' && Number.isFinite(v);
-const lista = v => Array.isArray(v) ? v : [];
-const objeto = v => v && typeof v === 'object' && !Array.isArray(v) ? v : {};
-const fmt0 = new Intl.NumberFormat('es-EC', {maximumFractionDigits: 0});
-const fmt1 = new Intl.NumberFormat('es-EC', {maximumFractionDigits: 1});
-const fmt2 = new Intl.NumberFormat('es-EC', {maximumFractionDigits: 2});
-const entero = v => esNum(v) ? fmt0.format(v) : '0';
-const pct = v => esNum(v) ? fmt1.format(v * 100) + ' %' : '—';
-const pctDirecto = v => esNum(v) ? fmt2.format(v) + ' %' : '—';
-const ms = v => esNum(v) ? fmt1.format(v) + ' ms' : '—';
-const plural = (n, uno, varios) => `${fmt0.format(n)} ${n === 1 ? uno : varios}`;
-const cmpIds = (a, b) => String(a).localeCompare(String(b), 'es', {numeric: true});
-function poner(el, texto) { texto = String(texto); if (el && el.textContent !== texto) el.textContent = texto; }
-function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); }
-function mmss(milis) { const s = Math.max(0, Math.ceil(milis / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
-function unirY(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' y ' + xs[xs.length - 1]; }
-const nivelNota = v => v >= 8 ? 'ok' : v >= 6 ? 'aviso' : v >= 4 ? 'serio' : 'critico';
-function notaLatencia(p95) { if (!esNum(p95)) return null; return p95 <= 150 ? [10, 'ok'] : p95 <= 300 ? [7, 'aviso'] : p95 <= 500 ? [4, 'serio'] : [0, 'critico']; }
-function notaErrores(p) { if (!esNum(p)) return null; return p < .5 ? [10, 'ok'] : p < 2 ? [6, 'aviso'] : p < 5 ? [3, 'serio'] : [0, 'critico']; }
-function iconoEvento(texto, tipo) {
-  if (tipo === 'puente') return '💥';
-  if (tipo === 'avenida' || tipo === 'calle' || tipo === 'callejon') return '🚧';
-  const t = ' ' + String(texto || '').toLowerCase();
-  if (/despert|dormid/.test(t)) return '💤';
-  if (/colaps|derrumb|\s(cay|caí)/.test(t)) return '💥';
-  if (/puente/.test(t)) return '🌉';
-  if (/bloque|cerr|cort/.test(t)) return '🚧';
-  if (/horda/.test(t)) return '🧟';
-  if (/refugio|lleno/.test(t)) return '🏠';
-  return '⚠️';
-}
-function mostrarError(texto) {
-  const el = $('aviso-error');
-  if (el.hidden === !texto && el.textContent === texto) return;
-  poner(el, texto); el.hidden = !texto;
-  if (mapa) mapa.invalidateSize();  // el aviso ocupa espacio sobre el mapa
-}
 
 // ================= Mapa base =================
 const HAY_MAPA = typeof window.L !== 'undefined';
