@@ -106,6 +106,8 @@ _Los totales se calculan sin redondear cada fila._
 
 - Subir la tarea a **1 vCPU y 2 GB** (si en AWS el p95 sale alto) cuesta **+14.42 USD/mes**: Fargate pasa a 28.84 USD.
 - La misma tarea en **x86** cuesta +3.60 USD/mes.
+- Link de AWS Pricing Calculator: 
+https://calculator.aws/#/estimate?id=cd92ee02de11a28f6bdf4853cd3c05745f0feac8 
 
 ## 5. Costo del evento (del 2026-10-26 al 2026-10-30)
 
