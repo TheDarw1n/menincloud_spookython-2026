@@ -192,7 +192,7 @@ después del pitch.
 | **Quitar la IP pública de la tarea** | ≈ 0.60 USD | ≈ 3.65 USD | Sin IP, la tarea no puede descargar la imagen de ECR ni leer SSM. Haría falta un NAT Gateway (32.85 USD/mes) o 4 endpoints en 2 AZ (58.40 USD/mes): sale más caro. |
 | **Dejar el ALB sin IP pública** (interno, conectado a CloudFront con *VPC origins*) | ≈ 1.20 USD (2 IPv4) | ≈ 7.30 USD | El plan Free de CloudFront no incluye *VPC origins*: empiezan en el plan Business, de 200 USD/mes ([precios de CloudFront](https://aws.amazon.com/cloudfront/pricing/)). En pago por uso, el WAF costaría ≈ 8 USD/mes, más de lo que se ahorra. |
 
-Con esta arquitectura, lo único que se puede quitar sin perder rendimiento es el ALB, y el precio es la recuperación automática: el evento bajaría de ≈ 6.90 a ≈ 2.99 USD y el mes 24/7, de ≈ 41.86 a ≈ 18.09 USD. No lo hicimos porque el evento cuesta ≈ 6.90 USD de un Budget de 50. El ahorro que sí importa es apagar todo al terminar ([sección 9](#9-cierre-del-evento)): cada día de más encendido cuesta 1.374 USD.
+Con esta arquitectura, lo único que se puede quitar sin perder rendimiento es el ALB, y el precio es la recuperación automática: el evento bajaría de ≈ 6.90 a ≈ 2.99 USD y el mes 24/7, de ≈ 41.86 a ≈ 18.09 USD. No lo hicimos porque el evento cuesta ≈ 6.90 USD de un Budget de 50. El ahorro que sí importa es apagar todo al terminar: cada día de más encendido cuesta 1.374 USD.
 
 ## 8. Qué cambiaría a mayor escala
 

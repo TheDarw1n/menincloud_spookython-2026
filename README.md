@@ -217,7 +217,7 @@ La infraestructura se creó **a mano en la consola** (sin IaC); la configuració
 - `deploy.sh` usa `minimumHealthyPercent=0 / maximumPercent=100`: **nunca hay 2 tareas con estados distintos**, a costa de ~1 min de corte por despliegue.
 - Construir ARM64 desde un PC x86 usa emulación (lento). Alternativa: `PLATFORM=linux/amd64 ./infra/deploy.sh backend` y `runtimePlatform` a `X86_64`.
 - **Credenciales de CLI:** cada persona que despliega crea **una** access key de **su** usuario IAM (nunca de root, nunca en el repo) y la borra al terminar el evento.
-- **Cierre del evento:** ver [`docs/costos.md` § 9](docs/costos.md#9-cierre-del-evento). El ALB, Fargate y las IPv4 cobran por hora (1.374 USD/día).
+- **Cierre del evento:** apagar todo después del pitch, porque el ALB, Fargate y las IPv4 cobran por hora aunque nadie use el sistema (1.374 USD/día).
 
 ## Cómo se mide la latencia
 
