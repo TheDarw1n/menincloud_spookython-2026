@@ -22,6 +22,12 @@ jobs:
       - run: pytest -q
       - name: Validar el grafo de Manta
         run: python tools/validar_grafo.py data/manta_graph.json
+      - name: Sintaxis del mapa (node --check)
+        # Cada archivo y todos juntos: comparten el ambito global del navegador, asi que un let o un
+        # const declarado en dos archivos es un SyntaxError que apaga el mapa
+        run: |
+          for f in frontend/js/*.js; do node --check "$f"; done
+          cat frontend/js/*.js > "$RUNNER_TEMP/mapa.js" && node --check "$RUNNER_TEMP/mapa.js"
 
   carga:
     # Emula la tarea de Fargate: 1 contenedor ARM64 (la tarea corre en Graviton) con 0.5 vCPU y 1 GB,
