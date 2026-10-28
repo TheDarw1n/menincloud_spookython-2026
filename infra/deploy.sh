@@ -43,7 +43,9 @@ backend() {
 }
 
 frontend() {
-  aws s3 sync frontend/ "s3://$BUCKET" --delete
+  # no-cache: el navegador revalida cada archivo del mapa (304 si no cambio), asi nunca mezcla
+  # un index.html nuevo con un css o un js viejo
+  aws s3 sync frontend/ "s3://$BUCKET" --delete --cache-control no-cache
   aws s3 cp data/manta_graph.json "s3://$BUCKET/manta_graph.json"   # el mapa lo lee como archivo estatico
   aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*" >/dev/null
   echo "Frontend publicado en S3 + invalidacion de CloudFront enviada"
