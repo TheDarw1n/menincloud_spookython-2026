@@ -132,7 +132,7 @@ Si la infraestructura se creó antes del 2026-10-26, hay que sumar 1.374 USD por
 *Corte de datos:* miércoles 28 de octubre de 2026, 01:34 (hora de Ecuador).
 *Fuente:* AWS Cost Explorer, rango 2026-10-26 a 2026-10-28, agrupado por servicio.
 *Filtro:* Tipo de cargo = Usage + Tax (sin Credit), es decir, *gasto bruto* antes de aplicar créditos.
-*Captura:* [gasto-real.png](gasto-real.png)
+*Captura:* [gasto_real.png](gasto_real.png)
 
 | Servicio | USD acumulado al corte |
 |---|---|
