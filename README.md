@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/TheDarw1n/menincloud_spookython-2026/actions/workflows/ci.yml)
 
-Motor de rutas en AWS que recalcula en tiempo real alrededor de zombies y calles cerradas, y responde rápido aunque 200 sobrevivientes pidan ruta a la vez. Es la base de una app de delivery, de un despacho de ambulancias o de una ruta de evacuación ante tsunamis en Manabí: basta cambiar «zombie» por «calle cerrada» o «zona inundada».
+Motor de rutas en AWS que recalcula en tiempo real alrededor de zombies y calles cerradas, y responde rápido aunque 200 sobrevivientes pidan ruta a la vez.
 
 | | |
 |---|---|
@@ -44,7 +44,6 @@ Carga externa con [`latency.py`](src/simulator/latency.py) contra ese mismo cont
 
 Supervivencia + eficiencia ponderadas como la rúbrica: **6.54 de 7**. Con latencia y disponibilidad en 10 (medidas arriba), la prueba de fuego estimada es **≈ 9.5 / 10**.
 
-> Pendiente del equipo: correr la prueba en AWS con `./infra/deploy.sh prueba` desde CloudShell y pegar aquí el resultado (ver [Cómo se mide la latencia](#cómo-se-mide-la-latencia)).
 
 ## Qué hace
 
@@ -266,14 +265,5 @@ frontend/        mapa en vivo (Leaflet)        infra/  despliegue        docs/  
 tests/           77 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
 ```
 
-## Equipo
-
-| Persona | Responsabilidad |
-|---|---|
-| Kenneth | _(completar)_ |
-| Jonathan | _(completar)_ |
-| Jostin | _(completar)_ |
-
-Se usaron asistentes de IA para programar (lo permiten las reglas del reto); el equipo revisó el código y puede explicarlo.
 
 Datos del mapa © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright) (ODbL).
