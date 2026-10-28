@@ -99,6 +99,28 @@ def test_docs_apagados_por_defecto():
     assert c.get("/docs").status_code == 404 and c.get("/openapi.json").status_code == 404
 
 
+def test_servir_frontend_local_incluye_css_y_js(tmp_path):
+    # SERVIR_FRONTEND se lee al importar la app: se prueba en un proceso aparte
+    import subprocess
+    import sys
+    (tmp_path / "css").mkdir()
+    (tmp_path / "js").mkdir()
+    (tmp_path / "index.html").write_text("<!doctype html>", encoding="utf-8")
+    (tmp_path / "css" / "a.css").write_text("body{}", encoding="utf-8")
+    (tmp_path / "js" / "a.js").write_text("'use strict';", encoding="utf-8")
+    codigo = ("from fastapi.testclient import TestClient\nfrom src.api.main import app\nc = TestClient(app)\n"
+              "for u in ('/', '/css/a.css', '/js/a.js', '/js/no.js'):\n"
+              "    r = c.get(u); print(u, r.status_code, r.headers['content-type'].split(';')[0])\n")
+    raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env = dict(os.environ, SERVIR_FRONTEND="1", FRONTEND_DIR=str(tmp_path), SIM_AUTOSTART="none")
+    lineas = subprocess.run([sys.executable, "-c", codigo], cwd=raiz, env=env, capture_output=True,
+                            text=True, check=True, timeout=60).stdout.split("\n")
+    r = {u: (int(s), t) for u, s, t in (x.split() for x in lineas if x)}
+    assert r["/"] == (200, "text/html") and r["/css/a.css"] == (200, "text/css")
+    assert r["/js/a.js"][0] == 200 and r["/js/a.js"][1].endswith("javascript")
+    assert r["/js/no.js"][0] == 404
+
+
 def test_websocket_limita_visores(monkeypatch):
     import pytest
     from starlette.websockets import WebSocketDisconnect

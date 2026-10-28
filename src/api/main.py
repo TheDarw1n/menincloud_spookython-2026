@@ -272,11 +272,18 @@ def sim_resultados():
 # proceso. En AWS no se activa: los sirve S3 a traves de CloudFront.
 if os.environ.get("SERVIR_FRONTEND", "0") == "1":
     from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
+
+    mapa_dir = os.environ.get("FRONTEND_DIR", "frontend")
 
     @app.get("/", include_in_schema=False)
     def mapa_local():
-        return FileResponse(os.path.join(os.environ.get("FRONTEND_DIR", "frontend"), "index.html"))
+        return FileResponse(os.path.join(mapa_dir, "index.html"))
 
     @app.get("/manta_graph.json", include_in_schema=False)
     def grafo_local():
         return FileResponse(os.environ.get("GRAPH_PATH", "data/manta_graph.json"), media_type="application/json")
+
+    # Estilos y codigo del mapa. check_dir=False: arranca aunque FRONTEND_DIR no tenga esas carpetas
+    for sub in ("css", "js"):
+        app.mount(f"/{sub}", StaticFiles(directory=os.path.join(mapa_dir, sub), check_dir=False), name=sub)
