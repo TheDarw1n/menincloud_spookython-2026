@@ -235,7 +235,7 @@ Resumen de [`docs/costos.md`](docs/costos.md) (precios verificados el 2026-10-27
 |---|---|
 | 24/7 durante un mes (Fargate 14.42 + ALB 16.47 + 3 IPv4 10.95 + resto) | ≈ 41.86 |
 | Evento del 26 al 30 de octubre (120 h) | ≈ 6.90 |
-| Gasto real según Cost Explorer | pendiente ([pasos](docs/costos.md#6-gasto-real-durante-el-evento)) |
+| Gasto real según Cost Explorer | [gasto_real.png](gasto_real.png) |
 
 ## AWS Budget
 
