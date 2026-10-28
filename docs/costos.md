@@ -193,6 +193,17 @@ aws ce get-cost-and-usage --time-period Start=2026-10-26,End=2026-10-31 \
 
 **Ya aplicado:** uvicorn escribía una línea de log por cada petición (unos 60 B): en una demo continua serían ≈ 7.9 GB/mes (≈ 3.94 USD/mes). El `CMD` del `Dockerfile` usa `--no-access-log` y quedan solo los errores y los logs JSON del simulador (uno cada 10 turnos y uno por ronda).
 
+### Lo que todavía se podría recortar y por qué no se hizo
+
+| Opción | Ahorro en el evento (120 h) | Ahorro al mes 24/7 | Por qué no se hizo |
+|---|---|---|---|
+| **Quitar el ALB** y apuntar CloudFront directo a la tarea | ≈ 3.91 USD: ALB 2.70 + LCU 0.01 + 2 IPv4 1.20 | ≈ 23.77 USD: 16.43 + 0.04 + 7.30 | El rendimiento sería el mismo (hay un salto menos), pero se pierde la recuperación automática. CloudFront exige un nombre de dominio como origen y una tarea Fargate no admite una IP fija: cada reinicio (despliegue, caída o mantenimiento de AWS) le cambia la dirección, y el sistema queda caído hasta que alguien actualiza el origen a mano. Hoy el ALB registra solo la tarea nueva. La disponibilidad pesa 15 % en la rúbrica. |
+| **Tarea de 0.25 vCPU y 0.5 GB** | ≈ 1.19 USD | ≈ 7.21 USD | Pierde rendimiento: la API, el simulador y el planner comparten la mitad de CPU, y el p95 de 14–17 ms con todo a la vez se midió con 0.5 vCPU. |
+| **Fargate Spot** | — | — | AWS puede retirar la tarea con 2 minutos de aviso. Se perdería la ronda en curso, que se retoma a mano con `/ws/sim/reanudar`. |
+| **Quitar la IP pública de la tarea** | ≈ 0.60 USD | ≈ 3.65 USD | Sin IP, la tarea no puede descargar la imagen de ECR ni leer SSM. Haría falta un NAT Gateway (32.85 USD/mes) o 4 endpoints en 2 AZ (58.40 USD/mes): sale más caro. |
+
+Con esta arquitectura, lo único que se puede quitar sin perder rendimiento es el ALB, y el precio es la recuperación automática: el evento bajaría de ≈ 6.90 a ≈ 2.99 USD y el mes 24/7, de ≈ 41.86 a ≈ 18.09 USD. No lo hicimos porque el evento cuesta ≈ 6.90 USD de un Budget de 50. El ahorro que sí importa es apagar todo al terminar ([sección 9](#9-cierre-del-evento)): cada día de más encendido cuesta 1.374 USD.
+
 ## 8. Qué cambiaría a mayor escala
 
 **Con 10 veces más sobrevivientes** (2 000 `/paso` por turno, es decir, ráfagas de 1 000 peticiones/s):
