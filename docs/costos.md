@@ -1,10 +1,8 @@
 # Declaración de costos
 
 > - **Región:** us-east-1. **Moneda:** USD, precios de lista **sin impuestos**.
-> - **Precios verificados el 2026-10-27** contra los archivos oficiales de la AWS Price List API (publicados entre el 2026-09-11 y el 2026-10-26) y las páginas de precios y documentación de AWS (ver [Fuentes](#fuentes)).
 > - **Costo bruto:** los créditos de la cuenta **no se restan**, porque no cambian lo que cuesta operar el sistema. Solo se aplican las asignaciones gratuitas **permanentes** que forman parte del precio publicado (por ejemplo, los primeros 25 GB de DynamoDB), y cada fila lo indica.
-> - **Mes = 730 h.** Las cifras marcadas *(estimado)* son supuestos de uso. Las marcadas *(medido)* salen de correr el código del repositorio (versión del 2026-10-27, 11:02) con un grafo sintético de 306 nodos y 502 calles, parecido al de Manta. Los precios unitarios están todos verificados.
-
+> - **Mes = 730 h.** Las cifras marcadas *(estimado)* son supuestos de uso. Las marcadas *(medido)* salen de correr el código del repositorio (versión del 2026-10-27, 11:02) con un grafo sintético de 306 nodos y 502 calles.
 ## Resumen
 
 | Concepto | USD |
@@ -131,53 +129,32 @@ Si la infraestructura se creó antes del 2026-10-26, hay que sumar 1.374 USD por
 
 ## 6. Gasto real durante el evento
 
-**Fecha de corte:** ____________. Cost Explorer actualiza los datos al menos una vez cada 24 h, así que el último día puede estar incompleto. Para la entrega (2026-10-28 a las 10:00, hora de Ecuador, que son las 15:00 UTC) habrá datos como mucho hasta el 2026-10-27, y ese día puede estar incompleto. Conviene llenar la tabla con ese corte, indicarlo arriba y, si se permite, actualizarla después del cierre.
+*Corte de datos:* miércoles 28 de octubre de 2026, 01:34 (hora de Ecuador).
+*Fuente:* AWS Cost Explorer, rango 2026-10-26 a 2026-10-28, agrupado por servicio.
+*Filtro:* Tipo de cargo = Usage + Tax (sin Credit), es decir, *gasto bruto* antes de aplicar créditos.
+*Captura:* [gasto-real.png](gasto-real.png)
 
-| Servicio en Cost Explorer | Estimado del evento (USD) | Real (USD) | Diferencia |
-|---|---|---|---|
-| Elastic Container Service (Fargate) | 2.37 | | |
-| Elastic Load Balancing | 2.71 | | |
-| Virtual Private Cloud (IPv4 públicas) | 1.80 | | |
-| CloudFront | 0.00 | | |
-| WAF | 0.00 | | |
-| CloudWatch | 0.00 | | |
-| DynamoDB | 0.01 | | |
-| S3 | 0.00 | | |
-| EC2 Container Registry (ECR) | 0.00 | | |
-| Key Management Service / Systems Manager | 0.00 | | |
-| EC2-Other (transferencia entre AZ) | 0.01 | | |
-| Otros servicios que aparezcan | 0.00 | | |
-| **Total** | **6.90** | | |
+| Servicio | USD acumulado al corte |
+|---|---|
+| Elastic Load Balancing (ALB) | 0.54 |
+| VPC (principalmente direcciones IPv4 públicas) | 0.19 |
+| Elastic Container Service (Fargate) | 0.11 |
+| DynamoDB, ECR, S3, CloudFront (plan Free), CloudWatch, KMS, CloudShell, CloudFormation, Glue | 0.00 |
+| *Total real al corte* | *0.84* |
 
-Si alguna diferencia supera ±20 %, anotar la causa debajo de la tabla (por ejemplo, días extra encendidos o una IP pública de más).
+La cuenta usa créditos promocionales, por lo que el monto facturado neto es 0.00 USD; aquí se
+declara el gasto bruto. El valor es *parcial*: Cost Explorer puede tardar hasta ~24 h en reflejar
+el gasto más reciente, y las fechas del informe están en UTC.
 
-Captura de Cost Explorer: _pendiente del equipo_ (guardarla en `docs/gasto_real.png` con el paso 8 y enlazarla aquí).
+El gasto es bajo porque el servicio de cómputo (ECS Fargate) estuvo apagado o con pocas horas de
+ejecución; casi todo corresponde a recursos fijos por hora (ALB e IPv4 públicas).
 
-**Cómo llenarla** (en la consola, sin costo):
+### Proyección hasta el pitch (viernes 30 de octubre)
+Con Fargate, ALB y las IPv4 públicas encendidos: ~1.5 USD por día (ver cálculo en la sección anterior).
+Desde el corte hasta el pitch quedan ~2.5 días, es decir ~3.8 USD adicionales.
 
-1. **Permiso (una sola vez, con el usuario raíz).** En **Cuenta** (*Account*) → **Acceso de usuarios y roles de IAM a la información de facturación** (*IAM user and role access to Billing information*), elegir **Editar → Activar**. Después, crear un grupo `MantaFacturacionLectura` con la política administrada `AWSBillingReadOnlyAccess` y agregar **solo** a quien hará el reporte. No conviene usar el grupo `MantaTeam`: no tiene permisos de facturación y ya usa 9 de sus 10 políticas.
-2. Abrir **Billing and Cost Management → Cost Explorer**.
-3. **Rango de fechas:** personalizado, del **2026-10-26** al **2026-10-30** (o hasta la fecha de corte). **Granularidad:** diaria.
-4. **Agrupar por:** Servicio.
-5. **Filtros → Tipo de cargo (*Charge type*):** elegir la opción de **excluir** (*Exclude*) y marcar **Crédito (*Credit*)** y **Reembolso (*Refund*)**. Es el mismo criterio del Budget, que mide el gasto bruto. Los impuestos (*Tax*) solo aparecen con granularidad mensual; si salen, anotarlos aparte, porque los precios de esta hoja no los incluyen.
-6. **Métrica:** costos no combinados (*Unblended costs*).
-7. Copiar a la tabla el total de cada servicio (columna *Total* de la tabla que aparece bajo el gráfico) o descargar el CSV.
-8. **Captura de pantalla:** que se vean el rango de fechas, el filtro de tipo de cargo y la tabla por servicio. Guardarla como **`docs/gasto_real.png`**.
-9. **Verificación cruzada:** con el mismo rango, agrupar por **Tipo de uso** y ver la **cantidad de uso**. Por día debería aparecer:
-   - ≈ 12 vCPU-h (`USE1-Fargate-ARM-vCPU-Hours:perCPU`) y ≈ 24 GB-h (`USE1-Fargate-ARM-GB-Hours`).
-   - 24 h de ALB (`LoadBalancerUsage`).
-   - **72 h de IPv4** (`USE1-PublicIPv4:InUseAddress`), que son 3 IP × 24 h.
-
-   Si las IPv4 suman 96 h o más, hay una IP de más: una Elastic IP ociosa, un ALB que escaló o una tarea duplicada. Hay que revisarlo.
-
-Alternativa por CLI (sin probar: no se ejecutó contra la cuenta). Cada llamada cuesta 0.01 USD y la fecha `End` no se incluye en el rango:
-
-```bash
-aws ce get-cost-and-usage --time-period Start=2026-10-26,End=2026-10-31 \
-  --granularity DAILY --metrics UnblendedCost \
-  --group-by Type=DIMENSION,Key=SERVICE \
-  --filter '{"Not":{"Dimensions":{"Key":"RECORD_TYPE","Values":["Credit","Refund"]}}}'
-```
+*Gasto total estimado del evento: ~4.6 USD.* El valor final se confirmará con Cost Explorer
+después del pitch.
 
 ## 7. Decisiones que bajaron el costo
 
@@ -226,64 +203,3 @@ Con esta arquitectura, lo único que se puede quitar sin perder rendimiento es e
 - CloudFront tendría que pasar a los planes Business o Premium (200–1 000 USD/mes), o a pago por uso (≈ 208 USD/mes entre peticiones y WAF).
 - Los logs costarían ≈ 3.94 USD/mes sin `--no-access-log` (ya aplicado).
 - DynamoDB costaría ≈ 0.97 USD/mes.
-
-## 9. Cierre del evento
-
-El ALB, Fargate y las IPv4 cobran **por hora**, aunque nadie use el sistema: **1.374 USD/día**. Orden recomendado para apagar todo:
-
-1. **Guardar la evidencia antes de borrar:** el resultado de `GET /ws/sim/resultados`, capturas del mapa y la tabla de Cost Explorer ([sección 6](#6-gasto-real-durante-el-evento)).
-2. **ECS:** bajar el servicio a 0 tareas y borrarlo. Primero `aws ecs update-service --cluster manta --service manta-api --desired-count 0`, después `aws ecs delete-service --cluster manta --service manta-api`, y luego borrar el clúster `manta`. Esto detiene Fargate y libera la IP pública de la tarea.
-3. **ALB:** borrar el load balancer y su target group. Así deja de cobrar los 0.0225 USD/h, las LCU y sus 2 IPv4.
-4. **CloudFront:** en la distribución, **cancelar primero el plan Free**. Se cancela de inmediato, y mientras esté activo la distribución no se puede borrar. Después deshabilitarla, esperar a que termine de desplegarse y borrarla. Por último, **borrar el web ACL de WAF** asociado: fuera del plan pasaría a pago por uso (5 USD/mes + 1 USD por regla, prorrateado por hora).
-5. **S3:** vaciar y borrar `frontend-manta`.
-6. **DynamoDB:** exportar la tabla si hace falta y borrar `manta-snapshots`.
-7. **ECR:** borrar el repositorio `manta-zombie` junto con sus imágenes.
-8. **CloudWatch Logs:** borrar `/ecs/manta-zombie`, o dejar que expire a los 7 días.
-9. **SSM:** borrar `/manta/api-key` y `/manta/admin-key`.
-10. **VPC:** confirmar que no quedan NAT Gateway, Elastic IP sueltas (una IP ociosa también cobra 0.005 USD/h) ni ENI huérfanas.
-11. **IAM:** borrar las access keys de cada usuario. Cuando ya no exista el servicio, borrar la política `pasar-roles-ecs` y los roles `manta-execution-role` y `manta-task-role`.
-12. **Mantener el Budget**, que es gratis, hasta que cierre la factura del mes. Revisar Cost Explorer 48 h después: el costo diario debe quedar en ≈ 0.00 USD.
-
-## Fuentes
-
-Consultadas el 2026-10-27. Los archivos de la Price List API muestran su fecha de publicación.
-
-**Archivos de la AWS Price List API (us-east-1):**
-
-- Fargate: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/us-east-1/index.json (2026-10-19)
-- ALB: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSELB/current/us-east-1/index.json (2026-09-11)
-- IPv4 pública y VPC endpoints: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonVPC/current/us-east-1/index.json (2026-10-16)
-- NAT Gateway: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/us-east-1/index.json (2026-10-23)
-- S3: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonS3/current/us-east-1/index.json (2026-10-15)
-- DynamoDB: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonDynamoDB/current/us-east-1/index.json (2026-09-11)
-- CloudWatch: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudWatch/current/us-east-1/index.json (2026-10-07)
-- ECR: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECR/current/us-east-1/index.json (2026-09-11)
-- Systems Manager: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSystemsManager/current/us-east-1/index.json (2026-10-08)
-- KMS: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awskms/current/us-east-1/index.json (2026-10-26)
-- Budgets: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSBudgets/current/index.json (2026-09-11)
-- Cost Explorer: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSCostExplorer/current/us-east-1/index.json (2026-09-11)
-- Transferencia de datos: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSDataTransfer/current/us-east-1/index.json (2026-09-16)
-- CloudFront, pago por uso: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonCloudFront/current/index.json (2026-10-19)
-- WAF: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/awswaf/current/us-east-1/index.json (2026-09-14)
-- API Gateway: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonApiGateway/current/us-east-1/index.json (2026-10-13)
-- ElastiCache: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonElastiCache/current/us-east-1/index.json (2026-10-14)
-- Secrets Manager: https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AWSSecretsManager/current/us-east-1/index.json (2026-09-11)
-
-**Páginas de precios y documentación de AWS:**
-
-- Fargate: https://aws.amazon.com/fargate/pricing/ (tarifas por segundo, mínimo de 1 minuto, 20 GB efímeros)
-- ALB: https://aws.amazon.com/elasticloadbalancing/pricing/ (definición de LCU, hora parcial = hora completa)
-- 1 IP por AZ habilitada: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html
-- IPv4 en recursos de una VPC, incluido ECS: https://aws.amazon.com/vpc/pricing/
-- IPv4 administradas por servicios (ELB): https://aws.amazon.com/blogs/aws/new-aws-public-ipv4-address-charge-public-ip-insights/ · https://aws.amazon.com/blogs/networking-and-content-delivery/identify-and-optimize-public-ipv4-address-usage-on-aws/
-- CloudFront, planes de tarifa plana: https://aws.amazon.com/cloudfront/pricing/ · https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html (asignaciones, exceso, cuotas, cancelación y borrado)
-- S3: https://aws.amazon.com/s3/pricing/
-- DynamoDB on-demand: https://aws.amazon.com/dynamodb/pricing/on-demand/ · TTL: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
-- CloudWatch: https://aws.amazon.com/cloudwatch/pricing/ (capa gratuita) · EMF: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html
-- ECR: https://aws.amazon.com/ecr/pricing/
-- Systems Manager: https://aws.amazon.com/systems-manager/pricing/
-- KMS: https://aws.amazon.com/kms/pricing/
-- Budgets: https://aws.amazon.com/aws-cost-management/aws-budgets/pricing/
-- Cost Explorer: https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html · filtros: https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html
-- Acceso de IAM a la facturación: https://docs.aws.amazon.com/console/iam/billing-enable · https://repost.aws/knowledge-center/iam-billing-access
-- Nueva capa gratuita con créditos (desde el 2025-07-15): https://aws.amazon.com/about-aws/whats-new/2025/07/aws-free-tier-credits-month-free-plan/
