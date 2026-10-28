@@ -75,7 +75,7 @@ GRUPOS = [
 CAJAS = [
     # --- personas (fuera de AWS)
     dict(id="nav", x=20, y=112, w=186, h=108, cat="internet", titulo="Navegador",
-         lineas=["mapa en vivo (Leaflet)", "GET / y /manta_graph.json", "WS /ws o GET /estado c/2 s",
+         lineas=["mapa en vivo (Leaflet)", "GET /, css/, js/ y el grafo", "WS /ws o GET /estado c/2 s",
                  "sin API key"]),
     dict(id="jurado", x=20, y=238, w=186, h=88, cat="internet", titulo="Jurado / simulador",
          lineas=["POST /paso + x-api-key", "respuesta en < 500 ms", "pruebas de latencia (p95)"]),
@@ -97,7 +97,7 @@ CAJAS = [
          lineas=["puede dar 403 en ráfagas"]),
     dict(id="s3", x=270, y=436, w=196, h=112, cat="almacenamiento", acceso="privado", pos="abajo",
          titulo="Amazon S3",
-         lineas=["bucket frontend-manta", "index.html, manta_graph.json", "solo vía CloudFront (OAC)"]),
+         lineas=["bucket frontend-manta", "index.html, css/, js/ y el grafo", "solo vía CloudFront (OAC)"]),
     # --- VPC
     dict(id="alb", x=552, y=250, w=152, h=220, cat="redes", acceso="privado", pos="abajo",
          titulo=["Application", "Load Balancer"],
@@ -189,7 +189,7 @@ FLECHAS = [
 # ---------------------------------------------------------------- leyendas
 LEYENDA = dict(x=700, y=10, w=878, h=62)
 FLUJOS = [
-    (1, "Página y grafo: Navegador → CloudFront → S3 (index.html y manta_graph.json, con OAC)."),
+    (1, "Página y grafo: Navegador → CloudFront → S3 (index.html, css/, js/ y manta_graph.json, con OAC)."),
     (2, "Estado en vivo: WS /ws (o GET /estado cada 2 s) → CloudFront → ALB → API, que lee el Mundo publicado."),
     (3, "POST /paso con x-api-key → CloudFront → ALB → ruta ASGI directa → consulta las tablas del planner (< 500 ms)."),
     (4, "Turno de 2 s: el simulador aplica eventos y mueve zombies → publica el Mundo → el planner recalcula 1 vez → /paso."),

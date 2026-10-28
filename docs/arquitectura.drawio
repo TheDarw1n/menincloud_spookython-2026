@@ -16,7 +16,7 @@
         <mxCell id="aws_tab" value="&lt;b&gt;AWS us-east-1 · una sola cuenta del equipo&lt;/b&gt;" style="rounded=0;html=1;whiteSpace=nowrap;align=left;spacingLeft=11;fillColor=#232F3E;strokeColor=none;fontColor=#FFFFFF;fontSize=13;" parent="aws" vertex="1">
           <mxGeometry x="0" y="0" width="290.736" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="nav" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Navegador&lt;/font&gt;&lt;/b&gt;&lt;br&gt;mapa en vivo (Leaflet)&lt;br&gt;GET / y /manta_graph.json&lt;br&gt;WS /ws o GET /estado c/2 s&lt;br&gt;sin API key" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+        <mxCell id="nav" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Navegador&lt;/font&gt;&lt;/b&gt;&lt;br&gt;mapa en vivo (Leaflet)&lt;br&gt;GET /, css/, js/ y el grafo&lt;br&gt;WS /ws o GET /estado c/2 s&lt;br&gt;sin API key" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#545B64;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
           <mxGeometry x="20" y="112" width="186" height="108" as="geometry" />
         </mxCell>
         <mxCell id="nav_cat" value="Internet" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#545B64;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="nav" vertex="1">
@@ -55,7 +55,7 @@
         <mxCell id="cf_acceso" value="PÚBLICO" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#1D8102;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="cf" vertex="1">
           <mxGeometry x="116" y="-9" width="70" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="s3" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon S3&lt;/font&gt;&lt;/b&gt;&lt;br&gt;bucket frontend-manta&lt;br&gt;index.html, manta_graph.json&lt;br&gt;solo vía CloudFront (OAC)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#7AA116;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
+        <mxCell id="s3" value="&lt;b&gt;&lt;font style=&quot;font-size:14px&quot; color=&quot;#16191F&quot;&gt;Amazon S3&lt;/font&gt;&lt;/b&gt;&lt;br&gt;bucket frontend-manta&lt;br&gt;index.html, css/, js/ y el grafo&lt;br&gt;solo vía CloudFront (OAC)" style="rounded=1;html=1;whiteSpace=wrap;arcSize=6;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fillColor=#FFFFFF;strokeColor=#7AA116;strokeWidth=1.5;fontSize=12;fontColor=#333D47;" parent="aws" vertex="1">
           <mxGeometry x="16" y="352" width="196" height="112" as="geometry" />
         </mxCell>
         <mxCell id="s3_cat" value="Almacenamiento" style="rounded=1;arcSize=50;html=1;whiteSpace=nowrap;fillColor=#3F8624;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="s3" vertex="1">
@@ -355,7 +355,7 @@
         <mxCell id="flujo1" value="1" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">
           <mxGeometry x="34" y="888" width="20" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="flujo1_t" value="Página y grafo: Navegador → CloudFront → S3 (index.html y manta_graph.json, con OAC)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
+        <mxCell id="flujo1_t" value="Página y grafo: Navegador → CloudFront → S3 (index.html, css/, js/ y manta_graph.json, con OAC)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=nowrap;fontSize=12;fontColor=#333D47;" parent="1" vertex="1">
           <mxGeometry x="60" y="888" width="740" height="20" as="geometry" />
         </mxCell>
         <mxCell id="flujo2" value="2" style="ellipse;html=1;fillColor=#232F3E;strokeColor=#FFFFFF;strokeWidth=1.5;fontColor=#FFFFFF;fontStyle=1;fontSize=12;" parent="1" vertex="1">

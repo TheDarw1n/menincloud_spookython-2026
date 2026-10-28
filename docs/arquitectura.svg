@@ -39,7 +39,7 @@
 <rect x="20" y="878" width="1558" height="114" rx="8" fill="#F7F8FA" stroke="#D5DBDB" stroke-width="1" data-rect="flujos" data-tipo="leyenda"/>
 <circle cx="44" cy="898" r="10" fill="#232F3E" stroke="#FFFFFF" stroke-width="1.5" data-num="flujo1" data-x="34" data-y="888"/>
 <text x="44" y="902.2" font-size="12" fill="#FFFFFF" font-weight="bold" text-anchor="middle" data-dueno="num:flujo1" data-rol="numero">1</text>
-<text x="60" y="902.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Página y grafo: Navegador → CloudFront → S3 (index.html y manta_graph.json, con OAC).</text>
+<text x="60" y="902.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Página y grafo: Navegador → CloudFront → S3 (index.html, css/, js/ y manta_graph.json, con OAC).</text>
 <circle cx="44" cy="918" r="10" fill="#232F3E" stroke="#FFFFFF" stroke-width="1.5" data-num="flujo2" data-x="34" data-y="908"/>
 <text x="44" y="922.2" font-size="12" fill="#FFFFFF" font-weight="bold" text-anchor="middle" data-dueno="num:flujo2" data-rol="numero">2</text>
 <text x="60" y="922.2" font-size="12" fill="#333D47" data-dueno="flujos" data-rol="leyenda">Estado en vivo: WS /ws (o GET /estado cada 2 s) → CloudFront → ALB → API, que lee el Mundo publicado.</text>
@@ -253,14 +253,14 @@
 <text x="393.328" y="552.2" font-size="12" fill="#FFFFFF" font-weight="bold" data-dueno="s3_acceso" data-rol="pastilla" data-sobre="s3">PRIVADO</text>
 <text x="280" y="464" font-size="14" fill="#16191F" font-weight="bold" data-dueno="s3" data-rol="titulo">Amazon S3</text>
 <text x="280" y="482" font-size="12" fill="#333D47" data-dueno="s3" data-rol="linea">bucket frontend-manta</text>
-<text x="280" y="498" font-size="12" fill="#333D47" data-dueno="s3" data-rol="linea">index.html, manta_graph.json</text>
+<text x="280" y="498" font-size="12" fill="#333D47" data-dueno="s3" data-rol="linea">index.html, css/, js/ y el grafo</text>
 <text x="280" y="514" font-size="12" fill="#333D47" data-dueno="s3" data-rol="linea">solo vía CloudFront (OAC)</text>
 <rect x="20" y="112" width="186" height="108" rx="8" fill="#FFFFFF" stroke="#545B64" stroke-width="1.5" data-rect="nav" data-tipo="caja"/>
 <rect x="30" y="103" width="60.004" height="18" rx="9.0" fill="#545B64" data-rect="nav_cat" data-tipo="pastilla"/>
 <text x="38" y="116.2" font-size="12" fill="#FFFFFF" font-weight="bold" data-dueno="nav_cat" data-rol="pastilla" data-sobre="nav">Internet</text>
 <text x="30" y="140" font-size="14" fill="#16191F" font-weight="bold" data-dueno="nav" data-rol="titulo">Navegador</text>
 <text x="30" y="158" font-size="12" fill="#333D47" data-dueno="nav" data-rol="linea">mapa en vivo (Leaflet)</text>
-<text x="30" y="174" font-size="12" fill="#333D47" data-dueno="nav" data-rol="linea">GET / y /manta_graph.json</text>
+<text x="30" y="174" font-size="12" fill="#333D47" data-dueno="nav" data-rol="linea">GET /, css/, js/ y el grafo</text>
 <text x="30" y="190" font-size="12" fill="#333D47" data-dueno="nav" data-rol="linea">WS /ws o GET /estado c/2 s</text>
 <text x="30" y="206" font-size="12" fill="#333D47" data-dueno="nav" data-rol="linea">sin API key</text>
 <rect x="20" y="238" width="186" height="88" rx="8" fill="#FFFFFF" stroke="#545B64" stroke-width="1.5" data-rect="jurado" data-tipo="caja"/>
