@@ -3,13 +3,14 @@
 > - **Región:** us-east-1. **Moneda:** USD, precios de lista **sin impuestos**.
 > - **Costo bruto:** los créditos de la cuenta **no se restan**, porque no cambian lo que cuesta operar el sistema. Solo se aplican las asignaciones gratuitas **permanentes** que forman parte del precio publicado (por ejemplo, los primeros 25 GB de DynamoDB), y cada fila lo indica.
 > - **Mes = 730 h.** Las cifras marcadas *(estimado)* son supuestos de uso. Las marcadas *(medido)* salen de correr el código del repositorio (versión del 2026-10-27, 11:02) con un grafo sintético de 306 nodos y 502 calles.
+
 ## Resumen
 
 | Concepto | USD |
 |---|---|
 | Operar el sistema **24/7 durante un mes** | **≈ 41.86** |
 | **Costo del evento:** 5 días (120 h), del 2026-10-26 al 2026-10-30 | **≈ 6.90** |
-| **Gasto real del evento** según Cost Explorer | _pendiente: ver [sección 6](#6-gasto-real-durante-el-evento)_ |
+| **Gasto real del evento** según Cost Explorer, al corte del 2026-10-28 a las 01:34 | **0.84** (ver [sección 6](#6-gasto-real-durante-el-evento)) |
 
 **Cerca del 99 %** del costo es **fijo por hora** y no depende del tráfico: Fargate + ALB + 3 IPv4 públicas = **0.05725 USD/h = 1.374 USD/día**. Todo el tráfico de la prueba de fuego cuesta centavos.
 
@@ -106,6 +107,15 @@ _Los totales se calculan sin redondear cada fila._
 - La misma tarea en **x86** cuesta +3.60 USD/mes.
 - Link de AWS Pricing Calculator: 
 https://calculator.aws/#/estimate?id=cd92ee02de11a28f6bdf4853cd3c05745f0feac8 
+
+**Por qué la calculadora da 48.52 USD/mes:** tiene los mismos servicios que esta hoja, pero con supuestos de uso más altos en cuatro filas:
+
+- **Elastic Load Balancing (22.27):** equivale a 1 LCU todas las horas (5.84 USD). Con el tráfico del evento son ≈ 5 LCU-h al mes (0.04 USD), así que el ALB queda en ≈ 16.47.
+- **CloudWatch (0.61):** supone 1 GB de logs al mes, 1 GB consultado con Logs Insights, 1 alarma y 70 eventos OTel. Sin el log de acceso se escriben ≈ 0.3 MB al mes, las primeras 10 alarmas son gratis y el sistema no usa OTel: < 0.01 USD.
+- **DynamoDB (0.22):** supone ítems de 30 KB. El snapshot más grande medido pesa 20.9 KB, y con lo medido (543 WRU por simulacro) sale ≈ 0.01 USD al mes.
+- **ECR (0.05):** supone 0.5 GB guardados. Esta hoja estima ≈ 0.1 GB (0.01 USD).
+
+Con los datos de esta hoja, la calculadora daría ≈ 41.9 USD/mes.
 
 ## 5. Costo del evento (del 2026-10-26 al 2026-10-30)
 
