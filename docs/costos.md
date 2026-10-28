@@ -19,7 +19,7 @@
 
 - **ECS Fargate:** 1 tarea **ARM64 (Graviton) de 0.5 vCPU y 1 GB** (`infra/task-definition.json`) con 1 worker de uvicorn, en una subred pública con IP pública. Usa los 20 GB de almacenamiento efímero incluidos. La task definition del repositorio está **reconstruida**: si la de la consola tiene otra CPU o memoria, hay que recalcular las filas de Fargate.
 - **Application Load Balancer** expuesto a internet en **2 AZ**, con 1 IP pública por AZ.
-- **CloudFront en plan Free** (WAF incluido) con dos orígenes: S3 (`frontend-manta`, con `index.html` y `manta_graph.json`) y el ALB.
+- **CloudFront en plan Free** (WAF incluido) con dos orígenes: S3 (`frontend-manta`, con el mapa en `index.html`, `css/` y `js/`, y `manta_graph.json`) y el ALB.
 - **DynamoDB on-demand** (`manta-snapshots`, TTL de 7 días), **SSM Parameter Store** (`/manta/api-key` y `/manta/admin-key`, SecureString con la clave administrada `aws/ssm`), **CloudWatch Logs** (`/ecs/manta-zombie`, 7 días), **ECR** (`manta-zombie`) y el **AWS Budget** `manta-zombie-mensual`.
 - **No se usan:** NAT Gateway, API Gateway, ElastiCache, Secrets Manager, Route 53 ni dominio propio. Se asume que Container Insights está **desactivado**.
 
@@ -58,7 +58,7 @@
 Otros tamaños medidos:
 
 - `POST /paso`: 67 B de cuerpo en la petición y 27 B en la respuesta.
-- `manta_graph.json`: unos 81 KB. `index.html` (el mapa en vivo, un solo archivo): 85 KB.
+- `manta_graph.json`: unos 81 KB. El mapa en vivo (`index.html`, `css/` y `js/`, 12 archivos): 86 KB en total. Se suben con `Cache-Control: no-cache`, así que en cada visita el navegador los revalida y, si no cambiaron, recibe un 304 sin cuerpo.
 - El log de acceso de uvicorn está **desactivado** (`--no-access-log` en el `Dockerfile`): antes eran unos 60 B por cada petición.
 - Logs JSON del simulador (una línea cada 10 turnos, más el resultado y el puntaje de cada ronda): unos 11 KB por simulacro.
 - Un simulacro completo (3 rondas) escribe **543 WRU**, es decir, 0.0003 USD.

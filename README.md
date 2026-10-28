@@ -51,7 +51,7 @@ Supervivencia + eficiencia ponderadas como la rúbrica: **6.54 de 7**. Con laten
 1. **Mapa real de Manta.** 307 intersecciones y 503 calles de OpenStreetMap (191 avenidas, 279 calles, 33 puentes sobre los ríos Manta y Burro), con distancia y tipo de cada calle. Los sobrevivientes están atrapados en **Tarqui, Los Esteros, Barbasquillo y Jocay** (cada barrio es su zona de OSM recortada a su parroquia real) y hay 4 refugios en lugares reales y altos, lejos de la costa: **ULEAM, Estadio Jocay, Hospital General IESS Manta y Colegio Réplica Manta**.
 2. **Simulador del Apocalipsis.** Cada 2 s: primero se mueven los zombies, se publica el mundo (`GET /estado` y WebSocket `/ws`), cada sobreviviente pregunta `POST /paso` y al final se cuentan mordidas y llegadas.
 3. **Motor de rutas.** Recalcula **una vez por turno** (no por petición) un Dijkstra inverso por refugio con los zombies del turno; `POST /paso` solo consulta esas tablas: O(grado del nodo), sin bloquear.
-4. **Mapa en vivo** ([`frontend/index.html`](frontend/index.html)): zombies con ícono por tipo, sobrevivientes con su ruta planificada, camionetas, ocupación de refugios, calles cerradas, zonas de horda, eventos y el puntaje en vivo. Se actualiza por WebSocket y, si no conecta, por polling cada 2 s.
+4. **Mapa en vivo** ([`frontend/`](frontend/): la estructura en `index.html`, los estilos en `css/` y el código en 10 scripts de `js/`, sin compilar): zombies con ícono por tipo, sobrevivientes con su ruta planificada, camionetas, ocupación de refugios, calles cerradas, zonas de horda, eventos y el puntaje en vivo. Se actualiza por WebSocket y, si no conecta, por polling cada 2 s.
 
 ## Cómo decide cada paso
 
