@@ -161,7 +161,7 @@ Todas las claves de `/estado` existen desde el arranque (`puntaje` es `null` has
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-pytest                                                 # 72 tests
+pytest                                                 # 77 tests
 python tools/validar_grafo.py data/manta_graph.json
 
 # Ronda completa sin HTTP (rápido): 1, 2, 3 o ciclo
@@ -263,7 +263,7 @@ src/simulator/   motor de rondas, puntaje de la rúbrica, cliente HTTP, latency.
 src/persistence.py   snapshots y resultados en DynamoDB
 tools/           export_overpass.py (OSM), validar_grafo.py, ab_planner.py, resumen_resultados.py, visores_ws.py, diagrama/, pitch/
 frontend/        mapa en vivo (Leaflet)        infra/  despliegue        docs/  arquitectura, costos, grafo
-tests/           72 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
+tests/           77 tests (grafo de prueba propio en tests/data/)     .github/workflows/ci.yml
 ```
 
 ## Equipo
